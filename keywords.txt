@@ -1,0 +1,60 @@
+#######################################
+# Syntax Coloring Map For TM1638 Lib
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+TM16XX	KEYWORD1
+TM1637	KEYWORD1
+TM1638	KEYWORD1
+InvertedTM1638	KEYWORD1
+TM1638QYF KEYWORD1
+TM1640	KEYWORD1
+TM1668	KEYWORD1
+TM16xxMatrix	KEYWORD1
+TM16xxDisplay	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setupDisplay	KEYWORD2
+setDisplayToHexNumber	KEYWORD2
+setDisplayToDecNumber	KEYWORD2
+setDisplayToBinNumber	KEYWORD2
+setDisplayDigit	KEYWORD2
+setDisplay	KEYWORD2
+clearDisplay	KEYWORD2
+setDisplayToString	KEYWORD2
+setLED	KEYWORD2
+setLEDs	KEYWORD2
+setRGBLED	KEYWORD2
+setRGBLEDs	KEYWORD2
+getButtons	KEYWORD2
+sendCommand	KEYWORD2
+sendData	KEYWORD2
+sendChar	KEYWORD2
+send	KEYWORD2
+receive	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+TM1638_COLOR_RED	LITERAL1
+TM1638_COLOR_GREEN	LITERAL1
+
+TM1668_COLOR_NONE	LITERAL1
+TM1668_COLOR_RED	LITERAL1
+TM1668_COLOR_GREEN	LITERAL1
+TM1668_COLOR_BLUE	LITERAL1
+TM1668_COLOR_WHITE	LITERAL1
+TM1668_COLOR_YELLOW	LITERAL1
+TM1668_COLOR_PURPLE	LITERAL1
+TM1668_COLOR_AQUA	LITERAL1
+TM1668_DISPMODE_4x13	LITERAL1
+TM1668_DISPMODE_5x12	LITERAL1
+TM1668_DISPMODE_6x11	LITERAL1
+TM1668_DISPMODE_7x10	LITERAL1
+
