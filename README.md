@@ -54,11 +54,13 @@ void loop() {
 }
 ```
 
+The TM16xx chip makes it easy to see if a button is pressed.
 To check if a button was pressed you can use the getButtons() method:
 ```C++
   byte btButtons=module.getButtons();
   Serial.println(btButtons, HEX);
 ```
+Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something.
 
 ## TMxxDisplay class
 
