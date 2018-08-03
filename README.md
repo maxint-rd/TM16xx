@@ -27,6 +27,7 @@ By using a base class that provides a uniform API, your application doesn't need
 Likewise, the library can offer common functionality in display specific classes that support multiple chips.
 
 The figure below illustrates that concept:
+
 ![Layered structure](/images/structure.png)
 
 ## Usage
