@@ -16,7 +16,7 @@ Type   | segments x digits    | buttons      | interface
 ------ | -------------------- | ------------ | -----------
 TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK
 TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB
-TM1640 | 8 x 16               | n/a          | DO/CLK
+TM1640 | 8 x 16               | n/a          | DIN/CLK
 TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB
 
 See the [documentation](/folder) for datasheets containing more information on these chips and their pinouts.
@@ -92,7 +92,7 @@ void loop() {
 ## TMxxMatrix class
 The _TMxxMatrix_ class provides basic methods for using a LED-matrix. To use that class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
 ```C++
-TM1640 module(9, 10);    // DO=9, CLK=10
+TM1640 module(9, 10);    // DIN=9, CLK=10
 #define MATRIX_NUMCOLUMNS 16
 #define MATRIX_NUMROWS 8
 TM16xxMatrix matrix(&module, MATRIX_NUMCOLUMNS, MATRIX_NUMROWS);    // TM16xx object, columns, rows
