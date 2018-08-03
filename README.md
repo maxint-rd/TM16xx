@@ -18,7 +18,7 @@ Type   | segments x digits    | buttons      | interface
 ------ | -------------------- | ------------ | -----------
 TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK
 TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB
-TM1640 | 8 x 16               | n/a          | DIN/CLK
+TM1640 | 8 x 16               | n/a          | DO/CLK
 TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB
 
 ## Library structure
@@ -89,7 +89,7 @@ void loop() {
 ```
 
 ## TMxxMatrix class
-The _TMxxMatrix_ class provides basic methods using a LED-matrix. To use that class on top of the base class, all you need to do is instantiate it, refering to the base class:
+The _TMxxMatrix_ class provides basic methods for using a LED-matrix. To use that class on top of the base class, all you need to do is instantiate it, refering to the base class:
 ```C++
 TM1640 module(9, 10);    // DO=9, CLK=10
 #define MATRIX_NUMCOLUMNS 16
@@ -102,6 +102,7 @@ These methods can be used to set the pixels of the matrix:
 ```C++
   matrix.setAll(true);    // set all pixels on
   matrix.setPixel(5,6, true);   // set one pixel on
+  matrix.setPixel(3,2, false);   // set another pixel off
 ```
 
 ## More information
@@ -132,7 +133,7 @@ Added library functionality:
 
 ## Features & limitations
 - The current version of this library supports ESP8266 and Atmel ATmega328 and ATmega168 MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Please let me know if you've successfully used this library with other MCUs.
-- Currently there is no specific support for daisychaining multiple chips and using combined displays. Please note that the TM1640 does support up to 16 digits or an 8x16 LED matrix.
+- Currently there is no specific support for daisychaining multiple chips and using combined displays. Please note that the TM1640 does support up to 16 digits or an 8x16 LED matrix and it is possible to use multiple display objects for multiple different modules. See the TM1638_TM1637ex_two_modules example. 
 
 ## Disclaimer
 - All code on this GitHub account, including this library is provided to you on an as-is basis without guarantees and with all liability dismissed. It may be used at your own risk. Unfortunately I have no means to provide support.
