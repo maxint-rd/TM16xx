@@ -115,6 +115,7 @@ See the [library examples](/examples) for more information on how to use this li
 - Manufacturer: [Titan Micro Electronics](http://www.titanmec.com/index.php/en/product/lists/typeid/59/p/1.html)
 - Original TM1638/TM1640 library: https://github.com/rjbatista/tm1638-library
 - TM1637 library used for reference: https://github.com/avishorp/TM1637
+- A TM1637 library optimized for speed and size: https://github.com/Erriez/ErriezTM1637
 
 ## New in this library
 Original library functionality:
