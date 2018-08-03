@@ -30,8 +30,76 @@ The figure below illustrates that concept:
 
 ![Layered structure](/images/structure.png)
 
-## Usage
-See the [library examples](/examples) for information on how to use this library.
+## Basic usage
+To use this library you need to include the class that matches the chip on your module and instantiate the object:
+```C++
+#include <TM1638.h>
+
+TM1638 module(8, 9, 7);   // DIO=8, CLK=9, STB=7
+```
+
+In your setup() you can set the intensity of the display, but that's not mandatory:
+```C++
+void setup() {
+  module.setupDisplay(true, 2);   // on=true, intensity-2 (range 0-7)
+  module.setDisplayToString("HALO");    // display simple text
+}
+```
+
+In your loop() you can use basic display methods provided by the base class:
+```C++
+void loop() {
+  int nTime = ((millis() / 1000) / 60) * 100 + (millis() / 1000) % 60; // convert time to minutes+seconds as integer
+  module.setDisplayToDecNumber(nTime, _BV(4)); // display milliseconds with dot on digit 4
+}
+```
+
+## TMxxDisplay class
+
+The _TMxxDisplay_ class provides more advanced display methods, but also the familiar print() and println() functions. To use that class on top of the base class, all you need to do is instantiate it, refering to the base class:
+```C++
+TM1638 module(8, 9, 7);   // DIO=8, CLK=9, STB=7
+TM16xxDisplay display(&module, 8);    // TM16xx object, 8 digits
+```
+
+Simple print example using the TM16xxDisplay class:
+```C++
+#include <TM1638.h>
+#include <TM16xxDisplay.h>
+
+TM1638 module(8, 9, 7);   // DIO=8, CLK=9, STB=7
+TM16xxDisplay display(&module, 8);    // TM16xx object, 8 digits
+
+void setup() {
+  display.println(F("HELLO !"));
+}
+
+int nCount=0;
+void loop() {
+  delay(1000);
+  display.print("Count:");
+  display.println(nCount++);
+}
+```
+
+# TMxxMatrix class
+The _TMxxMatrix_ class provides basic methods using a LED-matrix. To use that class on top of the base class, all you need to do is instantiate it, refering to the base class:
+```C++
+TM1640 module(9, 10);    // DO=9, CLK=10
+#define MATRIX_NUMCOLUMNS 16
+#define MATRIX_NUMROWS 8
+TM16xxMatrix matrix(&module, MATRIX_NUMCOLUMNS, MATRIX_NUMROWS);    // TM16xx object, columns, rows
+```
+Note that the TM1640 has sufficient outputs to drive two 8x8 matrices.
+
+These methods can be used to set the pixels of the matrix:
+```C++
+  matrix.setAll(true);    // set all pixels on
+  matrix.setPixel(5,6, true);   // set one pixel on
+```
+
+## More information
+See the [library examples](/examples) for more information on how to use this library.
 
 ## New in this library
 Original library functionality:
@@ -55,3 +123,12 @@ Added library functionality:
 - Separate classes for LED matrix and advanced LED display support.
 - Simple display of text and numbers using familiar print() and println() methods.
 - Added [library examples](/examples). See also [original examples](https://github.com/rjbatista/tm1638-library/examples).
+
+Features & limitations
+======================
+- The current version of this library supports ESP8266 and Atmel ATmega328 and ATmega168 MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Please let me know if you've successfully used this library with other MCUs.
+- Currently there is no specific support for daisychaining multiple chips and using combined displays. Please note that the TM1640 does support up to 16 digits or an 8x16 LED matrix.
+
+Disclaimer
+============
+- All code on this GitHub account, including this library is provided to you on an as-is basis without guarantees and with all liability dismissed. It may be used at your own risk. Unfortunately I have no means to provide support.
