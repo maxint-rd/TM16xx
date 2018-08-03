@@ -1,5 +1,5 @@
 /*
-Library examples for TM1638.
+Library examples for TM1668.
 
 Copyright (C) 2011 Ricardo Batista <rjbatista at gmail dot com>
 
