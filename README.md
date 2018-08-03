@@ -1,8 +1,7 @@
 # TM16xx
 TM16xx library for Arduino. Supports LED and KEY modules based on TM1638 and similar chips.
 
-TM16xx LEDs and Buttons library
--------------------------------
+## TM16xx LEDs and Buttons library
 A library for interacting an Arduino with a TM1637/TM1638/TM1640/TM1668.
 The TMxx chip family allows driving 7-segment LED displays or LED matrices.
 Most TMxx chips also support reading key-scan data.
@@ -12,7 +11,6 @@ Made by Maxint R&D. See https://github.com/maxint-rd/
 Based on TM1638 library by Ricardo Batista, see https://github.com/rjbatista/tm1638-library/
 
 ## TM16xx chip features
------------------------
 
 Type   | segments x digits    | buttons      | interface
 ------ | -------------------- | ------------ | -----------
@@ -20,6 +18,8 @@ TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK
 TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB
 TM1640 | 8 x 16               | n/a          | DO/CLK
 TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB
+
+See the [documentation](/folder) for datasheets containing more information on these chips and their pinouts.
 
 ## Library structure
 This library has a layered structure to simplify the support of multiple TM16xx chips.
@@ -63,7 +63,6 @@ To check if a button was pressed you can use the getButtons() method:
 Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something.
 
 ## TMxxDisplay class
-
 The _TMxxDisplay_ class provides more advanced display methods, but also the familiar print() and println() functions. To use that class on top of the base class, all you need to do is instantiate it, refering to the base class:
 ```C++
 TM1638 module(8, 9, 7);   // DIO=8, CLK=9, STB=7
