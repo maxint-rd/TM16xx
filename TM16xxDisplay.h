@@ -25,10 +25,11 @@ class TM16xxDisplay : public Print
  public:
 	TM16xxDisplay(TM16xx *pTM16xx, byte nNumDigits);
 
+	virtual void clear();
+
   // Set the display to the String (defaults to built in font)
 	virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
 	virtual void setDisplayToString(String string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
-
 	virtual void setDisplayToError();
 
   // Set the display to a unsigned hexadecimal number (with or without leading zeros)
@@ -41,6 +42,7 @@ class TM16xxDisplay : public Print
   void setDisplayToBinNumber(byte number, byte dots, const byte numberFont[] = TM16XX_NUMBER_FONT);
 
 	// support for the Print class
+	void setCursor(int8_t nPos); 	// allows setting negative to support scrolled printing
 	using Print::write; // pull in write(str) and write(buf, size) from Print
 	virtual size_t write(uint8_t character);
 	/* virtual size_t write(const char *str); */
@@ -48,7 +50,7 @@ class TM16xxDisplay : public Print
  protected:
   TM16xx *_pTM16xx;
   byte _nNumDigits;
-  byte _nPrintPos=0;
+  int8_t _nPrintPos=0;
   
 
  private:
