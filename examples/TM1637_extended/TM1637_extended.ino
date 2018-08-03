@@ -1,41 +1,32 @@
 /*
-Library example for TM1637.
-This example is for the extended TM1637 4-digit LED display module.
-It was tested on ESP8266 in Arduino IDE 1.6.10
-It was tested on Arduino Nano in Arduino IDE 1.8.2
-The extended module has 4 push-buttons (KS1-KS4 to K2) and 4 bi-color leds (SEG1-SEG4 to GRID5/GRID6)
+  Library example for TM1637.
+  This example is for the extended TM1637 4-digit LED display module.
+  It was tested on ESP8266 in Arduino IDE 1.6.10
+  It was tested on Arduino Nano in Arduino IDE 1.8.2
+  The extended module has 4 push-buttons (KS1-KS4 to K2) and 4 bi-color leds (SEG1-SEG4 to GRID5/GRID6)
 
-Based on TM1640 example by Ricardo Batista, adapted by Maxint-RD MMOLE 2018
-Copyright (C) 2011 Ricardo Batista <rjbatista at gmail dot com>
+  Tested to work:
+      Arduino Nano using Arduino IDE 1.8.2, Nano (Old Bootloader)), 6368 bytes flash, 306 bytes RAM
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the version 3 GNU General Public License as
-published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  Based on TM1640 example by Ricardo Batista, adapted by Maxint-RD MMOLE 2018
+  For more information see  https://github.com/maxint-rd/TM16xx
 */
 #include <TM1637.h>
 
 // define a module on data pin 5 (D1), clock pin 4 (D2)
-TM1637 module(5, 4);
+TM1637 module(5, 4);  // DIO=5, CLK=4
 
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("Setup start");
+  Serial.println(F("Setup start"));
   Serial.println();
   pinMode(LED_BUILTIN, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
   digitalWrite(LED_BUILTIN, LOW);     // switch (active) low LED off
   digitalWrite(LED_BUILTIN, HIGH);     // switch (active) low LED off
   delay(10);
 
-  Serial.println("clear");
+  Serial.println(F("clear"));
   digitalWrite(LED_BUILTIN, LOW);     // switch (active) low LED off
   module.clearDisplay();
   delay(1);
@@ -43,7 +34,7 @@ void setup()
   digitalWrite(LED_BUILTIN, HIGH);     // switch (active) low LED off
   delay(50);
 
-  Serial.println("txt");
+  Serial.println(F("txt"));
   module.setDisplayToString("HALO");
   delay(400);
   module.setDisplayToString("YOU ");
@@ -57,7 +48,7 @@ void setup()
   delay(10);
 
   // dim the display
-  Serial.println("dim");
+  Serial.println(F("dim"));
   for(int j=0; j<3; j++)
   {
     for(int i=7; i>0; i--)
@@ -73,7 +64,7 @@ void setup()
   }
 
   // set some ledsegments
-  Serial.println("ledsegments");
+  Serial.println(F("ledsegments"));
   for(int j=4; j<TM1637_MAX_POS; j++)
   {
     for(int i=0; i<=0x0F; i++)
@@ -86,7 +77,7 @@ void setup()
   }
 
 
-  Serial.println("clear");
+  Serial.println(F("clear"));
   digitalWrite(LED_BUILTIN, LOW);     // switch (active) low LED off
   module.clearDisplay();
   digitalWrite(LED_BUILTIN, HIGH);     // switch (active) low LED off
@@ -98,7 +89,7 @@ void setup()
   digitalWrite(LED_BUILTIN, HIGH);     // switch (active) low LED off
   delay(100);
 
-  Serial.println("Setup done");
+  Serial.println(F("Setup done"));
 }
 
 byte btLeds=0;
