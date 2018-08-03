@@ -63,7 +63,7 @@ To check if a button was pressed you can use the getButtons() method:
 Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something.
 
 ## TMxxDisplay class
-The _TMxxDisplay_ class provides more advanced display methods, but also the familiar print() and println() functions. To use that class on top of the base class, all you need to do is instantiate it, refering to the base class:
+The _TMxxDisplay_ class adds some bytes to the memory footprint, but it provides the familiar easy to use print() and println() functions. Next to that it also provides some more advanced display methods. To use that class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
 ```C++
 TM1638 module(8, 9, 7);   // DIO=8, CLK=9, STB=7
 TM16xxDisplay display(&module, 8);    // TM16xx object, 8 digits
@@ -90,7 +90,7 @@ void loop() {
 ```
 
 ## TMxxMatrix class
-The _TMxxMatrix_ class provides basic methods for using a LED-matrix. To use that class on top of the base class, all you need to do is instantiate it, refering to the base class:
+The _TMxxMatrix_ class provides basic methods for using a LED-matrix. To use that class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
 ```C++
 TM1640 module(9, 10);    // DO=9, CLK=10
 #define MATRIX_NUMCOLUMNS 16
