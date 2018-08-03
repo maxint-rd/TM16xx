@@ -1,5 +1,5 @@
 /*
-  Basic library example for TM1638. Kept small to show the simplest display functionality.
+  Scrolling printed text library example for TM1638.
   Library based on TM1638 library by Ricardo Batista, adapted by Maxint-RD MMOLE 2018.
   
   Tested to work:
