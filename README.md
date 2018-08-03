@@ -1,10 +1,10 @@
 # TM16xx
-TM16xx library for Arduino. Supports LED and KEY modules based on TM1638 and similar chips.
+TM16xx library for Arduino. Supports LED and KEY modules based on TM1637, TM1638 and similar chips.
 
 ## TM16xx LEDs and Buttons library
 A library for interacting an Arduino with a TM1637/TM1638/TM1640/TM1668.
-The TMxx chip family allows driving 7-segment LED displays or LED matrices.
-Most TMxx chips also support reading key-scan data.
+The TM16xx chip family allows driving 7-segment LED displays or LED matrices.
+Most TM16xx chips also support reading key-scan data.
 Next to built-in high-frequency LED multiplexing, they offer control of LED brightness.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
@@ -107,14 +107,20 @@ These methods can be used to set the pixels of the matrix:
 ```
 
 ## More information
-See the [library examples](/examples) for more information on how to use this library.
+
+### Examples
+See the [library examples](/examples) for more information on how to use this library. See also the [original examples](https://github.com/rjbatista/tm1638-library/examples) by Ricardo Batista. Most will still work or only require minor changes.
+
+### Links
+- Manufacturer: [Titan Micro Electronics](http://www.titanmec.com/index.php/en/product/lists/typeid/59/p/1.html)
+- Original TM1638/TM1640 library: https://github.com/rjbatista/tm1638-library
+- TM1637 library used for reference: https://github.com/avishorp/TM1637
 
 ## New in this library
 Original library functionality:
-- Support for the TM1638 and TM1640;
-- Support for common anode TM1638 module;
+- Support for the TM1638 and TM1640, including common anode TM1638 module;
 - Helper methods for displaying numbers in decimal, hexadecimal and binary;
-- Support for multiple chained tm1638;
+- Support for multiple chained TM1638;
 - Reading simultaneous button presses;
 - Support for dimming the display and LEDs;
 - Support for writing text;
@@ -124,18 +130,19 @@ Added library functionality:
 - Revised library structure to simplify support of other TM16xx chips.
 - Basic functionality in base class for a uniform API.
 - Support for TM1637. Note: TM1637 does not support simultaneous button presses.
-  (method derived from https://github.com/avishorp/TM1637 but using pins in standard output mode when writing).
+  (protocol derived from https://github.com/avishorp/TM1637 but using pins in standard output mode when writing).
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes.
 - Reduced required RAM memory by using PROGMEM fonts.
 - Support for ATtiny44A and ESP8266 in addition to regular Arduinos.
 - Separate classes for LED matrix and advanced LED display support.
 - Simple display of text and numbers using familiar print() and println() methods.
-- Added [library examples](/examples). See also [original examples](https://github.com/rjbatista/tm1638-library/examples).
+- Added [library examples](/examples).
 
 ## Features & limitations
 - The current version of this library supports ESP8266 and Atmel ATmega328 and ATmega168 MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Please let me know if you've successfully used this library with other MCUs.
 - Currently there is no specific support for daisychaining multiple chips and using combined displays. Please note that the TM1640 does support up to 16 digits or an 8x16 LED matrix and it is possible to use multiple display objects for multiple different modules. See the TM1638_TM1637ex_two_modules example. 
 - I don't have the [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display), so wasn't able to test that specific class. It may work, ...or not. Please let me know if you've tested that module.
+- The TM1668 class has some support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code.
 
 ## Disclaimer
 - All code on this GitHub account, including this library is provided to you on an as-is basis without guarantees and with all liability dismissed. It may be used at your own risk. Unfortunately I have no means to provide support.
