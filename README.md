@@ -38,7 +38,7 @@ To use this library you need to include the class that matches the chip on your 
 TM1638 module(8, 9, 7);   // DIO=8, CLK=9, STB=7
 ```
 
-In your setup() you can set the intensity of the display, but that's not mandatory:
+In the setup() function you can set the intensity of the display, but that's not mandatory:
 ```C++
 void setup() {
   module.setupDisplay(true, 2);   // on=true, intensity-2 (range 0-7)
@@ -46,12 +46,18 @@ void setup() {
 }
 ```
 
-In your loop() you can use basic display methods provided by the base class:
+In the loop() function you can use basic display methods provided by the base class:
 ```C++
 void loop() {
   int nTime = ((millis() / 1000) / 60) * 100 + (millis() / 1000) % 60; // convert time to minutes+seconds as integer
   module.setDisplayToDecNumber(nTime, _BV(4)); // display milliseconds with dot on digit 4
 }
+```
+
+To check if a button was pressed you can use the getButtons() method:
+```C++
+  byte btButtons=module.getButtons();
+  Serial.println(btButtons, HEX);
 ```
 
 ## TMxxDisplay class
@@ -82,7 +88,7 @@ void loop() {
 }
 ```
 
-# TMxxMatrix class
+## TMxxMatrix class
 The _TMxxMatrix_ class provides basic methods using a LED-matrix. To use that class on top of the base class, all you need to do is instantiate it, refering to the base class:
 ```C++
 TM1640 module(9, 10);    // DO=9, CLK=10
@@ -124,11 +130,9 @@ Added library functionality:
 - Simple display of text and numbers using familiar print() and println() methods.
 - Added [library examples](/examples). See also [original examples](https://github.com/rjbatista/tm1638-library/examples).
 
-Features & limitations
-======================
+## Features & limitations
 - The current version of this library supports ESP8266 and Atmel ATmega328 and ATmega168 MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Please let me know if you've successfully used this library with other MCUs.
 - Currently there is no specific support for daisychaining multiple chips and using combined displays. Please note that the TM1640 does support up to 16 digits or an 8x16 LED matrix.
 
-Disclaimer
-============
+## Disclaimer
 - All code on this GitHub account, including this library is provided to you on an as-is basis without guarantees and with all liability dismissed. It may be used at your own risk. Unfortunately I have no means to provide support.
