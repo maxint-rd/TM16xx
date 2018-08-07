@@ -123,17 +123,16 @@ See the [library examples](/examples) for more information on how to use this li
 Original library functionality:
 - Support for the TM1638 and TM1640, including common anode TM1638 module;
 - Helper methods for displaying numbers in decimal, hexadecimal and binary;
-- Support for multiple chained TM1638;
-- Reading simultaneous button presses;
+- Support for multiple chained TM1638 and for TM1638 in inverted position;
 - Support for dimming the display and LEDs;
 - Support for writing text;
-- Support for module in inverted position.
+- Reading simultaneous button presses on TM1638;
 
 Added library functionality:
 - Revised library structure to simplify support of other TM16xx chips.
 - Basic functionality in base class for a uniform API.
 - Support for TM1637. Note: TM1637 does not support simultaneous button presses.
-  (protocol derived from https://github.com/avishorp/TM1637 but using pins in standard output mode when writing).
+  (Method derived from https://github.com/avishorp/TM1637 but using pins in standard output mode when writing).
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes.
 - Reduced required RAM memory by using PROGMEM fonts.
 - Support for ATtiny44A and ESP8266 in addition to regular Arduinos.
