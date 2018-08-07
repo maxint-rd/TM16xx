@@ -2,10 +2,12 @@
 TM16xx library for Arduino. Supports LED and KEY modules based on TM1637, TM1638 and similar chips.
 
 ## TM16xx LEDs and Buttons library
-A library for interacting an Arduino with a TM1637/TM1638/TM1640/TM1668.
+This Arduino library facilitates driving LED displays using TM16xx LED driver chips.
 The TM16xx chip family allows driving 7-segment LED displays or LED matrices.
-Most TM16xx chips also support reading key-scan data.
 Next to built-in high-frequency LED multiplexing, they offer control of LED brightness.
+Most TM16xx chips also support reading key-scan data.
+Currently this library supports the TM1637, TM1638, TM1640 and TM1668 chips.
+The library structure is designed to add support for other TM16xx chips without much effort.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
 Based on TM1638 library by Ricardo Batista, see https://github.com/rjbatista/tm1638-library/
