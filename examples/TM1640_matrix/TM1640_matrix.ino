@@ -6,6 +6,7 @@
   Confirmed to work in the following environments:
     * ATtiny44A using Arduino IDE 1.8.2 and ATTinyCore (8MHz, LTO enabled), 3232 bytes flash, 103 bytes RAM ==> 3086/137 ==> 2996/141 ==> 3000/115
     * ATtiny44A using Arduino IDE 1.8.2 and ATtiny Microcontrolers (8MHz), 3212 bytes flash, 103 bytes RAM  == 3056/137 ==> 2976/115
+    * WeMos D1-mini and TM1640 8x8 MatrixLED Shield using Arduino IDE 1.6.10: DIN=D7/13/MOSI, CLK=D5/14/SCK, 248644 bytes flash, 32312 bytes RAM
 
   Only compiled: not tested yet:
     * Arduino Nano using Arduino IDE 1.8.2, Nano (Old Bootloader)), 3388 bytes flash, 119 bytes RAM => 3298/115
@@ -22,8 +23,9 @@
 // Define a 4-digit display module. Pin suggestions:
 // ESP8266 (Wemos D1): data pin 5 (D1), clock pin 4 (D2)
 // ATtiny44A: data pin 9, clock pin 10 (LED_BUILTIN: 8 in ATtiny Core)
-TM1640 module(9, 10, 4);    // data, clock, 4 digits
-#define MATRIX_NUMCOLUMNS 16
+//TM1640 module(9, 10, 4);    // data, clock, 4 digits
+TM1640 module(13, 14);    // For ESP8266/WeMos D1-mini: DIN=D7/13/MOSI, CLK=D5/14/SCK
+#define MATRIX_NUMCOLUMNS 8
 #define MATRIX_NUMROWS 8
 TM16xxMatrix matrix(&module, MATRIX_NUMCOLUMNS, MATRIX_NUMROWS);    // TM16xx object, columns, rows
 
