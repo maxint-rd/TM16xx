@@ -5,17 +5,19 @@
  * Based on Snake.pde example of the MAX72xxPanel library
  * 
  *   Confirmed to work in the following environments:
- *     - ATtiny44A using Arduino IDE 1.8.2 and ATtiny Microcontrolers (8MHz), 3976 bytes flash, 149 bytes RAM ==> 3962/149
- *     - ATtiny44A using Arduino IDE 1.8.2 and ATTinyCore (8MHz, LTO enabled), 3974 bytes flash, 149 bytes RAM
+ *     - ATtiny44A using Arduino IDE 1.8.2 and ATtiny Microcontrolers (8MHz), DIN=9, CLK=10, 3976 bytes flash, 149 bytes RAM ==> 3962/149
+ *     - ATtiny44A using Arduino IDE 1.8.2 and ATTinyCore (8MHz, LTO enabled), DIN=9, CLK=10, 3974 bytes flash, 149 bytes RAM
  *     - Arduino Nano and TM1637 5x6 mini-matrix using Arduino IDE 1.8.2, Nano (Old Bootloader), 4126 bytes flash, 149 bytes RAM
+ *     - WeMos D1-mini and TM1640 8x8 MatrixLED Shield using Arduino IDE 1.6.10: DIN=D7/13/MOSI, CLK=D5/14/SCK, 249176 bytes flash, 32356 bytes RAM
  *     
 **/
 
 #include <TM1640.h>
 #include <TM16xxMatrix.h>
 
-TM1640 module(9, 10);    // data, clock
-#define MATRIX_NUMCOLUMNS 16
+//TM1640 module(9, 10);    // DIN=9, CLK=10
+TM1640 module(13, 14);    // For ESP8266/WeMos D1-mini: DIN=D7/13/MOSI, CLK=D5/14/SCK
+#define MATRIX_NUMCOLUMNS 8
 #define MATRIX_NUMROWS 8
 TM16xxMatrix matrix(&module, MATRIX_NUMCOLUMNS, MATRIX_NUMROWS);    // TM16xx object, columns, rows
 
