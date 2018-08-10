@@ -44,4 +44,3 @@ bool TM16xxMatrix::getPixel(byte nCol, byte nRow)
 {
 	return((_btColumns[nCol]&_BV(nRow))!=0);
 }
-
