@@ -1,12 +1,12 @@
 #######################################
-# Syntax Coloring Map For TM1638 Lib
+# Syntax Coloring Map For TM16xx Lib
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
 
-TM16XX	KEYWORD1
+TM16xx	KEYWORD1
 TM1637	KEYWORD1
 TM1638	KEYWORD1
 InvertedTM1638	KEYWORD1
@@ -15,6 +15,7 @@ TM1640	KEYWORD1
 TM1668	KEYWORD1
 TM16xxMatrix	KEYWORD1
 TM16xxDisplay	KEYWORD1
+TM16xxMatrixGFX	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
