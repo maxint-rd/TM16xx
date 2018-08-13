@@ -92,7 +92,7 @@ void loop() {
 ```
 
 ## TMxxMatrix class
-The _TMxxMatrix_ class provides basic methods for using a LED-matrix. To use that class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
+The _TMxxMatrix_ class provides basic methods for using a LED-matrix. For more advanced graphics use the _TMxxMatrixGFX_ class. To use the _TMxxMatrix_ class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
 ```C++
 TM1640 module(9, 10);    // DIN=9, CLK=10
 #define MATRIX_NUMCOLUMNS 16
@@ -107,6 +107,36 @@ These methods can be used to set the pixels of the matrix:
   matrix.setPixel(5,6, true);   // set one pixel on
   matrix.setPixel(3,2, false);   // set another pixel off
 ```
+
+## TMxxMatrixGFX class
+The _TMxxMatrixGFX_ class implements the [Adafruit GFX](https://learn.adafruit.com/adafruit-gfx-graphics-library/overview) interface for a LED-matrix connected to a TM16xx chip. To use the _TMxxMatrixGFX_ class you first need to include the proper header files:
+```C++
+#include <Adafruit_GFX.h>
+#include <TM1640.h>
+#include <TM16xxMatrixGFX.h>
+```
+
+Then you can instantiate the TM16xxMatrixGFX class, refering to the chip specific class:
+```C++
+TM1640 module(13, 14);    // For ESP8266/WeMos D1-mini: DIN=D7/13/MOSI, CLK=D5/14/SCK
+#define MATRIX_NUMCOLUMNS 8
+#define MATRIX_NUMROWS 8
+TM16xxMatrixGFX matrix(&module, MATRIX_NUMCOLUMNS, MATRIX_NUMROWS);    // TM16xx object, columns, rows
+```
+Note that the TM1640 has sufficient outputs to drive two 8x8 matrices. The WeMOS D1 Mini Matrix LED Shield also uses the TM1640, but has only one 8x8 matrix.
+
+These methods can be used to draw on the matrix:
+```C++
+  matrix.setIntensity(1);         // Use a value between 0 and 7 for brightness
+  matrix.fillScreen(LOW);         // Clear the matrix
+  matrix.drawPixel(1, 4, HIGH);   // set one pixel in the memory bitmap on
+  matrix.write();                 // Send the memory bitmap to the display
+```
+
+In addition all the Adafruit GFX methods can be used, e.g.:
+```C++
+  matrix.drawChar(0, 0, 'A', HIGH, LOW, 1);
+```  
 
 ## More information
 
