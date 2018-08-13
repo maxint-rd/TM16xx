@@ -10,6 +10,7 @@ Currently this library supports the TM1637, TM1638, TM1640 and TM1668 chips.
 The library structure is designed to add support for other TM16xx chips without much effort.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
+
 Based on TM1638 library by Ricardo Batista, see https://github.com/rjbatista/tm1638-library/
 
 ## TM16xx chip features
@@ -21,7 +22,7 @@ TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB
 TM1640 | 8 x 16               | n/a          | DIN/CLK
 TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB
 
-See the [documentation](/folder) for datasheets containing more information on these chips and their pinouts.
+See the [documents folder](/documents) for datasheets containing more information on these chips and their pinouts.
 
 ## Library structure
 This library has a layered structure to simplify the support of multiple TM16xx chips.
@@ -109,7 +110,7 @@ These methods can be used to set the pixels of the matrix:
 ```
 
 ## TMxxMatrixGFX class
-The _TMxxMatrixGFX_ class implements the [Adafruit GFX](https://learn.adafruit.com/adafruit-gfx-graphics-library/overview) interface for a LED-matrix connected to a TM16xx chip. To use the _TMxxMatrixGFX_ class you first need to include the proper header files:
+The _TMxxMatrixGFX_ class implements the popular [Adafruit GFX](https://learn.adafruit.com/adafruit-gfx-graphics-library/overview) interface to drive a LED-matrix connected to a TM16xx chip. To use the _TMxxMatrixGFX_ class you first need to include the proper header files:
 ```C++
 #include <Adafruit_GFX.h>
 #include <TM1640.h>
@@ -167,7 +168,8 @@ Added library functionality:
 - Reduced required RAM memory by using PROGMEM fonts.
 - Support for ATtiny44A and ESP8266 in addition to regular Arduinos.
 - Separate classes for LED matrix and advanced LED display support.
-- Simple display of text and numbers using familiar print() and println() methods.
+- Simple display of text and numbers on7-segment displays using familiar print() and println() methods.
+- Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
 - Added [library examples](/examples).
 
 ## Features & limitations
