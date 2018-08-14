@@ -1,17 +1,18 @@
 # TM16xx
-TM16xx library for Arduino. Supports LED and KEY modules based on TM1637, TM1638 and similar chips.
+Arduino TM16xx library for LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 and similar chips. Simply use print() on 7-segment and use Adafruit GFX on matrix.
 
 ## TM16xx LEDs and Buttons library
 This Arduino library facilitates driving LED displays using TM16xx LED driver chips.
 The TM16xx chip family allows driving 7-segment LED displays or LED matrices.
 Next to built-in high-frequency LED multiplexing, they offer control of LED brightness.
-Most TM16xx chips also support reading key-scan data.
+Most TM16xx chips also support reading key-scan data for button presses.
 Currently this library supports the TM1637, TM1638, TM1640 and TM1668 chips.
+Simply use print() on a 7-segment display and use Adafruit GFX on a LED matrix.
 The library structure is designed to add support for other TM16xx chips without much effort.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
 
-Based on TM1638 library by Ricardo Batista, see https://github.com/rjbatista/tm1638-library/
+Based on the [TM1638 library](https://github.com/rjbatista/tm1638-library/) by Ricardo Batista. Further inspiration from the [TM1637 library](https://github.com/avishorp/TM1637) by Avishay and  the [Max72xxPanel library](https://github.com/markruys/arduino-Max72xxPanel) by Mark Ruys. 
 
 ## TM16xx chip features
 
@@ -149,6 +150,7 @@ See the [library examples](/examples) for more information on how to use this li
 - Original TM1638/TM1640 library: https://github.com/rjbatista/tm1638-library
 - TM1637 library used for reference: https://github.com/avishorp/TM1637
 - A TM1637 library optimized for speed and size: https://github.com/Erriez/ErriezTM1637
+- MAX7219 LED Matrix library: https://github.com/markruys/arduino-Max72xxPanel
 
 ## New in this library
 Original library functionality:
@@ -177,6 +179,7 @@ Added library functionality:
 - Currently there is no specific support for daisychaining multiple chips and using combined displays. Please note that the TM1640 does support up to 16 digits or an 8x16 LED matrix and it is possible to use multiple display objects for multiple different modules. See the TM1638_TM1637ex_two_modules example. 
 - I don't have the [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display), so wasn't able to test that specific class. It may work, ...or not. Please let me know if you've tested that module.
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. Most likely future versions will have a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
+- The WeMOS D1 mini Matrix LED Shield has R1 on SEG8 instead of SEG1. Call setMirror(true) to reverse the x-mirrorring.
 
 ## Disclaimer
 - All code on this GitHub account, including this library is provided to you on an as-is basis without guarantees and with all liability dismissed. It may be used at your own risk. Unfortunately I have no means to provide support.
