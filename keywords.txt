@@ -39,6 +39,7 @@ sendData	KEYWORD2
 sendChar	KEYWORD2
 send	KEYWORD2
 receive	KEYWORD2
+setMirror	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
