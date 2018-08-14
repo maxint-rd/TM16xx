@@ -26,6 +26,7 @@ class TM16xxMatrixGFX : public Adafruit_GFX
  public:
 	TM16xxMatrixGFX(TM16xx *pTM16xx, byte nColumns, byte nRows);
   void setIntensity(byte intensity);
+  void setMirror(boolean fMirrorX=false, boolean fMirrorY=false);
   void fillScreen(uint16_t color);
   void drawPixel(int16_t x, int16_t y, uint16_t color);
   void write();
@@ -34,6 +35,8 @@ class TM16xxMatrixGFX : public Adafruit_GFX
   TM16xx *_pTM16xx;
   byte _nColumns;
   byte _nRows;
+  boolean _fMirrorX;
+  boolean _fMirrorY;
   
   /* We keep track of the led-status for 8 devices in this array */
   byte *bitmap;

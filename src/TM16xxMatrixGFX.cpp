@@ -8,11 +8,13 @@ Made by Maxint R&D. See https://github.com/maxint-rd/
 #include <Adafruit_GFX.h>
 #include "TM16xxMatrixGFX.h"
 
-TM16xxMatrixGFX::TM16xxMatrixGFX(TM16xx *pTM16xx, byte nColumns, byte nRows) : Adafruit_GFX(nColumns, nRows)
+TM16xxMatrixGFX::TM16xxMatrixGFX(TM16xx *pTM16xx, byte nColumns, byte nRows) : Adafruit_GFX(nRows, nColumns)
 {
 	_pTM16xx=pTM16xx;
 	_nColumns=nColumns;
 	_nRows=nRows;
+	_fMirrorX=false;
+	_fMirrorY=false;
 	
 	// offscreen bitmap is required to set an individual pixel, while retaining the others 
 	// TODO: use dynamic memory allocation for the off-screen bitmap
@@ -26,6 +28,13 @@ void TM16xxMatrixGFX::setIntensity(byte intensity)
 {
   _pTM16xx->setupDisplay(true, intensity);
 }
+
+void TM16xxMatrixGFX::setMirror(boolean fMirrorX, boolean fMirrorY)	// fMirrorX=false, fMirrorY=false
+{
+	_fMirrorX=fMirrorX;
+	_fMirrorY=fMirrorY;
+}
+
 
 void TM16xxMatrixGFX::fillScreen(uint16_t color) {
   memset(bitmap, color ? 0xff : 0, bitmapSize);
@@ -96,8 +105,11 @@ void TM16xxMatrixGFX::drawPixel(int16_t xx, int16_t yy, uint16_t color)
 	}
 #endif
 
-	// fix mirror display (following WeMOS mini matrix layout)
-	x=WIDTH-x-1;
+	// mirror display (fMirrorX true for WeMOS mini matrix)
+	if(_fMirrorX)
+		x=WIDTH-x-1;
+	if(_fMirrorY)
+		y=HEIGHT-y-1;
 
 	if(color)
 	{
