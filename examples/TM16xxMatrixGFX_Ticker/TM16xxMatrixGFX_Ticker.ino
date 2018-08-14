@@ -21,8 +21,8 @@ int numberOfVerticalDisplays = 1;
 //Max72xxPanel matrix = Max72xxPanel(pinCS, numberOfHorizontalDisplays, numberOfVerticalDisplays);
 //TM1640 module(9, 10);    // DIN=9, CLK=10
 TM1640 module(13, 14);    // For ESP8266/WeMos D1-mini: DIN=D7/13/MOSI, CLK=D5/14/SCK
-#define MATRIX_NUMCOLUMNS 8
-#define MATRIX_NUMROWS 8
+#define MATRIX_NUMCOLUMNS 16    // number of GRD lines, will be the y-height of the display
+#define MATRIX_NUMROWS 8    // number of SEG lines, will be the x-width of the display
 TM16xxMatrixGFX matrix(&module, MATRIX_NUMCOLUMNS, MATRIX_NUMROWS);    // TM16xx object, columns, rows
 
 
@@ -34,9 +34,9 @@ int width = 5 + spacer; // The font width is 5 pixels
 
 void setup()
 {
-
   matrix.setIntensity(1); // Use a value between 0 and 7 for brightness
-  matrix.setRotation(0);
+  matrix.setRotation(3);
+  //matrix.setMirror(true);   // set X-mirror true when using the WeMOS D1 mini Matrix LED Shield
 
 // Adjust to your own needs
 //  matrix.setPosition(0, 0, 0); // The first display is at <0, 0>
