@@ -8,25 +8,51 @@ Made by Maxint R&D. See https://github.com/maxint-rd/
 #include <Adafruit_GFX.h>
 #include "TM16xxMatrixGFX.h"
 
-TM16xxMatrixGFX::TM16xxMatrixGFX(TM16xx *pTM16xx, byte nColumns, byte nRows) : Adafruit_GFX(nRows, nColumns)
+TM16xxMatrixGFX::TM16xxMatrixGFX(TM16xx *pModule, byte nColumns, byte nRows) : Adafruit_GFX(nRows, nColumns)
 {
-	_pTM16xx=pTM16xx;
 	_nColumns=nColumns;
 	_nRows=nRows;
 	_fMirrorX=false;
 	_fMirrorY=false;
 	
-	// offscreen bitmap is required to set an individual pixel, while retaining the others 
-	// TODO: use dynamic memory allocation for the off-screen bitmap
+	// Allocate a module array for just one module
+	_nModules=1;
+	_aModules=(TM16xx **)malloc(sizeof(TM16xx *));
+	_aModules[0]=pModule;
+
+	// An offscreen bitmap is required to set an individual pixel, while retaining the others 
+	// We use dynamic memory allocation for the off-screen bitmap
 	// as different chips support different sizes
 	TM16xxMatrixGFX::bitmapSize = _nColumns;
   TM16xxMatrixGFX::bitmap = (byte*)malloc(bitmapSize);
   fillScreen(0);
 }
 
-void TM16xxMatrixGFX::setIntensity(byte intensity)
+TM16xxMatrixGFX::TM16xxMatrixGFX(TM16xx *aModules[], byte nColumns, byte nRows, byte nModulesCol, byte nModulesRow) : Adafruit_GFX(nRows*nModulesRow, nColumns*nModulesCol)
 {
-  _pTM16xx->setupDisplay(true, intensity);
+	_nColumns=nColumns;
+	_nRows=nRows;
+	_fMirrorX=false;
+	_fMirrorY=false;
+
+	// Allocate memory to copy pointers to the modules
+	_nModules=nModulesRow*nModulesCol;
+	_aModules=(TM16xx **)malloc(_nModules*sizeof(TM16xx *));
+	for(byte n=0; n<_nModules; n++)
+			_aModules[n]=aModules[n];
+
+	// Allocate memory for the memory bitmap
+	_nModulesRow=nModulesRow;
+	_nModulesCol=nModulesCol;
+	TM16xxMatrixGFX::bitmapSize = _nColumns*nModulesRow*nModulesCol;	// assume 8 rows per byte
+  TM16xxMatrixGFX::bitmap = (byte*)malloc(bitmapSize);
+  fillScreen(0);
+}
+
+void TM16xxMatrixGFX::setIntensity(byte intensity)
+{	// set the intensity of all modules
+	for(byte n=0; n<_nModules; n++)
+			_aModules[n]->setupDisplay(true, intensity);
 }
 
 void TM16xxMatrixGFX::setMirror(boolean fMirrorX, boolean fMirrorY)	// fMirrorX=false, fMirrorY=false
@@ -36,7 +62,8 @@ void TM16xxMatrixGFX::setMirror(boolean fMirrorX, boolean fMirrorY)	// fMirrorX=
 }
 
 
-void TM16xxMatrixGFX::fillScreen(uint16_t color) {
+void TM16xxMatrixGFX::fillScreen(uint16_t color)
+{	// set the offscreen bitmap to the specified color
   memset(bitmap, color ? 0xff : 0, bitmapSize);
 }
 
@@ -69,7 +96,7 @@ void TM16xxMatrixGFX::drawPixel(int16_t xx, int16_t yy, uint16_t color)
 		return;
 	}
 
-#if 0		// TODO: support for multiple chained displays
+/*		// TODO?: support for different module orientaton and layout? (currently only left-top to right-bottom)
 	// Translate the x, y coordinate according to the layout of the
 	// displays. They can be ordered and rotated (0, 90, 180, 270).
 
@@ -93,7 +120,6 @@ void TM16xxMatrixGFX::drawPixel(int16_t xx, int16_t yy, uint16_t color)
 	y += d << 3;												 // y += (display / hDisplays) * 8
 
 	// Update the color bit in our bitmap buffer.
-
 	byte *ptr = bitmap + x + WIDTH * (y >> 3);
 	byte val = 1 << (y & 0b111);
 
@@ -103,13 +129,22 @@ void TM16xxMatrixGFX::drawPixel(int16_t xx, int16_t yy, uint16_t color)
 	else {
 		*ptr &= ~val;
 	}
-#endif
+*/
 
 	// mirror display (fMirrorX true for WeMOS mini matrix)
 	if(_fMirrorX)
 		x=WIDTH-x-1;
 	if(_fMirrorY)
 		y=HEIGHT-y-1;
+
+	// Translation for multiple modules.
+	if(_nModules>1)
+	{	// Assume modules are identical and ordered left to right, top to bottom
+		// The columns are stacked in memory in module order
+		uint8_t _nModule=x/_nRows + _nModulesRow*(y/_nColumns);
+		y=y%_nColumns+(_nModule*_nColumns);
+		x=x%_nRows;
+	}
 
 	if(color)
 	{
@@ -121,11 +156,13 @@ void TM16xxMatrixGFX::drawPixel(int16_t xx, int16_t yy, uint16_t color)
 	}
 }
 
-
 void TM16xxMatrixGFX::write()
 {	// write the memory to the display
-	for(uint8_t i=0;i<_nColumns;i++)
+	for(uint8_t n=0;n<_nModules;n++)
 	{
-		_pTM16xx->setSegments(bitmap[i],i);
+		for(uint8_t i=0;i<_nColumns;i++)
+		{
+			_aModules[n]->setSegments(bitmap[i+(n*_nColumns)],i);
+		}
 	}
 }
