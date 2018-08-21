@@ -138,7 +138,19 @@ These methods can be used to draw on the matrix:
 In addition all the Adafruit GFX methods can be used, e.g.:
 ```C++
   matrix.drawChar(0, 0, 'A', HIGH, LOW, 1);
+  matrix.drawLine(0, matrix. height(), matrix.width(), 0, HIGH);
 ```  
+
+Multiple identical modules can be combined to form a large matrix. The data line
+can be shared to reduce the number of pins:
+```C++
+  TM1640 module(D7, D5);    // For ESP8266/WeMos D1-mini: DIN=D7/13/MOSI, CLK=D5/14/SCK
+  TM1640 module2(D7, D6);   // For ESP8266/WeMos D1-mini: shared DIN=D7/13/MOSI, different CLK
+  TM16xx * modules[]={&module,&module2};      // put modules in an array
+  TM16xxMatrixGFX matrix(modules, MODULE_SIZECOLUMNS, MODULE_SIZEROWS, 2, 1);    // modules, size of each module, size combined
+```  
+See [library examples](/examples) for more information.
+
 
 ## More information
 
@@ -165,13 +177,14 @@ Added library functionality:
 - Revised library structure to simplify support of other TM16xx chips.
 - Basic functionality in base class for a uniform API.
 - Support for TM1637. Note: TM1637 does not support simultaneous button presses.
-  (Method derived from https://github.com/avishorp/TM1637 but using pins in standard output mode when writing).
+  (Method derived from [TM1637 library](https://github.com/avishorp/TM1637) but using pins in standard output mode when writing).
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes.
 - Reduced required RAM memory by using PROGMEM fonts.
 - Support for ATtiny44A and ESP8266 in addition to regular Arduinos.
 - Separate classes for LED matrix and advanced LED display support.
 - Simple display of text and numbers on7-segment displays using familiar print() and println() methods.
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
+- Support for combining multiple modules into one large Adafruit GFX matrix.
 - Added [library examples](/examples).
 
 ## Features & limitations
