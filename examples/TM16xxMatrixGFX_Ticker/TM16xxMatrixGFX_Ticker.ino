@@ -37,7 +37,6 @@ void setup()
 void loop()
 {
   for ( int i = 0 ; i < width * tape.length() + matrix.width() - 1 - spacer; i++ ) {
-
     matrix.fillScreen(LOW);
 
     int letter = i / width;
@@ -52,11 +51,7 @@ void loop()
       letter--;
       x -= width;
     }
-    matrix.drawPixel(0, 0, HIGH); // mark axis-origin for reference
-    matrix.drawPixel(0, 3, HIGH);
-
     matrix.write(); // Send bitmap to display
-
     delay(wait);
   }
 }
