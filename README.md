@@ -94,7 +94,7 @@ void loop() {
 ```
 
 ## TMxxMatrix class
-The _TMxxMatrix_ class provides basic methods for using a LED-matrix. For more advanced graphics use the _TMxxMatrixGFX_ class. To use the _TMxxMatrix_ class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
+The _TMxxMatrix_ class provides basic methods for using a single LED-matrix module. For more advanced graphics use the _TMxxMatrixGFX_ class. To use the _TMxxMatrix_ class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
 ```C++
 TM1640 module(9, 10);    // DIN=9, CLK=10
 #define MATRIX_NUMCOLUMNS 16
@@ -111,7 +111,7 @@ These methods can be used to set the pixels of the matrix:
 ```
 
 ## TMxxMatrixGFX class
-The _TMxxMatrixGFX_ class implements the popular [Adafruit GFX](https://learn.adafruit.com/adafruit-gfx-graphics-library/overview) interface to drive a LED-matrix connected to a TM16xx chip. To use the _TMxxMatrixGFX_ class you first need to include the proper header files:
+The _TMxxMatrixGFX_ class implements the popular [Adafruit GFX](https://learn.adafruit.com/adafruit-gfx-graphics-library/overview) interface to drive one or more TM16xx based LED-matrix modules. To use the _TMxxMatrixGFX_ class you first need to include the proper header files:
 ```C++
 #include <Adafruit_GFX.h>
 #include <TM1640.h>
