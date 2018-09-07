@@ -8,6 +8,8 @@ Made by Maxint R&D. See https://github.com/maxint-rd/
 #include <Adafruit_GFX.h>
 #include "TM16xxMatrixGFX.h"
 
+#define TM16xxMatrixGFX_swap(a, b) { int16_t t = a; a = b; b = t; }
+
 TM16xxMatrixGFX::TM16xxMatrixGFX(TM16xx *pModule, byte nColumns, byte nRows) : Adafruit_GFX(nRows, nColumns)
 {
 	_nColumns=nColumns;
@@ -67,17 +69,14 @@ void TM16xxMatrixGFX::fillScreen(uint16_t color)
   memset(bitmap, color ? 0xff : 0, bitmapSize);
 }
 
-void TM16xxMatrixGFX::drawPixel(int16_t xx, int16_t yy, uint16_t color)
-{	// set the specified pixel as wanted in the memory
-	// Operating in bytes is faster and takes less code to run. We don't
-	// need values above 200, so switch from 16 bit ints to 8 bit unsigned
-	// ints (bytes).
-	int8_t x = xx;
-	byte y = yy;
-	byte tmp;
-
-	if ( rotation ) {
+bool TM16xxMatrixGFX::convertToMemPos(int16_t &x, int16_t &y)
+{	// Convert x/y coordinates to bitmap memory position (array with rows of 8 pixels per byte)
+	// Given coordinates are passed by reference and changed to the required range
+	// Returns false if coordinates fall outside of canvas after processing rotation
+	if (rotation)
+	{
 		// Implement Adafruit's rotation.
+		byte tmp;
 		if ( rotation >= 2 ) {										// rotation == 2 || rotation == 3
 			x = _width - 1 - x;
 		}
@@ -93,7 +92,7 @@ void TM16xxMatrixGFX::drawPixel(int16_t xx, int16_t yy, uint16_t color)
 
 	if ( x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT ) {
 		// Ignore pixels outside the canvas.
-		return;
+		return(false);
 	}
 
 /*		// TODO?: support for different module orientaton and layout? (currently only left-top to right-bottom)
@@ -145,6 +144,22 @@ void TM16xxMatrixGFX::drawPixel(int16_t xx, int16_t yy, uint16_t color)
 		y=y%_nColumns+(_nModule*_nColumns);
 		x=x%_nRows;
 	}
+	return(true);
+}
+
+void TM16xxMatrixGFX::drawPixel(int16_t xx, int16_t yy, uint16_t color)
+{	// set the specified pixel as wanted in the memory
+	// Operating in bytes is faster and takes less code to run. We don't
+	// need values above 200, so switch from 16 bit ints to 8 bit unsigned
+	// ints (bytes).
+	//int8_t x = xx;
+	//int8_t  y = yy;
+
+	int16_t x = xx;
+	int16_t  y = yy;
+
+	if(!convertToMemPos(x, y))
+		return;
 
 	if(color)
 	{
@@ -154,6 +169,18 @@ void TM16xxMatrixGFX::drawPixel(int16_t xx, int16_t yy, uint16_t color)
 	{
 		bitmap[y]&=~(1<<x);
 	}
+}
+
+ // required for scroll support as implemented by Adafruit GFX pull request #60
+uint16_t TM16xxMatrixGFX::getPixel(int16_t x, int16_t y)
+{
+  if ((x < 0) || (x >= _width) || (y < 0) || (y >= _height))
+    return 0;
+
+	if(!convertToMemPos(x, y))
+		return 0;
+
+  return (bitmap[y+ (x/8)*WIDTH] >> (x%8)) & 0x1;
 }
 
 void TM16xxMatrixGFX::write()

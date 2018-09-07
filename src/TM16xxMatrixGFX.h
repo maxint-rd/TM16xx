@@ -31,6 +31,8 @@ class TM16xxMatrixGFX : public Adafruit_GFX
   void setMirror(boolean fMirrorX=false, boolean fMirrorY=false);
   void fillScreen(uint16_t color);
   void drawPixel(int16_t x, int16_t y, uint16_t color);
+  uint16_t getPixel(int16_t x, int16_t y); // required for scroll support as implemented by Adafruit GFX pull request #60
+
   void write();
 
  protected:
@@ -46,5 +48,8 @@ class TM16xxMatrixGFX : public Adafruit_GFX
   
   byte *bitmap;
   byte bitmapSize;
+  
+ private:
+ 	bool convertToMemPos(int16_t &x, int16_t &y);
 };
 #endif
