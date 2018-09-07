@@ -1,5 +1,5 @@
 # TM16xx
-Arduino TM16xx library for LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 and similar chips. Simply use print() on 7-segment and use Adafruit GFX on matrix.
+Arduino TM16xx library for LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 and similar chips. Simply use print() on 7-segment displays and use Adafruit GFX on matrix displays.
 
 ## TM16xx LEDs and Buttons library
 This Arduino library facilitates driving LED displays using TM16xx LED driver chips.
@@ -12,7 +12,7 @@ The library structure is designed to add support for other TM16xx chips without 
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
 
-Based on the [TM1638 library](https://github.com/rjbatista/tm1638-library/) by Ricardo Batista. Further inspiration from the [TM1637 library](https://github.com/avishorp/TM1637) by Avishay and  the [Max72xxPanel library](https://github.com/markruys/arduino-Max72xxPanel) by Mark Ruys. 
+Based on the [TM1638 library](https://github.com/rjbatista/tm1638-library/) by Ricardo Batista. Further inspiration from the [TM1637 library](https://github.com/avishorp/TM1637) by Avishay and the [Max72xxPanel library](https://github.com/markruys/arduino-Max72xxPanel) by Mark Ruys. 
 
 ## TM16xx chip features
 
@@ -23,7 +23,7 @@ TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB
 TM1640 | 8 x 16               | n/a          | DIN/CLK
 TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB
 
-See the [documents folder](/documents) for datasheets containing more information on these chips and their pinouts.
+See the [documents folder](/documents) for datasheets containing more information about these chips and their pinouts.
 
 ## Library structure
 This library has a layered structure to simplify the support of multiple TM16xx chips.
@@ -66,8 +66,8 @@ To check if a button was pressed you can use the getButtons() method:
 ```
 Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something.
 
-## TMxxDisplay class
-The _TMxxDisplay_ class adds some bytes to the memory footprint, but it provides the familiar easy to use print() and println() functions. Next to that it also provides some more advanced display methods. To use that class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
+## TM16xxDisplay class
+The _TM16xxDisplay_ class adds some bytes to the memory footprint, but it provides the familiar easy to use print() and println() functions. Next to that it also provides some more advanced display methods. To use that class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
 ```C++
 TM1638 module(8, 9, 7);   // DIO=8, CLK=9, STB=7
 TM16xxDisplay display(&module, 8);    // TM16xx object, 8 digits
@@ -92,9 +92,10 @@ void loop() {
   display.println(nCount++);
 }
 ```
+See [TM16xxDisplay.h](/src/TM16xxDisplay.h) for the provided methods.
 
-## TMxxMatrix class
-The _TMxxMatrix_ class provides basic methods for using a single LED-matrix module. For more advanced graphics use the _TMxxMatrixGFX_ class. To use the _TMxxMatrix_ class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
+## TM16xxMatrix class
+The _TM16xxMatrix_ class provides basic methods for using a single LED-matrix module. For more advanced graphics use the _TM16xxMatrixGFX_ class. To use the _TM16xxMatrix_ class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
 ```C++
 TM1640 module(9, 10);    // DIN=9, CLK=10
 #define MATRIX_NUMCOLUMNS 16
@@ -109,9 +110,10 @@ These methods can be used to set the pixels of the matrix:
   matrix.setPixel(5,6, true);   // set one pixel on
   matrix.setPixel(3,2, false);   // set another pixel off
 ```
+See [TM16xxMatrix.h](/src/TM16xxMatrix.h) for the provided methods.
 
-## TMxxMatrixGFX class
-The _TMxxMatrixGFX_ class implements the popular [Adafruit GFX](https://learn.adafruit.com/adafruit-gfx-graphics-library/overview) interface to drive one or more TM16xx based LED-matrix modules. To use the _TMxxMatrixGFX_ class you first need to include the proper header files:
+## TM16xxMatrixGFX class
+The _TM16xxMatrixGFX_ class implements the popular [Adafruit GFX](https://learn.adafruit.com/adafruit-gfx-graphics-library/overview) interface to drive one or more TM16xx based LED-matrix modules. To use the _TM16xxMatrixGFX_ class you first need to include the proper header files:
 ```C++
 #include <Adafruit_GFX.h>
 #include <TM1640.h>
@@ -135,10 +137,11 @@ These methods can be used to draw on the matrix:
   matrix.write();                 // Send the memory bitmap to the display
 ```
 
-In addition all the Adafruit GFX methods can be used, e.g.:
+In addition all the [Adafruit GFX methods](https://learn.adafruit.com/adafruit-gfx-graphics-library/graphics-primitives) can be used, e.g.:
 ```C++
   matrix.drawChar(0, 0, 'A', HIGH, LOW, 1);
   matrix.drawLine(0, matrix. height(), matrix.width(), 0, HIGH);
+  matrix.drawRect(0, 0, 6, 6, HIGH);
 ```  
 
 Multiple identical modules can be combined to form a large matrix. The data line
@@ -149,7 +152,7 @@ can be shared to reduce the number of pins:
   TM16xx * modules[]={&module,&module2};      // put modules in an array
   TM16xxMatrixGFX matrix(modules, MODULE_SIZECOLUMNS, MODULE_SIZEROWS, 2, 1);    // modules, size of each module, size combined
 ```  
-See [library examples](/examples) for more information.
+See  [Adafruit GFX documentation](https://learn.adafruit.com/adafruit-gfx-graphics-library/graphics-primitives) and [TM16xxMatrixGFX.h](/src/TM16xxMatrixGFX.h) for the provided methods. See the [library examples](/examples) for more information.
 
 
 ## More information
@@ -163,6 +166,9 @@ See the [library examples](/examples) for more information on how to use this li
 - TM1637 library used for reference: https://github.com/avishorp/TM1637
 - A TM1637 library optimized for speed and size: https://github.com/Erriez/ErriezTM1637
 - MAX7219 LED Matrix library: https://github.com/markruys/arduino-Max72xxPanel
+- Adafruit GFX library: https://github.com/adafruit/Adafruit-GFX-Library
+- Adafruit GFX documentation: https://learn.adafruit.com/adafruit-gfx-graphics-library
+
 
 ## New in this library
 Original library functionality:
