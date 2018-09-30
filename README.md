@@ -158,7 +158,7 @@ See  [Adafruit GFX documentation](https://learn.adafruit.com/adafruit-gfx-graphi
 ## More information
 
 ### Examples
-See the [library examples](/examples) for more information on how to use this library. See also the [original examples](https://github.com/rjbatista/tm1638-library/examples) by Ricardo Batista. Most will still work or only require minor changes.
+See the [library examples](/examples) for more information on how to use this library. See also the [original examples](https://github.com/rjbatista/tm1638-library/tree/master/examples) by Ricardo Batista. Most will still work or only require minor changes.
 
 ### Links
 - Manufacturer: [Titan Micro Electronics](http://www.titanmec.com/index.php/en/product/lists/typeid/59/p/1.html)
