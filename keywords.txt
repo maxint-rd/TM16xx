@@ -16,6 +16,7 @@ TM1668	KEYWORD1
 TM16xxMatrix	KEYWORD1
 TM16xxDisplay	KEYWORD1
 TM16xxMatrixGFX	KEYWORD1
+TM16xxButtons	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
