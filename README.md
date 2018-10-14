@@ -166,6 +166,7 @@ See the [library examples](/examples) for more information on how to use this li
 - TM1637 library used for reference: https://github.com/avishorp/TM1637
 - A TM1637 library optimized for speed and size: https://github.com/Erriez/ErriezTM1637
 - MAX7219 LED Matrix library: https://github.com/markruys/arduino-Max72xxPanel
+- OneButton multi-state buttons: https://github.com/mathertel/OneButton
 - Adafruit GFX library: https://github.com/adafruit/Adafruit-GFX-Library
 - Adafruit GFX documentation: https://learn.adafruit.com/adafruit-gfx-graphics-library
 
@@ -191,11 +192,14 @@ Added library functionality:
 - Simple display of text and numbers on7-segment displays using familiar print() and println() methods.
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
 - Support for combining multiple modules into one large Adafruit GFX matrix.
+- Support for click, doubleclick and long press button detection using callback functions
 - Added [library examples](/examples).
 
 ## Features & limitations
 - The current version of this library supports ESP8266 and Atmel ATmega328 and ATmega168 MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Please let me know if you've successfully used this library with other MCUs.
-- Currently there is no specific support for daisychaining multiple chips and using combined displays. Please note that the TM1640 does support up to 16 digits or an 8x16 LED matrix and it is possible to use multiple display objects for multiple different modules. See the TM1638_TM1637ex_two_modules example. 
+- The TM16xx chips offer no support for daisychaining multiple chips, but when separate Clk or Latch lines are used the Din line can be shared for combined displays.
+- The library doesn't support combining multiple 7-segment modules into one display, but it is possible to define multiple display objects for multiple different modules. See the TM1638_TM1637ex_two_modules example. 
+- The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. Please note that the TM1640 supports up to 16 digits or an 8x16 LED matrix. 
 - I don't have the [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display), so wasn't able to test that specific class. It may work, ...or not. Please let me know if you've tested that module.
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. Most likely future versions will have a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
 - The WeMOS D1 mini Matrix LED Shield has R1 on SEG8 instead of SEG1. Call setMirror(true) to reverse the x-mirrorring.
