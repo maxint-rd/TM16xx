@@ -8,11 +8,10 @@ Next to built-in high-frequency LED multiplexing, they offer control of LED brig
 Most TM16xx chips also support reading key-scan data for button presses.
 Currently this library supports the TM1637, TM1638, TM1640 and TM1668 chips.
 Simply use print() on a 7-segment display and use Adafruit GFX on a LED matrix.
-The library structure is designed to add support for other TM16xx chips without much effort.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
 
-Based on the [TM1638 library](https://github.com/rjbatista/tm1638-library/) by Ricardo Batista. Further inspiration from the [TM1637 library](https://github.com/avishorp/TM1637) by Avishay and the [Max72xxPanel library](https://github.com/markruys/arduino-Max72xxPanel) by Mark Ruys. 
+Based on the [TM1638 library](https://github.com/rjbatista/tm1638-library/) by Ricardo Batista. Further inspiration from the [TM1637 library](https://github.com/avishorp/TM1637) by Avishay, the [Max72xxPanel library](https://github.com/markruys/arduino-Max72xxPanel) by Mark Ruys and the [OneButton library](https://github.com/mathertel/OneButton) by Matthias Hertel. 
 
 ## TM16xx chip features
 
@@ -154,6 +153,49 @@ can be shared to reduce the number of pins:
 ```  
 See  [Adafruit GFX documentation](https://learn.adafruit.com/adafruit-gfx-graphics-library/graphics-primitives) and [TM16xxMatrixGFX.h](/src/TM16xxMatrixGFX.h) for the provided methods. See the [library examples](/examples) for more information.
 
+## TM16xxButtons class
+The _TM16xxButtons_ class adds some bytes to the memory footprint, but it adds more advanced methods to use buttons. Next to simply polling the state of each button, you can define callback functions that will be called when a button is clicked, double-clicked or long pressed. To use this class on top of the base class, all you need to do is include the proper headers and instantiate the buttons object, refering to the chip specific class, for example:
+```C++
+#include <TM1638.h>
+#include <TM16xxButtons.h>
+
+TM1638 module(8, 9, 7);   // DIO=8, CLK=9, STB=7
+TM16xxButtons buttons(&module);    // TM16xx object
+```
+
+Then you define the functions you want to use to handle the button events:
+```C++
+void fnClick(byte nButton)
+{ // byte nButton is the button-number (first button is number 0)
+  Serial.print(F("Button "));
+  Serial.print(nButton);
+  Serial.println(F(" click."));
+}
+```
+
+In setup() you need to specify the callback function:
+```C++
+void setup()
+{
+    .
+    .
+    buttons.attachClick(fnClick);
+}
+```
+
+In loop() you need to call the tick() function that handles all state changes and calls the callback function when needed:
+```C++
+int nCount=0;
+void loop()
+{
+  buttons.tick();
+  .
+  .
+  // do your other things
+}
+```
+See [TM16xxButtons.h](/src/TM16xxButtons.h) for the provided methods and the [Button clicks example](/examples/TM16xxButtons_clicks) for more information.
+
 
 ## More information
 
@@ -169,7 +211,6 @@ See the [library examples](/examples) for more information on how to use this li
 - OneButton multi-state buttons: https://github.com/mathertel/OneButton
 - Adafruit GFX library: https://github.com/adafruit/Adafruit-GFX-Library
 - Adafruit GFX documentation: https://learn.adafruit.com/adafruit-gfx-graphics-library
-
 
 ## New in this library
 Original library functionality:
@@ -202,7 +243,7 @@ Added library functionality:
 - The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. Please note that the TM1640 supports up to 16 digits or an 8x16 LED matrix. 
 - I don't have the [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display), so wasn't able to test that specific class. It may work, ...or not. Please let me know if you've tested that module.
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. Most likely future versions will have a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
-- The WeMOS D1 mini Matrix LED Shield has R1 on SEG8 instead of SEG1. Call setMirror(true) to reverse the x-mirrorring.
+- The WeMOS D1 mini Matrix LED Shield and the TM1640 Mini LED Matrix 8x16 by Maxint R&D have R1 on the right-top. Call setMirror(true) to reverse the x-mirrorring.
 
 ## Disclaimer
 - All code on this GitHub account, including this library is provided to you on an as-is basis without guarantees and with all liability dismissed. It may be used at your own risk. Unfortunately I have no means to provide support.
