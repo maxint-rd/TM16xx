@@ -21,6 +21,11 @@ Partially based on OneButton library by Matthias Hertel. See https://github.com/
 #include "TM16xx.h"
 
 #define TM16XX_BUTTONS_MAXBUTTONS 32
+#define TM16XX_BUTTONS_STATE_START 0
+#define TM16XX_BUTTONS_STATE_PRESSED 1
+#define TM16XX_BUTTONS_STATE_RELEASED 2
+#define TM16XX_BUTTONS_STATE_DLPRESS 3
+#define TM16XX_BUTTONS_STATE_LPRESS 6
 
 // ----- Callback function types -----
 
