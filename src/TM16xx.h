@@ -73,6 +73,12 @@ class TM16xx
 		virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
 		virtual void sendChar(byte pos, byte data, boolean dot); // made public to allow calling from TM16xxDisplay
 
+		// Key-scanning functions
+		// Note: not all TM16xx chips support key-scanning and sizes are different per chip
+		// Up to 32 key states are supported, but specific chips may support less keys or less combinations
+		// The chip specific derived class method will return a 32-bit value representing the state of each key, containing 0 if no key is pressed
+		virtual uint32_t getButtons();  // return state of up to 32 keys.
+
   protected:
 //		virtual void sendChar(byte pos, byte data, boolean dot);
 	  virtual void bitDelay();

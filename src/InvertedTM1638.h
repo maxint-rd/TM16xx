@@ -36,7 +36,7 @@ class InvertedTM1638 : public TM1638
     /** Set the LED at pos to color (TM1638_COLOR_RED, TM1638_COLOR_GREEN or both) */
     virtual void setLED(byte color, byte pos);
     /** Returns the pressed buttons as a bit set (left to right). */
-    virtual byte getButtons();
+    virtual uint32_t getButtons();
 
   protected:
     virtual void sendChar(byte pos, byte data, boolean dot);

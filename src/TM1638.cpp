@@ -56,11 +56,11 @@ void TM1638::setLEDs(word leds)
   }
 }
 
-byte TM1638::getButtons(void)
+uint32_t TM1638::getButtons(void)
 {
 	// TODO: TM1638 returns 4 bytes/8 nibbles for keyscan. Each byte has K3, K2 and K1 status in lower bits of each nibble for KS1-KS2
 	// Currently only the status of K3 is returned as a single byte, mixed in with K2 and K1
-	// To return all a uint32_t would be more appropriate
+	// For compatibility with the rest of the library the buttonstate is returned as a 32-bit value
 	// 
   byte keys = 0;
 

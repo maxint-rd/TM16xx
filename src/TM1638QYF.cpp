@@ -138,7 +138,7 @@ void TM1638QYF::setDisplayToSignedDecNumber(signed long number, byte dots, boole
 }
 */
 
-word TM1638QYF::getButtons(void)
+uint32_t TM1638QYF::getButtons(void)
 {
   word keys = 0;
 

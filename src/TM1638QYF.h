@@ -61,7 +61,7 @@ class TM1638QYF : public TM16xx
 		const byte font[] = TM16XX_FONT_DEFAULT);
 
     /** Returns the pressed buttons as a bit set (left to right). */
-    virtual word getButtons();
+    virtual uint32_t getButtons();
 
   protected:
 	/** Set the display to the values (left to right) */

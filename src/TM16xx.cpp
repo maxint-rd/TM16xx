@@ -142,6 +142,17 @@ void TM16xx::setDisplayToString(const char* string, const word dots, const byte 
   }
 }
 
+// key-scanning method, implemented in chip specific derived class
+uint32_t TM16xx::getButtons()
+{	// return state of up to 32 keys.
+	return(0);
+}
+
+
+//
+//  Protected methods
+//
+
 void TM16xx::bitDelay()
 {	// if needed derived classes can add a delay (eg. for TM1637)
 	//delayMicroseconds(50);

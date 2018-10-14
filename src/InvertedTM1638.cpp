@@ -35,7 +35,7 @@ void InvertedTM1638::setLED(byte color, byte pos)
     sendData(((7 - pos) << 1) + 1, color);
 }
 
-byte InvertedTM1638::getButtons()
+uint32_t InvertedTM1638::getButtons()
 {
 	byte buttons = TM1638::getButtons();
 

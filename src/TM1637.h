@@ -35,7 +35,7 @@ class TM1637 : public TM16xx
   public:
 	/** Instantiate a tm1637 module specifying the display state, the starting intensity (0-7) data and clock pins. */
   	TM1637(byte dataPin, byte clockPin, byte numDigits=4, boolean activateDisplay=true, byte intensity=7);
-		virtual word getButtons();
+		virtual uint32_t getButtons();
 
   protected:
     virtual void bitDelay();

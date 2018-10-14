@@ -90,12 +90,12 @@ void TM1637::send(byte data)
 //  bitDelay();
 }
 
-word TM1637::getButtons()
+uint32_t TM1637::getButtons()
 {	// Keyscan data on the TM1636 is one byte, with index of the button that is pressed.
 	// Simultaneous presses are not supported.
 	// Received value is 0xFF when no buttons are pressed or in second call when button is not released , 0xEF-0xE8 for K2, 0xC7 to 0xC0 for K1
 	// Button state is reset only when another command is issued, otherwise the second call returns no button pressed
-	// for compatibility with the rest of the library the buttonstate is returned as a 16-bit word
+	// For compatibility with the rest of the library the buttonstate is returned as a 32-bit value
   start();
   send(TM16XX_CMD_DATA_READ);		// send read buttons command
 	byte received=receive();

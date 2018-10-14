@@ -44,7 +44,7 @@ class TM1638 : public TM16xx
     virtual void setLEDs(word led);
 
     /** Returns the pressed buttons as a bit set (left to right). */
-    virtual byte getButtons();
+    virtual uint32_t getButtons();
     
   protected:
     virtual void sendChar(byte pos, byte data, boolean dot);
