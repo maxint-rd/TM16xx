@@ -40,10 +40,16 @@ void TM16xxButtons::setClickTicks(int ticks)
 
 // explicitly set the number of millisec that have to pass by before a long
 // button press is detected.
-void TM16xxButtons::setPressTicks(int ticks)
+void TM16xxButtons::setLongPressTicks(int ticks)
 {
-  _pressTicks = ticks;
-} // setPressTicks
+  _longPressTicks = ticks;
+} // setLongPressTicks
+
+// set function for release event
+void TM16xxButtons::attachRelease(callbackTM16xxButtons newFunction)
+{
+  _releaseFunc = newFunction;
+} // attachRelease
 
 // set function for click event
 void TM16xxButtons::attachClick(callbackTM16xxButtons newFunction)
@@ -77,9 +83,15 @@ void TM16xxButtons::attachDuringLongPress(callbackTM16xxButtons newFunction)
 } // attachDuringLongPress
 
 // function to get the current long pressed state
+bool TM16xxButtons::isPressed(byte nButton)
+{
+  return(_state[nButton]==TM16XX_BUTTONS_STATE_PRESSED || _state[nButton]==TM16XX_BUTTONS_STATE_DBLPRESS || _state[nButton]==TM16XX_BUTTONS_STATE_LPRESS);
+}
+
+// function to get the current long pressed state
 bool TM16xxButtons::isLongPressed(byte nButton)
 {
-  return _isLongPressed[nButton];
+	return(_state[nButton]==TM16XX_BUTTONS_STATE_LPRESS);
 }
 
 int TM16xxButtons::getPressedTicks(byte nButton)
@@ -94,7 +106,6 @@ void TM16xxButtons::reset(void)
 	  _state[n] = TM16XX_BUTTONS_STATE_START; // restart.
 	  _startTime[n] = 0;
 	  _stopTime[n] = 0;
-	  _isLongPressed[n] = false;
 	}
 }
 
@@ -146,17 +157,17 @@ void TM16xxButtons::tick(byte nButton, bool activeLevel)
     {
       _state[nButton] = TM16XX_BUTTONS_STATE_RELEASED; // step to released state
       _stopTime[nButton] = now; // remember stopping time
-
+      if (_releaseFunc)
+        _releaseFunc(nButton);
     }
-    else if ((activeLevel) && ((unsigned long)(now - _startTime[nButton]) > _pressTicks))
+    else if ((activeLevel) && ((unsigned long)(now - _startTime[nButton]) > _longPressTicks))
     {
-      _isLongPressed[nButton] = true; // Keep track of long press state
+      _state[nButton] = TM16XX_BUTTONS_STATE_LPRESS; // step to long press state
+      _stopTime[nButton] = now; // remember stopping time
       if (_longPressStartFunc)
         _longPressStartFunc(nButton);
       if (_duringLongPressFunc)
         _duringLongPressFunc(nButton);
-      _state[nButton] = TM16XX_BUTTONS_STATE_LPRESS; // step to long press state
-      _stopTime[nButton] = now; // remember stopping time
     } else {
       // wait. Stay in this state.
     } // if
@@ -172,38 +183,40 @@ void TM16xxButtons::tick(byte nButton, bool activeLevel)
     }
     else if ((activeLevel))
     {
-      _state[nButton] = TM16XX_BUTTONS_STATE_DLPRESS; // step to long press or doubleclick state
+      _state[nButton] = TM16XX_BUTTONS_STATE_DBLPRESS; // step to doubleclick state
       _startTime[nButton] = now; // remember starting time
     } // if
     break;
 
-  case TM16XX_BUTTONS_STATE_DLPRESS: // waiting for button being released finally.
+  case TM16XX_BUTTONS_STATE_DBLPRESS: // waiting for button being released finally.
     if ((!activeLevel))
    	{
       // this was a 2 click sequence.
-      if (_doubleClickFunc)
-        _doubleClickFunc(nButton);
       _state[nButton] = TM16XX_BUTTONS_STATE_START; // restart.
       _stopTime[nButton] = now; // remember stopping time
+      if (_releaseFunc)
+        _releaseFunc(nButton);
+      if (_doubleClickFunc)
+        _doubleClickFunc(nButton);
     } // if
     break;
 
   case TM16XX_BUTTONS_STATE_LPRESS: // waiting for button being release after long press.
     if (!activeLevel)
     {
-      _isLongPressed[nButton] = false; // Keep track of long press state
-      if (_longPressStopFunc)
-        _longPressStopFunc(nButton);
       _state[nButton] = TM16XX_BUTTONS_STATE_START; // restart.
       _stopTime[nButton] = now; // remember stopping time
+      if (_releaseFunc)
+        _releaseFunc(nButton);
+      if (_longPressStopFunc)
+        _longPressStopFunc(nButton);
     }
     else
     {
       // button is being long pressed
-      _isLongPressed[nButton] = true; // Keep track of long press state
       if (_duringLongPressFunc)
         _duringLongPressFunc(nButton);
     } // if
 		break;
   } // switch
-} // OneButton.tick(nButton)
+} // TM16xxButtons.tick(nButton)

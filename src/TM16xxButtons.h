@@ -21,18 +21,18 @@ Partially based on OneButton library by Matthias Hertel. See https://github.com/
 #include "TM16xx.h"
 
 #define TM16XX_BUTTONS_MAXBUTTONS 32
+
 #define TM16XX_BUTTONS_STATE_START 0
 #define TM16XX_BUTTONS_STATE_PRESSED 1
 #define TM16XX_BUTTONS_STATE_RELEASED 2
-#define TM16XX_BUTTONS_STATE_DLPRESS 3
-#define TM16XX_BUTTONS_STATE_LPRESS 6
+#define TM16XX_BUTTONS_STATE_DBLPRESS 3
+#define TM16XX_BUTTONS_STATE_LPRESS 4
 
 // ----- Callback function types -----
 
 extern "C" {
 typedef void (*callbackTM16xxButtons)(byte nButton);
 }
-
 
 class TM16xxButtons
 {
@@ -43,11 +43,12 @@ class TM16xxButtons
   // set # millisec after single click is assumed.
   void setClickTicks(int ticks);
 
-  // set # millisec after press is assumed.
-  void setPressTicks(int ticks);
+  // set # millisec after long press is assumed.
+  void setLongPressTicks(int ticks);
 
   // attach functions that will be called when button was pressed in the
   // specified way.
+  void attachRelease(callbackTM16xxButtons newFunction);
   void attachClick(callbackTM16xxButtons newFunction);
   void attachDoubleClick(callbackTM16xxButtons newFunction);
   void attachLongPressStart(callbackTM16xxButtons newFunction);
@@ -63,6 +64,7 @@ class TM16xxButtons
    */
   void tick(byte nButton, bool level);
 
+  bool isPressed(byte nButton);
   bool isLongPressed(byte nButton);
   int getPressedTicks(byte nButton);
   void reset(void);
@@ -73,12 +75,11 @@ class TM16xxButtons
  private:
   unsigned int _clickTicks = 500; // number of ticks that have to pass by
                                   // before a click is detected.
-  unsigned int _pressTicks = 1000; // number of ticks that have to pass by
+  unsigned int _longPressTicks = 1000; // number of ticks that have to pass by
                                    // before a long button press is detected
-  int _buttonPressed;
-  bool _isLongPressed[TM16XX_BUTTONS_MAXBUTTONS];		// = false;
 
   // These variables will hold functions acting as event source.
+  callbackTM16xxButtons _releaseFunc = NULL;
   callbackTM16xxButtons _clickFunc = NULL;
   callbackTM16xxButtons _doubleClickFunc = NULL;
   callbackTM16xxButtons _longPressStartFunc = NULL;
@@ -88,9 +89,8 @@ class TM16xxButtons
   // These variables that hold information across the upcoming tick calls.
   // They are initialized once on program start and are updated every time the
   // tick function is called.
-  int _state[TM16XX_BUTTONS_MAXBUTTONS];			// = 0;
-  unsigned long _startTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state 1
-  unsigned long _stopTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state 2
-
+  int _state[TM16XX_BUTTONS_MAXBUTTONS];			// = TM16XX_BUTTONS_STATE_START;
+  unsigned long _startTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_PRESSED
+  unsigned long _stopTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_RELEASED
 };
 #endif
