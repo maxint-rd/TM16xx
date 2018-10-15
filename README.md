@@ -63,7 +63,7 @@ To check if a button was pressed you can use the getButtons() method:
   byte btButtons=module.getButtons();
   Serial.println(btButtons, HEX);
 ```
-Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something.
+Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something. For advanced detection of button clicks, double clicks and long presses you can use the _TM16xxButtons_ class.
 
 ## TM16xxDisplay class
 The _TM16xxDisplay_ class adds some bytes to the memory footprint, but it provides the familiar easy to use print() and println() functions. Next to that it also provides some more advanced display methods. To use that class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
@@ -154,7 +154,7 @@ can be shared to reduce the number of pins:
 See  [Adafruit GFX documentation](https://learn.adafruit.com/adafruit-gfx-graphics-library/graphics-primitives) and [TM16xxMatrixGFX.h](/src/TM16xxMatrixGFX.h) for the provided methods. See the [library examples](/examples) for more information.
 
 ## TM16xxButtons class
-The _TM16xxButtons_ class adds some bytes to the memory footprint, but it adds more advanced methods to use buttons. Next to simply polling the state of each button, you can define callback functions that will be called when a button is clicked, double-clicked or long pressed. To use this class on top of the base class, all you need to do is include the proper headers and instantiate the buttons object, refering to the chip specific class, for example:
+The _TM16xxButtons_ class enlarges the footprint a bit, but it adds more advanced methods to use buttons. Next to simply polling the state of each button, you can define callback functions that will be called when a button is released, clicked, double-clicked or long pressed. To use this class on top of the base class, all you need to do is include the proper headers and instantiate the buttons object, refering to the chip specific class, for example:
 ```C++
 #include <TM1638.h>
 #include <TM16xxButtons.h>
@@ -173,7 +173,7 @@ void fnClick(byte nButton)
 }
 ```
 
-In setup() you need to specify the callback function:
+In setup() you need to attach the callback function:
 ```C++
 void setup()
 {
@@ -182,8 +182,9 @@ void setup()
     buttons.attachClick(fnClick);
 }
 ```
+(BTW. Besides a click function, you can also attach a function to handle release, doubleclick and longpress events).
 
-In loop() you need to call the tick() function that handles all state changes and calls the callback function when needed:
+In loop() you need to call the tick() function that detects all state changes and calls the callback functions as needed:
 ```C++
 int nCount=0;
 void loop()
@@ -194,7 +195,7 @@ void loop()
   // do your other things
 }
 ```
-See [TM16xxButtons.h](/src/TM16xxButtons.h) for the provided methods and the [Button clicks example](/examples/TM16xxButtons_clicks) for more information.
+To implement a shift key, you can use the isPressed() function. See [TM16xxButtons.h](/src/TM16xxButtons.h) for the provided methods and the [Button clicks example](/examples/TM16xxButtons_clicks) for more information.
 
 
 ## More information
@@ -233,7 +234,7 @@ Added library functionality:
 - Simple display of text and numbers on7-segment displays using familiar print() and println() methods.
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
 - Support for combining multiple modules into one large Adafruit GFX matrix.
-- Support for click, doubleclick and long press button detection using callback functions
+- Support for release, click, doubleclick and long press button detection using callback functions.
 - Added [library examples](/examples).
 
 ## Features & limitations
