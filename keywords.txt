@@ -41,6 +41,8 @@ sendChar	KEYWORD2
 send	KEYWORD2
 receive	KEYWORD2
 setMirror	KEYWORD2
+setPixel	KEYWORD2
+getPixel	KEYWORD2
 setPressTicks	KEYWORD2
 attachRelease	KEYWORD2
 attachClick	KEYWORD2
