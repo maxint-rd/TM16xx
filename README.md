@@ -197,7 +197,6 @@ void loop()
 ```
 To implement a shift key, you can use the isPressed() function. See [TM16xxButtons.h](/src/TM16xxButtons.h) for the provided methods and the [Button clicks example](/examples/TM16xxButtons_clicks) for more information.
 
-
 ## More information
 
 ### Examples
@@ -245,6 +244,11 @@ Added library functionality:
 - I don't have the [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display), so wasn't able to test that specific class. It may work, ...or not. Please let me know if you've tested that module.
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. Most likely future versions will have a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
 - The WeMOS D1 mini Matrix LED Shield and the TM1640 Mini LED Matrix 8x16 by Maxint R&D have R1 on the right-top. Call setMirror(true) to reverse the x-mirrorring.
+- When using TM16xxButtons, the amount of memory used can become too large. To preserve RAM memory on smaller MCUs such as the ATtiny44A, the amount of buttons can be limited by setting the maximum in the TM16xxButtons.h header file:
+```C++
+#define TM16XX_BUTTONS_MAXBUTTONS 8   // Note: changing this define requires recompilation of the library
+```
+- An alternative RAM preserving implementation using dynamic memory allocation is optional, but not suitable for small MCUs as using malloc/free will increase the required FLASH program space by over 600 bytes. Modify the TM16XX_OPT_BUTTONS_... defines in the header file at your own risk.
 
 ## Disclaimer
 - All code on this GitHub account, including this library is provided to you on an as-is basis without guarantees and with all liability dismissed. It may be used at your own risk. Unfortunately I have no means to provide support.
