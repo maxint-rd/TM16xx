@@ -19,12 +19,18 @@ Partially based on OneButton library by Matthias Hertel. See https://github.com/
 #include "TM16xxButtons.h"
 
 // constructor
-TM16xxButtons::TM16xxButtons(TM16xx *pTM16xx)
+TM16xxButtons::TM16xxButtons(TM16xx *pTM16xx, byte nNumButtons) : _nNumButtons(nNumButtons), _pTM16xx(pTM16xx)
 {
 	// TODO: reduce memory by using dynamic memory allocation instead of static arrays for button states
 	// requires additional constructor parameter to allow less than TM16XX_BUTTONS_MAXBUTTONS
 
-	_pTM16xx=pTM16xx;
+	//_pTM16xx=pTM16xx;
+#if(TM16XX_OPT_BUTTONS_MALLOC)
+	_state=malloc(_nNumButtons*sizeof(byte));
+  _startTime=malloc(_nNumButtons*sizeof(unsigned long));
+  _stopTime=malloc(_nNumButtons*sizeof(unsigned long));
+#endif
+
 	reset();
 }
 
@@ -45,7 +51,13 @@ void TM16xxButtons::setLongPressTicks(int ticks)
   _longPressTicks = ticks;
 } // setLongPressTicks
 
+#if(TM16XX_OPT_BUTTONS_EVENT)
 // set function for release event
+void TM16xxButtons::attachEventHandler(callbackTM16xxButtonsEvent newFunction)
+{
+  _eventFunc = newFunction;
+} // attachEventHandler
+#else
 void TM16xxButtons::attachRelease(callbackTM16xxButtons newFunction)
 {
   _releaseFunc = newFunction;
@@ -81,27 +93,31 @@ void TM16xxButtons::attachDuringLongPress(callbackTM16xxButtons newFunction)
 {
   _duringLongPressFunc = newFunction;
 } // attachDuringLongPress
+#endif
 
 // function to get the current long pressed state
 bool TM16xxButtons::isPressed(byte nButton)
 {
+	if(nButton>=_nNumButtons) return(false);
   return(_state[nButton]==TM16XX_BUTTONS_STATE_PRESSED || _state[nButton]==TM16XX_BUTTONS_STATE_DBLPRESS || _state[nButton]==TM16XX_BUTTONS_STATE_LPRESS);
 }
 
 // function to get the current long pressed state
 bool TM16xxButtons::isLongPressed(byte nButton)
 {
+	if(nButton>=_nNumButtons) return(false);
 	return(_state[nButton]==TM16XX_BUTTONS_STATE_LPRESS);
 }
 
 int TM16xxButtons::getPressedTicks(byte nButton)
 {
+	if(nButton>=_nNumButtons) return(0);
   return _stopTime[nButton] - _startTime[nButton];
 }
 
 void TM16xxButtons::reset(void)
 {
-  for(byte n=0; n<TM16XX_BUTTONS_MAXBUTTONS; n++)
+  for(byte n=0; n<_nNumButtons; n++)
   {
 	  _state[n] = TM16XX_BUTTONS_STATE_START; // restart.
 	  _startTime[n] = 0;
@@ -121,14 +137,14 @@ uint32_t TM16xxButtons::tick(void)
   Serial.print(F("TM16xxButtons: "));
   Serial.print(dwButtons, HEX);
   Serial.print(F(", state: "));
-  for(byte n=0; n<TM16XX_BUTTONS_MAXBUTTONS; n++)
+  for(byte n=0; n<_nNumButtons; n++)
   {
 	  tick(n, dwButtons&_BV(n));
 	  Serial.print(_state[n]);
 	}
   Serial.print(F("    "));
 #else
-  for(byte n=0; n<TM16XX_BUTTONS_MAXBUTTONS; n++)
+  for(byte n=0; n<_nNumButtons; n++)
 	  tick(n, dwButtons&_BV(n));
 #endif
 	return(dwButtons);
@@ -157,28 +173,50 @@ void TM16xxButtons::tick(byte nButton, bool activeLevel)
     {
       _state[nButton] = TM16XX_BUTTONS_STATE_RELEASED; // step to released state
       _stopTime[nButton] = now; // remember stopping time
+#if(TM16XX_OPT_BUTTONS_EVENT)
+      if (_eventFunc)
+        _eventFunc(TM16XX_BUTTONS_EVENT_RELEASE, nButton);
+#else
       if (_releaseFunc)
         _releaseFunc(nButton);
+#endif
     }
     else if ((activeLevel) && ((unsigned long)(now - _startTime[nButton]) > _longPressTicks))
     {
       _state[nButton] = TM16XX_BUTTONS_STATE_LPRESS; // step to long press state
       _stopTime[nButton] = now; // remember stopping time
+#if(TM16XX_OPT_BUTTONS_EVENT)
+      if (_eventFunc)
+      {
+        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSSTART, nButton);
+        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSBUSY, nButton);
+      }
+#else
       if (_longPressStartFunc)
         _longPressStartFunc(nButton);
       if (_duringLongPressFunc)
         _duringLongPressFunc(nButton);
+#endif
     } else {
       // wait. Stay in this state.
     } // if
     break;
 
   case TM16XX_BUTTONS_STATE_RELEASED: // waiting for button being pressed the second time or timeout.
+#if(TM16XX_OPT_BUTTONS_EVENT)
+    if ((unsigned long)(now - _startTime[nButton]) > _clickTicks)
+#else
     if (_doubleClickFunc == NULL || (unsigned long)(now - _startTime[nButton]) > _clickTicks)
+#endif
     {
       // this was only a single short click
+#if(TM16XX_OPT_BUTTONS_EVENT)
+      if (_eventFunc)
+        _eventFunc(TM16XX_BUTTONS_EVENT_CLICK, nButton);
+#else
       if (_clickFunc)
         _clickFunc(nButton);
+#endif
       _state[nButton] = TM16XX_BUTTONS_STATE_START; // restart.
     }
     else if ((activeLevel))
@@ -194,10 +232,18 @@ void TM16xxButtons::tick(byte nButton, bool activeLevel)
       // this was a 2 click sequence.
       _state[nButton] = TM16XX_BUTTONS_STATE_START; // restart.
       _stopTime[nButton] = now; // remember stopping time
+#if(TM16XX_OPT_BUTTONS_EVENT)
+      if (_eventFunc)
+      {
+        _eventFunc(TM16XX_BUTTONS_EVENT_RELEASE, nButton);
+        _eventFunc(TM16XX_BUTTONS_EVENT_DOUBLECLICK, nButton);
+      }
+#else
       if (_releaseFunc)
         _releaseFunc(nButton);
       if (_doubleClickFunc)
         _doubleClickFunc(nButton);
+#endif
     } // if
     break;
 
@@ -206,16 +252,29 @@ void TM16xxButtons::tick(byte nButton, bool activeLevel)
     {
       _state[nButton] = TM16XX_BUTTONS_STATE_START; // restart.
       _stopTime[nButton] = now; // remember stopping time
+#if(TM16XX_OPT_BUTTONS_EVENT)
+      if (_eventFunc)
+      {
+        _eventFunc(TM16XX_BUTTONS_EVENT_RELEASE, nButton);
+        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSSTOP, nButton);
+      }
+#else
       if (_releaseFunc)
         _releaseFunc(nButton);
       if (_longPressStopFunc)
         _longPressStopFunc(nButton);
+#endif
     }
     else
     {
       // button is being long pressed
+#if(TM16XX_OPT_BUTTONS_EVENT)
+      if (_eventFunc)
+        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSBUSY, nButton);
+#else
       if (_duringLongPressFunc)
         _duringLongPressFunc(nButton);
+#endif
     } // if
 		break;
   } // switch

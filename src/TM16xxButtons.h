@@ -20,7 +20,11 @@ Partially based on OneButton library by Matthias Hertel. See https://github.com/
 
 #include "TM16xx.h"
 
-#define TM16XX_BUTTONS_MAXBUTTONS 32
+#define TM16XX_OPT_BUTTONS_EVENT 0			// use a single callback function instead of multiple (more flash, less heap)
+#define TM16XX_OPT_BUTTONS_MALLOC 0			// use malloc to reserve button-state memory (more flash, less heap)
+#ifndef TM16XX_BUTTONS_MAXBUTTONS
+#define TM16XX_BUTTONS_MAXBUTTONS 32		// maximum number of buttons supported (determines heap used when not using malloc)
+#endif
 
 #define TM16XX_BUTTONS_STATE_START 0
 #define TM16XX_BUTTONS_STATE_PRESSED 1
@@ -28,16 +32,29 @@ Partially based on OneButton library by Matthias Hertel. See https://github.com/
 #define TM16XX_BUTTONS_STATE_DBLPRESS 3
 #define TM16XX_BUTTONS_STATE_LPRESS 4
 
+
+#if(TM16XX_OPT_BUTTONS_EVENT)
+#define TM16XX_BUTTONS_EVENT_RELEASE 10
+#define TM16XX_BUTTONS_EVENT_CLICK 20
+#define TM16XX_BUTTONS_EVENT_DOUBLECLICK 30
+#define TM16XX_BUTTONS_EVENT_LONGPRESSSTART 40
+#define TM16XX_BUTTONS_EVENT_LONGPRESSSTOP 50
+#define TM16XX_BUTTONS_EVENT_LONGPRESSBUSY 60
+#endif
+
 // ----- Callback function types -----
 
 extern "C" {
 typedef void (*callbackTM16xxButtons)(byte nButton);
+#if(TM16XX_OPT_BUTTONS_EVENT)
+typedef void (*callbackTM16xxButtonsEvent)(byte btEvent, byte nButton);
+#endif
 }
 
 class TM16xxButtons
 {
  public:
-	TM16xxButtons(TM16xx *pTM16xx);
+	TM16xxButtons(TM16xx *pTM16xx, byte nNumButtons=TM16XX_BUTTONS_MAXBUTTONS);
 
 
   // set # millisec after single click is assumed.
@@ -48,14 +65,16 @@ class TM16xxButtons
 
   // attach functions that will be called when button was pressed in the
   // specified way.
+#if(TM16XX_OPT_BUTTONS_EVENT)
+  void attachEventHandler(callbackTM16xxButtonsEvent newFunction);
+#else
   void attachRelease(callbackTM16xxButtons newFunction);
   void attachClick(callbackTM16xxButtons newFunction);
   void attachDoubleClick(callbackTM16xxButtons newFunction);
   void attachLongPressStart(callbackTM16xxButtons newFunction);
   void attachLongPressStop(callbackTM16xxButtons newFunction);
   void attachDuringLongPress(callbackTM16xxButtons newFunction);
-
-
+#endif
   uint32_t tick(void);
   /**
    * @brief Call this function every time the input level has changed.
@@ -73,24 +92,35 @@ class TM16xxButtons
   TM16xx *_pTM16xx;
 
  private:
+ 	byte _nNumButtons;
   unsigned int _clickTicks = 500; // number of ticks that have to pass by
                                   // before a click is detected.
   unsigned int _longPressTicks = 1000; // number of ticks that have to pass by
                                    // before a long button press is detected
 
   // These variables will hold functions acting as event source.
+#if(TM16XX_OPT_BUTTONS_EVENT)
+  callbackTM16xxButtonsEvent _eventFunc = NULL;
+#else
   callbackTM16xxButtons _releaseFunc = NULL;
   callbackTM16xxButtons _clickFunc = NULL;
   callbackTM16xxButtons _doubleClickFunc = NULL;
   callbackTM16xxButtons _longPressStartFunc = NULL;
   callbackTM16xxButtons _longPressStopFunc = NULL;
   callbackTM16xxButtons _duringLongPressFunc = NULL;
+#endif
 
   // These variables that hold information across the upcoming tick calls.
   // They are initialized once on program start and are updated every time the
   // tick function is called.
-  int _state[TM16XX_BUTTONS_MAXBUTTONS];			// = TM16XX_BUTTONS_STATE_START;
+#if(TM16XX_OPT_BUTTONS_MALLOC)
+  byte *_state;		// allocated memory array
+  unsigned long *_startTime; 		// allocated memory array, value is set in state TM16XX_BUTTONS_STATE_PRESSED
+  unsigned long *_stopTime; 		// allocated memory array, value is set in state TM16XX_BUTTONS_STATE_RELEASED
+#else
+  byte _state[TM16XX_BUTTONS_MAXBUTTONS];			// = TM16XX_BUTTONS_STATE_START;
   unsigned long _startTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_PRESSED
   unsigned long _stopTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_RELEASED
+#endif
 };
 #endif
