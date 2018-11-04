@@ -144,7 +144,7 @@ void loop()
   byte btButtons=module37.getButtons()&0x0F;    // only need bits 0-3
   Serial.print(F("Buttons: "));
   Serial.print(btButtons, HEX);
-  byte btButtons2=module38.getButtons();
+  uint32_t btButtons2=module38.getButtons();
   Serial.print(F(",  "));
   Serial.println(btButtons2, HEX);
 
