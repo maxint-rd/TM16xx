@@ -16,6 +16,8 @@ Partially based on OneButton library by Matthias Hertel. See https://github.com/
 
 */
 
+//#define TM16XX_DEBUG 1
+
 #include "TM16xxButtons.h"
 
 // constructor
@@ -139,13 +141,13 @@ uint32_t TM16xxButtons::tick(void)
   Serial.print(F(", state: "));
   for(byte n=0; n<_nNumButtons; n++)
   {
-	  tick(n, dwButtons&_BV(n));
+	  tick(n, (dwButtons&bit(n))>0);		// MMOLE 181103: _BV only works on 16-bit values!
 	  Serial.print(_state[n]);
 	}
   Serial.print(F("    "));
 #else
   for(byte n=0; n<_nNumButtons; n++)
-	  tick(n, dwButtons&_BV(n));
+	  tick(n, dwButtons&bit(n));		// MMOLE 181103: _BV only works on 16-bit values!
 #endif
 	return(dwButtons);
 }
