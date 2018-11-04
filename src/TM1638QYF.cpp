@@ -1,19 +1,8 @@
 /*
-TM1638.cpp - Library implementation for TM1638.
+TM1638QYF.cpp - Library implementation for QYF-TM1638 module.
+The QYF-TM1638 module uses the TM1638 chip with with a 2 xcommon anode 4bit 7-segment LED display.
 
-Copyright (C) 2011 Ricardo Batista (rjbatista <at> gmail <dot> com)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the version 3 GNU General Public License as
-published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Made by Maxint R&D, based on TM1638 class. See https://github.com/maxint-rd/
 */
 
 #if defined(ARDUINO) && ARDUINO >= 100
@@ -23,136 +12,119 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include "TM1638QYF.h"
-#include "string.h"
 
 TM1638QYF::TM1638QYF(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay, byte intensity)
-	: TM16xx(dataPin, clockPin, strobePin, 8, 8, activateDisplay, intensity)
+	: TM16xx(dataPin, clockPin, strobePin, TM1638QYF_MAX_POS, 8, activateDisplay, intensity)
 {
-  _maxSegments=10;		// on the LED & KEY modules the extra segments are used to drive individual red or red/green LEDs
+  _maxSegments=8;		// on the QYF-TM1638 modules the two extra segment lines are not used. The display uses common anode LEDs
 
+	memset(this->bitmap, 0, TM1638QYF_MAX_POS);
 	clearDisplay();
 }
 
-void TM1638QYF::setDisplay(const byte values[], unsigned int length)
-{
-  for (int i = 0; i < digits; i++) {
-	int val = 0;
 
-	for (int j = 0; j < length; j++) {
-	  val |= ((values[j] >> i) & 1) << (digits - j - 1);
-	}
-	
-	sendData(i << 1, val);
-  }
+/**
+ * Flip a bitboard about the antidiagonal a8-h1.
+ * Square a1 is mapped to h8 and vice versa.
+ * @param x any bitboard
+ * @return bitboard x flipped about antidiagonal a8-h1
+ *
+ * https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Anti-Diagonal
+ */
+uint64_t TM1638QYF::flipDiagA8H1(uint64_t x)
+{
+	uint64_t t;
+  const uint64_t k1 = 0xaa00aa00aa00aa00;
+	const uint64_t k2 = 0xcccc0000cccc0000;
+	const uint64_t k4 = 0xf0f0f0f00f0f0f0f;
+	t  =       x ^ (x << 36) ;
+	x ^= k4 & (t ^ (x >> 36));
+	t  = k2 & (x ^ (x << 18));
+	x ^=       t ^ (t >> 18) ;
+	t  = k1 & (x ^ (x <<  9));
+	x ^=       t ^ (t >>  9) ;
+
+	return x;
 }
 
+/**
+ * Flip a bitboard about the diagonal a1-h8.
+ * Square h1 is mapped to a8 and vice versa.
+ * @param x any bitboard
+ * @return bitboard x flipped about diagonal a1-h8
+ *
+ * https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Diagonal
+ */
 /*
-void TM1638QYF::clearDisplay()
+uint64_t TM1638QYF::flipDiagA1H8(uint64_t x)
 {
-	setDisplay(NULL, 0);
+   uint64_t t;
+   const uint64_t k1 = 0x5500550055005500;
+   const uint64_t k2 = 0x3333000033330000;
+   const uint64_t k4 = 0x0f0f0f0f00000000;
+   t  = k4 & (x ^ (x << 28));
+   x ^=       t ^ (t >> 28) ;
+   t  = k2 & (x ^ (x << 14));
+   x ^=       t ^ (t >> 14) ;
+   t  = k1 & (x ^ (x <<  7));
+   x ^=       t ^ (t >>  7) ;
+   return x;
 }
 */
 
-void TM1638QYF::setDisplayToString(const char* string, const word dots, const byte ignored,	const byte font[])
-{
-	byte values[digits];
-	boolean done = false;
+void TM1638QYF::setSegments(byte segments, byte position)
+{	// set 8 leds on common grd as specified
+	// TODO: support 10-14 segments on chips like TM1638/TM1668
+  // TM1638 uses 10 segments in two bytes, similar to TM1668
+  // for the digit displays only the first byte (containing seg1-seg8) is sent
+	// Only the LSB (SEG1-8) is sent to the display
+	if(position<_maxDisplays)
+	{
+		//update our memory bitmap
+		this->bitmap[position]=segments;
 
-	memset(values, 0, digits * sizeof(byte));
+		// transpose the bitmap to counter Common Anode connections
+		uint64_t t=*((uint64_t *)this->bitmap);
+		t=flipDiagA8H1(t);
+		//t=flipDiagA1H8(t);
 
-	for (int i = 0; i < digits; i++) {
-		if (!done && string[i] != '\0') {
-		  values[i] = font[string[i] - 32] | (((dots >> (digits - i - 1)) & 1) << 7);
-		} else {
-		  done = true;
-		  values[i] = (((dots >> (digits - i - 1)) & 1) << 7);
+		// send each byte of the transposed bitmap
+		for(byte nPos=0; nPos<TM1638QYF_MAX_POS; nPos++)
+		{
+			byte *pVal=(byte *)&t;
+			byte btVal=pVal[nPos];
+			sendData((7-nPos) << 1, btVal);	// flip position to counter Common Anode connections
+			//sendData((nPos) << 1, btVal);
 		}
 	}
-
-	setDisplay(values, digits);
 }
 
-void TM1638QYF::setDisplayToString(String string, const word dots, const byte ignored, const byte font[])
+void TM1638QYF::clearDisplay()
 {
-  byte values[digits];
-  int stringLength = string.length();
-
-  memset(values, 0, digits * sizeof(byte));
-
-  for (int i = 0; i < digits; i++) {
-    if (i < stringLength) {
-      values[i] = font[string.charAt(i) - 32] | (((dots >> (digits - i - 1)) & 1) << 7);
-    } else {
-	  values[i] = (((dots >> (digits - i - 1)) & 1) << 7);
-    }
-  }
-
-  setDisplay(values, digits);
+  for(byte nPos=0; nPos<TM1638QYF_MAX_POS; nPos++)
+	  sendData(nPos << 1, 0);
 }
-
-/*
-void TM1638QYF::setDisplayToBinNumber(byte number, byte dots, const byte numberFont[])
-{
-	byte values[digits];
-
-	memset(values, 0, digits * sizeof(byte));
-
-	for (int i = 0; i < digits; i++) {
-		values[i] = numberFont[(number >> (digits - i - 1)) & 1] | (((dots >> (digits - i - 1)) & 1) << 7);
-	}
-
-	setDisplay(values, digits);
-}
-
-void TM1638QYF::setDisplayToHexNumber(unsigned long number, byte dots, boolean leadingZeros,
-	const byte numberFont[])
-{
-	char values[digits + 1];
-
-	snprintf(values, digits + 1, leadingZeros ? "%08X" : "%X", number); // ignores display size
-
-	setDisplayToString(values, dots, 0, numberFont);
-}
-
-void TM1638QYF::setDisplayToDecNumber(unsigned long number, byte dots, boolean leadingZeros,
-	const byte numberFont[])
-{
-	char values[digits + 1];
-
-	snprintf(values, digits + 1, leadingZeros ? "%08ld" : "%ld", number); // ignores display size
-
-// MMOLE: ATtiny doesn't support debug printing in library
-//	Serial.println(values);
-	
-	setDisplayToString(values, dots, 0, numberFont);
-}
-
-void TM1638QYF::setDisplayToSignedDecNumber(signed long number, byte dots, boolean leadingZeros,
-		const byte numberFont[])
-{
-	char values[digits + 1];
-
-	snprintf(values, digits + 1, leadingZeros ? "%08d" : "%d", number); // ignores display size
-
-	setDisplayToString(values, dots, 0, numberFont);
-}
-*/
 
 uint32_t TM1638QYF::getButtons(void)
 {
-  word keys = 0;
+	// TM1638 returns 4 bytes/8 nibbles for keyscan. Each byte has K3, K2 and K1 status in lower bits of each nibble for KS1-KS8
+	// NOTE: K3 is implemented for this class, but the TM1638QYF module only uses K1/K2
+  byte keys_K1 = 0;
+  byte keys_K2 = 0;
+  byte keys_K3 = 0;
 
-  digitalWrite(strobePin, LOW);
-  send(0x42); // B01000010 Read the key scan data
-  for (int i = 0; i < 4; i++) {
+  start();
+  send(TM16XX_CMD_DATA_READ); // B01000010 Read the key scan data
+
+  for (int i = 0; i < 4; i++)
+  {
 	  byte rec = receive();
-
-	  rec = (((rec & B1000000) >> 3 | (rec & B100)) >> 2) | (rec & B100000) | (rec & B10) << 3;
-
-	  keys |= ((rec & 0x000F) << (i << 1)) | (((rec & 0x00F0) << 4) << (i << 1));
+    keys_K1 |= ((rec&_BV(2))>>2 | (rec&_BV(6))>>5) << (2*i);			// bits 2 and	6 for K1/KS1 and K1/KS2
+    keys_K2 |= ((rec&_BV(1))>>1 | (rec&_BV(5))>>4) << (2*i);			// bits 1 and	5 for K2/KS1 and K2/KS2
+    keys_K3 |= ((rec&_BV(0))    | (rec&_BV(4))>>3) << (2*i);			// bits 0 and	4 for K3/KS1 and K3/KS2
   }
-  digitalWrite(strobePin, HIGH);
-  
-  return keys;
-}
 
+  stop();
+
+  return((uint32_t)keys_K3<<16 | (uint32_t)keys_K2<<8 | (uint32_t)keys_K1);
+}
