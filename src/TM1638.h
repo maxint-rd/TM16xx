@@ -2,7 +2,7 @@
 TM1638.h - Library for TM1638.
 
 Copyright (C) 2011 Ricardo Batista <rjbatista at gmail dot com>
-Modified by Maxint R&D. See https://github.com/maxint-rd/
+Rewrite for TM16xx library by Maxint R&D. See https://github.com/maxint-rd/
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the version 3 GNU General Public License as
@@ -28,6 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TM16xx.h"
 
+#define TM1638_MAX_POS 8
+
 #define TM1638_COLOR_NONE   0
 #define TM1638_COLOR_RED    1
 #define TM1638_COLOR_GREEN  2
@@ -38,6 +40,10 @@ class TM1638 : public TM16xx
     /** Instantiate a tm1638 module specifying data, clock and stobe pins, the number of digits, the display state, the starting intensity (0-7). */
     TM1638(byte dataPin, byte clockPin, byte strobePin, byte numDigits=8, boolean activateDisplay = true, byte intensity = 7);
 
+		/** Set the segments at a specific position on or off */
+	  virtual void setSegments(byte segments, byte position);
+	  virtual void setSegments(uint16_t segments, byte position);
+
     /** Set the LED at pos to color (TM1638_COLOR_RED, TM1638_COLOR_GREEN or both) */
     virtual void setLED(byte color, byte pos);
     /** Set the LEDs. MSB byte for the green LEDs, LSB for the red LEDs */
@@ -45,9 +51,6 @@ class TM1638 : public TM16xx
 
     /** Returns the pressed buttons as a bit set (left to right). */
     virtual uint32_t getButtons();
-    
-  protected:
-    virtual void sendChar(byte pos, byte data, boolean dot);
 };
 
 #endif
