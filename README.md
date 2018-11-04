@@ -60,8 +60,8 @@ void loop() {
 The TM16xx chip makes it easy to see if a button is pressed.
 To check if a button was pressed you can use the getButtons() method:
 ```C++
-  byte btButtons=module.getButtons();
-  Serial.println(btButtons, HEX);
+  uint32_t dwButtons=module.getButtons();
+  Serial.println(dwButtons, HEX);
 ```
 Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something. For advanced detection of button clicks, double clicks and long presses you can use the _TM16xxButtons_ class.
 
@@ -154,7 +154,7 @@ can be shared to reduce the number of pins:
 See  [Adafruit GFX documentation](https://learn.adafruit.com/adafruit-gfx-graphics-library/graphics-primitives) and [TM16xxMatrixGFX.h](/src/TM16xxMatrixGFX.h) for the provided methods. See the [library examples](/examples) for more information.
 
 ## TM16xxButtons class
-The _TM16xxButtons_ class enlarges the footprint a bit, but it adds more advanced methods to use buttons. Next to simply polling the state of each button, you can define callback functions that will be called when a button is released, clicked, double-clicked or long pressed. To use this class on top of the base class, all you need to do is include the proper headers and instantiate the buttons object, refering to the chip specific class, for example:
+The _TM16xxButtons_ class enlarges the footprint a bit, but based on the popular [OneButton library](https://github.com/mathertel/OneButton) library, it adds more advanced methods to use buttons. Next to simply polling the state of each button, you can define callback functions that will be called when a button is released, clicked, double-clicked or long pressed. To use this class on top of the base class, all you need to do is include the proper headers and instantiate the buttons object, refering to the chip specific class, for example:
 ```C++
 #include <TM1638.h>
 #include <TM16xxButtons.h>
@@ -211,14 +211,14 @@ See the [library examples](/examples) for more information on how to use this li
 - OneButton multi-state buttons: https://github.com/mathertel/OneButton
 - Adafruit GFX library: https://github.com/adafruit/Adafruit-GFX-Library
 - Adafruit GFX documentation: https://learn.adafruit.com/adafruit-gfx-graphics-library
+- Matrix transposition used in TM1638QYF: https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Anti-Diagonal
 
 ## New in this library
 Original library functionality:
 - Support for the TM1638 and TM1640, including common anode TM1638 module;
 - Helper methods for displaying numbers in decimal, hexadecimal and binary;
 - Support for multiple chained TM1638 and for TM1638 in inverted position;
-- Support for dimming the display and LEDs;
-- Support for writing text;
+- Support for dimming the display and LEDs and for for writing text;
 - Reading simultaneous button presses on TM1638;
 
 Added library functionality:
@@ -232,16 +232,19 @@ Added library functionality:
 - Separate classes for LED matrix and advanced LED display support.
 - Simple display of text and numbers on7-segment displays using familiar print() and println() methods.
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
+- Full support for QYF-TM1638 module (8 digit common anode LED display and 4x4 keypad)
 - Support for combining multiple modules into one large Adafruit GFX matrix.
+- Support for scanning all possible keys (K1, K2 and K3 lines) on TM1638.
 - Support for release, click, doubleclick and long press button detection using callback functions.
 - Added [library examples](/examples).
 
 ## Features & limitations
-- The current version of this library supports ESP8266 and Atmel ATmega328 and ATmega168 MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Please let me know if you've successfully used this library with other MCUs.
+- The current version of this library supports ESP8266, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Please let me know if you've successfully used this library with other MCUs.
 - The TM16xx chips offer no support for daisychaining multiple chips, but when separate Clk or Latch lines are used the Din line can be shared for combined displays.
 - The library doesn't support combining multiple 7-segment modules into one display, but it is possible to define multiple display objects for multiple different modules. See the TM1638_TM1637ex_two_modules example. 
 - The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. Please note that the TM1640 supports up to 16 digits or an 8x16 LED matrix. 
-- I don't have the [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display), so wasn't able to test that specific class. It may work, ...or not. Please let me know if you've tested that module.
+- The [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display) is fully supported. Please note that while multiple buttons can be pressed, pressing more than two buttons can give faulty results due to the lack of short-out preventing diodes on the module.
+- The pupular TM1638 LED & KEY module comes in a number of varieties. My version has some odd button wiring sequence: S1=KS1, S5=KS2, S2=KS3, S6=KS4, S3=KS5, S7=KS6, S4=KS7, S8=KS8
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. Most likely future versions will have a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
 - The WeMOS D1 mini Matrix LED Shield and the TM1640 Mini LED Matrix 8x16 by Maxint R&D have R1 on the right-top. Call setMirror(true) to reverse the x-mirrorring.
 - When using TM16xxButtons, the amount of memory used can become too large. To preserve RAM memory on smaller MCUs such as the ATtiny44A, the amount of buttons can be limited by setting the maximum in the TM16xxButtons.h header file:
