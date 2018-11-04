@@ -24,9 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #include "TM1668.h"
-#include "string.h"
 
-TM1668::TM1668(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay, byte intensity, byte numDigits, byte displaymode)
+TM1668::TM1668(byte dataPin, byte clockPin, byte strobePin, byte numDigits, boolean activateDisplay, byte intensity, byte displaymode)
 	: TM16xx(dataPin, clockPin, strobePin, 7, numDigits, activateDisplay, intensity)		// "numDigits" is the number of digits
 {
 	// set the display mode
@@ -54,69 +53,26 @@ TM1668::TM1668(byte dataPin, byte clockPin, byte strobePin, boolean activateDisp
 	setupDisplay(activateDisplay, intensity);
 }
 
-/*
-void TM1668::setDisplayToHexNumber(unsigned long number, byte dots, boolean leadingZeros,
-	const byte numberFont[])
-{
-  for (int i = 0; i < digits; i++) {
-	if (!leadingZeros && number == 0) {
-		clearDisplayDigit(digits - i - 1, (dots & (1 << i)) != 0);
-	} else {
-		setDisplayDigit(number & 0xF, digits - i - 1, (dots & (1 << i)) != 0, numberFont);
-		number >>= 4;
-    }
-  }
+void TM1668::setSegments(byte segments, byte position)
+{	// set 8 leds on common grd as specified
+	// TODO: support 10-14 segments on chips like TM1638/TM1668
+	// TM1668 uses 10-13 segments in two bytes, similar to TM1638
+	// Only the LSB (SEG1-8) is sent to the display
+	if(position<_maxDisplays)
+		sendData(position << 1, segments);
 }
 
-void TM1668::setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, boolean leadingZeros,
-	const byte numberFont[])
-{
-  if (number > 99999999L) {
-    setDisplayToError();
-  } else {
-    for (int i = 0; i < digits - startingPos; i++) {
-      if (number != 0) {
-        setDisplayDigit(number % 10, digits - i - 1, (dots & (1 << i)) != 0, numberFont);
-        number /= 10;
-      } else {
-		if (leadingZeros) {
-		  setDisplayDigit(0, digits - i - 1, (dots & (1 << i)) != 0, numberFont);
-		} else {
-		  clearDisplayDigit(digits - i - 1, (dots & (1 << i)) != 0);
-		}
-      }
-    }
-  }
-}
-
-void TM1668::setDisplayToDecNumber(unsigned long number, byte dots, boolean leadingZeros,
-	const byte numberFont[])
-{
-	setDisplayToDecNumberAt(number, dots, 0, leadingZeros, numberFont);
-}
-
-void TM1668::setDisplayToSignedDecNumber(signed long number, byte dots, boolean leadingZeros,
-		const byte numberFont[])
-{
-	if (number >= 0) {
-		setDisplayToDecNumberAt(number, dots, 0, leadingZeros, numberFont);
-	} else {
-		if (-number > 9999999L) {
-		    setDisplayToError();
-		} else {
-			setDisplayToDecNumberAt(-number, dots, 1, leadingZeros, numberFont);
-			sendChar(0, MINUS, (dots & (0x80)) != 0);
-		}
+void TM1668::setSegments(uint16_t segments, byte position)
+{	// overloaded method to send more segments (10 max for TM1638)
+  // TM1638 uses 10 segments in two bytes, similar to TM1668
+  // segments 0-7 are in bits 0-7 of position bytes 0,2,4,6,8,10,12,14
+  // segments 8-9 are in bits 0-1 of position bytes 1,3,5,7,9,11,13,15
+	if(position<_maxDisplays)
+	{
+		sendData(position << 1, (byte)segments&0xFF);
+		sendData((position << 1) | 1, (byte)(segments>>8));
 	}
 }
-
-void TM1668::setDisplayToBinNumber(byte number, byte dots, const byte numberFont[])
-{
-  for (int i = 0; i < digits; i++) {
-    setDisplayDigit((number & (1 << i)) == 0 ? 0 : 1, digits - i - 1, (dots & (1 << i)) != 0, numberFont);
-  }
-}
-*/
 
 void TM1668::setLED(byte color, byte pos)
 {
@@ -148,7 +104,6 @@ void TM1668::setLEDs(uint32_t leds)
 void TM1668::setRGBLEDs(uint32_t uRgbLeds)
 {	// Common anode RGB LEDs can be connected on the 10 segments and GRID5-7
 	// for each color there are 3 segments and 10 leds
-	
 	word wSegmentsR=0;
 	word wSegmentsG=0;
 	word wSegmentsB=0;
@@ -219,26 +174,22 @@ uint32_t TM1668::getButtons(byte keyset)		// keyset=TM1668_KEYSET_ALL
   word keys_K2 = 0;
   byte received;
 
-  digitalWrite(strobePin, LOW);
-  send(0x42);		// send read buttons command
+  start();
+  send(TM16XX_CMD_DATA_READ);		// send read buttons command
   for (int i = 0; i < 5; i++) {
   	received=receive();
     keys_K1 |= ( received&_BV(0)     | (received&_BV(3))>>2) << (2*i);			// bits 0 and	3 for K1/KS1 and K1/KS2
     keys_K2 |= ((received&_BV(1))>>1 | (received&_BV(4))>>3) << (2*i);			// bits 1 and	4 for K2/KS1 and K2/KS2
   }
-  digitalWrite(strobePin, HIGH);
+  stop();
 	if(keyset==TM1668_KEYSET_K1)
 		return(keys_K1);
 	else if(keyset==TM1668_KEYSET_K2)
 		return(keys_K2);
-  return(keys_K1|(keys_K2<<16));
+  return((uint32_t)keys_K2<<16 | keys_K1);
 }
 
-/**/
-void TM1668::sendChar(byte pos, byte data, boolean dot)
-{ // Send data for a character to the display
-	// TM1668 uses 10-13 segments in two bytes, similar to TM1638
-	// Only the LSB (SEG1-8) is sent to the display
-	sendData(pos << 1, data | (dot ? 0b10000000 : 0));		// TM1668 uses 10-13 segments in two bytes (similar to TM1638)
+uint32_t TM1668::getButtons()
+{	// method function needed to override empty base class method
+	return(getButtons(TM1668_KEYSET_ALL));
 }
-/**/

@@ -38,7 +38,6 @@ For the TM1668 module the following default setup is assumed:
 #endif
 
 #include "TM16xx.h"
-//#include "TM16xxFonts.h"
 
 #define TM1668_COLOR_NONE   0
 #define TM1668_COLOR_RED    1
@@ -66,41 +65,24 @@ class TM1668 : public TM16xx
 {
   public:
     /** Instantiate a TM1668 module specifying the display state, the starting intensity (0-7) data, clock and stobe pins. */
-    TM1668(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay = true, byte intensity = 7, byte numDigits = 4, byte displaymode = TM1668_DISPMODE_7x10);
+    TM1668(byte dataPin, byte clockPin, byte strobePin, byte numDigits = 4, boolean activateDisplay = true, byte intensity = 7, byte displaymode = TM1668_DISPMODE_7x10);
 
-#if 0
-    /** Set the display to a unsigned hexadecimal number (with or without leading zeros) */
-    void setDisplayToHexNumber(unsigned long number, byte dots=0x00, boolean leadingZeros = true,
-		const byte numberFont[] = TM16XX_NUMBER_FONT);
-    /** Set the display to a unsigned decimal number (with or without leading zeros) */
-    void setDisplayToDecNumber(unsigned long number, byte dots=0x00, boolean leadingZeros = true,
-		const byte numberFont[] = TM16XX_NUMBER_FONT);
-    /** Set the display to a signed decimal number (with or without leading zeros) */
-    void setDisplayToSignedDecNumber(signed long number, byte dots=0x00, boolean leadingZeros = true,
-		const byte numberFont[] = TM16XX_NUMBER_FONT);
-    /** Set the display to a unsigned binary number */
-    void setDisplayToBinNumber(byte number, byte dots,
-		const byte numberFont[] = TM16XX_NUMBER_FONT);
-#endif
+		/** Set the segments at a specific position on or off */
+	  virtual void setSegments(byte segments, byte position);
+	  virtual void setSegments(uint16_t segments, byte position);
 
     /** Set the LED at pos to color (TM1668_COLOR_RED, TM1668_COLOR_GREEN or both) */
     virtual void setLED(byte color, byte pos);
     /** Set the LEDs. MSB byte for the green LEDs, LSB for the red LEDs */
-    //void setLEDs(word led);
 		void setLEDs(uint32_t leds);
 		void setRGBLEDs(uint32_t uRgbLeds);
 		void setRGBLED(byte color, byte pos);
 	
     /** Returns the pressed buttons as a bit set (left to right), K2|K1 or just K1 or K2. */
-    virtual uint32_t getButtons(byte keyset=TM1668_KEYSET_ALL);
-
-    //virtual void sendChar(byte pos, byte data, boolean dot);
+    virtual uint32_t getButtons(byte keyset);
+    virtual uint32_t getButtons();		// calls getButtons(TM1668_KEYSET_ALL)
 
   protected:
-    virtual void sendChar(byte pos, byte data, boolean dot);
-/* MMOLE TODO: NOT TESTED YET! (needs chip specific implementation?)
-    void setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, boolean leadingZeros, const byte numberFont[]);
-*/
 		uint32_t _uTenRgbLeds;
 };
 
