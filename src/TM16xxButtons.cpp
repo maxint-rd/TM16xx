@@ -114,7 +114,7 @@ bool TM16xxButtons::isLongPressed(byte nButton)
 int TM16xxButtons::getPressedTicks(byte nButton)
 {
 	if(nButton>=_nNumButtons) return(0);
-  return _stopTime[nButton] - _startTime[nButton];
+  return((_stopTime[nButton] - _startTime[nButton]));		// uint16_t subtraction may overflow, but is still fine   0x01 - 0xFC = 0x05
 }
 
 void TM16xxButtons::reset(void)
@@ -157,7 +157,8 @@ uint32_t TM16xxButtons::tick(void)
  */
 void TM16xxButtons::tick(byte nButton, bool activeLevel)
 {
-  unsigned long now = millis(); // current (relative) time in msecs.
+  //unsigned long now = millis(); // current (relative) time in msecs.
+  uint16_t now = (uint16_t) millis(); // current (relative) time in msecs. To safe RAM we only use the bottom word (16 bits for instead of 32 for approx. 50 days)
 
   // Implementation of the state machine
   switch(_state[nButton])

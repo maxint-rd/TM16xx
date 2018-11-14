@@ -22,8 +22,14 @@ Partially based on OneButton library by Matthias Hertel. See https://github.com/
 
 #define TM16XX_OPT_BUTTONS_EVENT 0			// use a single callback function instead of multiple (more flash, less heap)
 #define TM16XX_OPT_BUTTONS_MALLOC 0			// use malloc to reserve button-state memory (more flash, less heap)
+
 #ifndef TM16XX_BUTTONS_MAXBUTTONS
+	#if defined(__AVR_ATtiny85__) ||  defined(__AVR_ATtiny13__) ||  defined(__AVR_ATtiny44__)
+#define TM16XX_BUTTONS_MAXBUTTONS 8     // WARNING: changing this define outside of the header file requires recompilation of the library;
+                                        // using without full recompile may cause very obscure crashes/resets
+	#else
 #define TM16XX_BUTTONS_MAXBUTTONS 32		// maximum number of buttons supported (determines heap used when not using malloc)
+	#endif
 #endif
 
 #define TM16XX_BUTTONS_STATE_START 0
@@ -119,8 +125,10 @@ class TM16xxButtons
   unsigned long *_stopTime; 		// allocated memory array, value is set in state TM16XX_BUTTONS_STATE_RELEASED
 #else
   byte _state[TM16XX_BUTTONS_MAXBUTTONS];			// = TM16XX_BUTTONS_STATE_START;
-  unsigned long _startTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_PRESSED
-  unsigned long _stopTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_RELEASED
+  //unsigned long _startTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_PRESSED
+  //unsigned long _stopTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_RELEASED
+  uint16_t _startTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_PRESSED
+  uint16_t _stopTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_RELEASED
 #endif
 };
 #endif
