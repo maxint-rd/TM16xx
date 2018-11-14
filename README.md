@@ -247,7 +247,7 @@ Added library functionality:
 - The pupular TM1638 LED & KEY module comes in a number of varieties. My version has some odd button wiring sequence: S1=KS1, S5=KS2, S2=KS3, S6=KS4, S3=KS5, S7=KS6, S4=KS7, S8=KS8
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. Most likely future versions will have a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
 - The WeMOS D1 mini Matrix LED Shield and the TM1640 Mini LED Matrix 8x16 by Maxint R&D have R1 on the right-top. Call setMirror(true) to reverse the x-mirrorring.
-- When using TM16xxButtons, the amount of memory used can become too large. To preserve RAM memory on smaller MCUs such as the ATtiny44A, the amount of buttons can be limited by setting the maximum in the TM16xxButtons.h header file:
+- When using TM16xxButtons, the amount of memory used can become too large. To preserve RAM memory on smaller MCUs such as the ATtiny44A, the number of buttons is limited to 8 on the ATtiny MCUs. This can be changed setting the maximum in the TM16xxButtons.h header file:
 ```C++
 #define TM16XX_BUTTONS_MAXBUTTONS 8   // Note: changing this define requires recompilation of the library
 ```
