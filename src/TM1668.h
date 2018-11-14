@@ -57,9 +57,11 @@ For the TM1668 module the following default setup is assumed:
 #define TM1668_DISPMODE_6x11 2
 #define TM1668_DISPMODE_7x10 3
 
+/*
 #define TM1668_KEYSET_ALL 0
 #define TM1668_KEYSET_K1 1
 #define TM1668_KEYSET_K2 2
+*/
 
 class TM1668 : public TM16xx
 {
@@ -79,8 +81,9 @@ class TM1668 : public TM16xx
 		void setRGBLED(byte color, byte pos);
 	
     /** Returns the pressed buttons as a bit set (left to right), K2|K1 or just K1 or K2. */
-    virtual uint32_t getButtons(byte keyset);
-    virtual uint32_t getButtons();		// calls getButtons(TM1668_KEYSET_ALL)
+    //virtual uint32_t getButtons(byte keyset);
+    //virtual uint32_t getButtons();		// calls getButtons(TM1668_KEYSET_ALL)
+    virtual uint32_t getButtons();		// returns K1 keys in low word, K2 keys in high word
 
   protected:
 		uint32_t _uTenRgbLeds;

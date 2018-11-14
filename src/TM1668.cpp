@@ -164,8 +164,9 @@ void TM1668::setRGBLED(byte color, byte pos)
   setRGBLEDs(_uTenRgbLeds);
 }
 
+/*
 uint32_t TM1668::getButtons(byte keyset)		// keyset=TM1668_KEYSET_ALL
-{	// Keyscan data on the TM1668 is an array of 5 bytes (whereas TM1638 uses four bytes, six bits/byte).
+{	// Keyscan data on the TM1668 is 2x10 keys, received as an array of 5 bytes (whereas TM1638 uses four bytes, six bits/byte).
 	// Of each byte the bits B0/B3 and B1/B4 represent status of the connection of K1 and K2 to KS1-KS10
 	// Byte1[0-1]: KS1xK1, KS1xK2
 	// The return value is a 32 bit value containing either button scans for K1 or K2 or for both K1 and K2.
@@ -178,18 +179,42 @@ uint32_t TM1668::getButtons(byte keyset)		// keyset=TM1668_KEYSET_ALL
   send(TM16XX_CMD_DATA_READ);		// send read buttons command
   for (int i = 0; i < 5; i++) {
   	received=receive();
-    keys_K1 |= ( received&_BV(0)     | (received&_BV(3))>>2) << (2*i);			// bits 0 and	3 for K1/KS1 and K1/KS2
-    keys_K2 |= ((received&_BV(1))>>1 | (received&_BV(4))>>3) << (2*i);			// bits 1 and	4 for K2/KS1 and K2/KS2
+    keys_K1 |= ( received&_BV(0)     | (received&_BV(3))>>2) << (2*i);			// bit 0 for K1/KS1 and bit 3 for K1/KS2
+    keys_K2 |= ((received&_BV(1))>>1 | (received&_BV(4))>>3) << (2*i);			// bit 1 for K2/KS1 and bit 4 for K2/KS2
   }
   stop();
+
+
 	if(keyset==TM1668_KEYSET_K1)
 		return(keys_K1);
 	else if(keyset==TM1668_KEYSET_K2)
 		return(keys_K2);
-  return((uint32_t)keys_K2<<16 | keys_K1);
+
+  return((uint32_t)keys_K2<<16 | (uint32_t)keys_K1);
 }
 
 uint32_t TM1668::getButtons()
 {	// method function needed to override empty base class method
 	return(getButtons(TM1668_KEYSET_ALL));
+}
+*/
+
+uint32_t TM1668::getButtons()
+{	// Keyscan data on the TM1668 is 2x10 keys, received as an array of 5 bytes (whereas TM1638 uses four bytes, six bits/byte).
+	// Of each byte the bits B0/B3 and B1/B4 represent status of the connection of K1 and K2 to KS1-KS10
+	// Byte1[0-1]: KS1xK1, KS1xK2
+	// The return value is a 32 bit value containing button scans for both K1 and K2, the high word is for K2 and the low word for K1.
+  word keys_K1 = 0;
+  word keys_K2 = 0;
+  byte received;
+
+  start();
+  send(TM16XX_CMD_DATA_READ);		// send read buttons command
+  for (int i = 0; i < 5; i++) {
+  	received=receive();
+    keys_K1 |= ( received&_BV(0)     | (received&_BV(3))>>2) << (2*i);			// bit 0 for K1/KS1 and bit 3 for K1/KS2
+    keys_K2 |= ((received&_BV(1))>>1 | (received&_BV(4))>>3) << (2*i);			// bit 1 for K2/KS1 and bit 4 for K2/KS2
+  }
+  stop();
+  return((uint32_t)keys_K2<<16 | (uint32_t)keys_K1);
 }
