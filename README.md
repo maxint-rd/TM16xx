@@ -6,7 +6,7 @@ This Arduino library facilitates driving LED displays using TM16xx LED driver ch
 The TM16xx chip family allows driving 7-segment LED displays or LED matrices.
 Next to built-in high-frequency LED multiplexing, they offer control of LED brightness.
 Most TM16xx chips also support reading key-scan data for button presses.
-Currently this library supports the TM1637, TM1638, TM1640 and TM1668 chips.
+Currently this library supports the TM1637, TM1638, TM1640, TM1650 and TM1668 chips.
 Simply use print() on a 7-segment display and use Adafruit GFX on a LED matrix.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
@@ -248,7 +248,7 @@ Functionality in original library by Ricardo Batista:
 - The library doesn't support combining multiple 7-segment modules into one display, but it is possible to define multiple display objects for multiple different modules. See the TM1638_TM1637ex_two_modules example. 
 - The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. Please note that the TM1640 supports up to 16 digits or an 8x16 LED matrix. 
 - The [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display) is fully supported. Please note that while multiple buttons can be pressed, pressing more than two buttons can give faulty results due to the lack of short-out preventing diodes on the module.
-- The pupular TM1638 LED & KEY module comes in a number of varieties. My version has some odd button wiring sequence: S1=KS1, S5=KS2, S2=KS3, S6=KS4, S3=KS5, S7=KS6, S4=KS7, S8=KS8
+- The popular TM1638 LED & KEY module comes in a number of varieties. My version has some odd button wiring sequence: S1=KS1, S5=KS2, S2=KS3, S6=KS4, S3=KS5, S7=KS6, S4=KS7, S8=KS8
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. Most likely future versions will have a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
 - Although the TM1650 datasheet mentions SDA and SCL pins, the used protocol is not I2C complient. For that reason this library doesn't use the I2C Wire library, but (slow) bitbanging using digitalWrite.
 - The WeMOS D1 mini Matrix LED Shield and the TM1640 Mini LED Matrix 8x16 by Maxint R&D have R1 on the right-top. Call setMirror(true) to reverse the x-mirrorring.
