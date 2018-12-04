@@ -1,20 +1,12 @@
 /*
-TM1650.h - Library for TM1637.
+TM1650.cpp - Library implementation for TM1637.
 
-Copyright (C) 2011 Ricardo Batista <rjbatista at gmail dot com>
-Adjusted for TM1650 by Maxint R&D, based on TM1637 code. See https://github.com/maxint-rd/
+Part of the TM16xx library by Maxint. See https://github.com/maxint-rd/TM16xx
+The Arduino TM16xx library supports LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 as well as individual chips.
+Simply use print() on 7-segment displays and use Adafruit GFX on matrix displays.
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the version 3 GNU General Public License as
-published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Adjusted for TM1650 by Maxint R&D, based on TM1637 code. 
+Partially based on TM1640 library by MRicardo Batista. See ttps://github.com/rjbatista/tm1638-library
 */
 
 #ifndef TM1650_h
@@ -42,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class TM1650 : public TM16xx
 {
   public:
-	/** Instantiate a tm1637 module specifying the display state, the starting intensity (0-7) data and clock pins. */
+	/** Instantiate a TM1650 module specifying the  data and clock pins, number of digits, display state, the starting intensity (0-7). */
   	TM1650(byte dataPin, byte clockPin, byte numDigits=4, boolean activateDisplay=true, byte intensity=7, byte displaymode = TM1650_DISPMODE_4x8);
     virtual void clearDisplay();
     virtual void setupDisplay(boolean active, byte intensity);
