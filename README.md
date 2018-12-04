@@ -23,7 +23,7 @@ Initial version was based on the [TM1638 library](https://github.com/rjbatista/t
 - [TM16xxButtons class](#tm16xxbuttons-class)
 - [More information](#more-information)
 - [New in this library](#new-in-this-library)
-- [Features & limitations](#features-limitations)
+- [Features & limitations](#features--limitations)
 
 ## TM16xx chip features
 
@@ -239,7 +239,7 @@ Added library functionality:
 - Reduced required RAM memory by using PROGMEM fonts.
 - Support for ATtiny44A and ESP8266 in addition to regular Arduinos.
 - Separate classes for LED matrix and advanced LED display support.
-- Simple display of text and numbers on7-segment displays using familiar print() and println() methods.
+- Simple display of text and numbers on 7-segment displays using familiar print() and println() methods.
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
 - Full support for QYF-TM1638 module (8 digit common anode LED display and 4x4 keypad)
 - Support for combining multiple modules into one large Adafruit GFX matrix.
