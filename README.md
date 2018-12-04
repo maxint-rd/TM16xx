@@ -13,6 +13,18 @@ Made by Maxint R&D. See https://github.com/maxint-rd/
 
 Initial version was based on the [TM1638 library](https://github.com/rjbatista/tm1638-library/) by Ricardo Batista. Further inspiration from the [TM1637 library](https://github.com/avishorp/TM1637) by Avishay, the [Max72xxPanel library](https://github.com/markruys/arduino-Max72xxPanel) by Mark Ruys and the [OneButton library](https://github.com/mathertel/OneButton) by Matthias Hertel. 
 
+## Table of contents
+- [TM16xx chip features](#tm16xx-chip-features)
+- [Library structure](#library-structure)
+- [Basic usage](#basic-usage)
+- [TM16xxDisplay class](#tm16xxdisplay-class)
+- [TM16xxMatrix class](#tm16xxmatrix-class)
+- [TM16xxMatrixGFX class](#tm16xxmatrixgfx-class)
+- [TM16xxButtons class](#tm16xxbuttons-class)
+- [More information](#more-information)
+- [New in this library](#new-in-this-library)
+- [Features & limitations](#features-limitations)
+
 ## TM16xx chip features
 
 Type   | segments x digits    | buttons      | interface
