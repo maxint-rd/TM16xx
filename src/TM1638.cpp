@@ -44,8 +44,8 @@ void TM1638::setSegments(byte segments, byte position)
 		sendData(position << 1, segments);
 }
 
-void TM1638::setSegments(uint16_t segments, byte position)
-{	// overloaded method to send more segments (10 max for TM1638)
+void TM1638::setSegments16(uint16_t segments, byte position)
+{	// method to send more than 8 segments (10 max for TM1638)
   // TM1638 uses 10 segments in two bytes, similar to TM1668
   // segments 0-7 are in bits 0-7 of position bytes 0,2,4,6,8,10,12,14
   // segments 8-9 are in bits 0-1 of position bytes 1,3,5,7,9,11,13,15

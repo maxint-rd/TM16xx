@@ -71,7 +71,7 @@ class TM1668 : public TM16xx
 
 		/** Set the segments at a specific position on or off */
 	  virtual void setSegments(byte segments, byte position);
-	  virtual void setSegments(uint16_t segments, byte position);
+	  virtual void setSegments16(uint16_t segments, byte position);
 
     /** Set the LED at pos to color (TM1668_COLOR_RED, TM1668_COLOR_GREEN or both) */
     virtual void setLED(byte color, byte pos);
