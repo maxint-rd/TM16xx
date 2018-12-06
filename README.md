@@ -21,9 +21,9 @@ Initial version was based on the [TM1638 library](https://github.com/rjbatista/t
 - [TM16xxMatrix class](#tm16xxmatrix-class)
 - [TM16xxMatrixGFX class](#tm16xxmatrixgfx-class)
 - [TM16xxButtons class](#tm16xxbuttons-class)
-- [More information](#more-information)
 - [New in this library](#new-in-this-library)
 - [Features & limitations](#features--limitations)
+- [More information](#more-information)
 
 ## TM16xx chip features
 
@@ -69,6 +69,7 @@ void loop() {
   module.setDisplayToDecNumber(nTime, _BV(4)); // display milliseconds with dot on digit 4
 }
 ```
+For the easy to use print() method and more advance display methods you can use the [_TM16xxDisplay_](#tm16xxdisplay-class) class.
 
 The TM16xx chip makes it easy to see if a button is pressed.
 To check if a button was pressed you can use the getButtons() method:
@@ -76,7 +77,7 @@ To check if a button was pressed you can use the getButtons() method:
   uint32_t dwButtons=module.getButtons();
   Serial.println(dwButtons, HEX);
 ```
-Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something. For advanced detection of button clicks, double clicks and long presses you can use the _TM16xxButtons_ class.
+Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something. For advanced detection of button clicks, double clicks and long presses you can use the [_TM16xxButtons_](#tm16xxbuttons-class) class.
 
 ## TM16xxDisplay class
 The _TM16xxDisplay_ class adds some bytes to the memory footprint, but it provides the familiar easy to use print() and println() functions. Next to that it also provides some more advanced display methods. To use that class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
@@ -107,7 +108,7 @@ void loop() {
 See [TM16xxDisplay.h](/src/TM16xxDisplay.h) for the provided methods.
 
 ## TM16xxMatrix class
-The _TM16xxMatrix_ class provides basic methods for using a single LED-matrix module. For more advanced graphics use the _TM16xxMatrixGFX_ class. To use the _TM16xxMatrix_ class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
+The _TM16xxMatrix_ class provides basic methods for using a single LED-matrix module. For more advanced graphics use the [_TM16xxMatrixGFX_](#tm16xxmatrixgfx-class) class. To use the _TM16xxMatrix_ class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
 ```C++
 TM1640 module(9, 10);    // DIN=9, CLK=10
 #define MATRIX_NUMCOLUMNS 16
@@ -210,23 +211,6 @@ void loop()
 ```
 To implement a shift key, you can use the isPressed() function. See [TM16xxButtons.h](/src/TM16xxButtons.h) for the provided methods and the [Button clicks example](/examples/TM16xxButtons_clicks) for more information.
 
-## More information
-
-### Examples
-See the [library examples](/examples) for more information on how to use this library. See also the [original examples](https://github.com/rjbatista/tm1638-library/tree/master/examples) by Ricardo Batista. Most will still work or only require minor changes.
-
-### Links
-- Manufacturer: [Titan Micro Electronics](http://www.titanmec.com/index.php/en/product/lists/typeid/59/p/1.html)
-- Original TM1638/TM1640 library: https://github.com/rjbatista/tm1638-library
-- TM1637 library used for reference: https://github.com/avishorp/TM1637
-- A TM1637 library optimized for speed and size: https://github.com/Erriez/ErriezTM1637
-- TM1650 library that uses the Wire interface: https://github.com/mozgy/Mozz_TM1650
-- MAX7219 LED Matrix library: https://github.com/markruys/arduino-Max72xxPanel
-- OneButton multi-state buttons: https://github.com/mathertel/OneButton
-- Adafruit GFX library: https://github.com/adafruit/Adafruit-GFX-Library
-- Adafruit GFX documentation: https://learn.adafruit.com/adafruit-gfx-graphics-library
-- Matrix transposition used in TM1638QYF: https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Anti-Diagonal
-
 ## New in this library
 
 Added library functionality:
@@ -251,7 +235,7 @@ Functionality in original library by Ricardo Batista:
 - Support for the TM1638 and TM1640, including common anode TM1638 module;
 - Helper methods for displaying numbers in decimal, hexadecimal and binary;
 - Support for multiple chained TM1638 and for TM1638 in inverted position;
-- Support for dimming the display and LEDs and for for writing text;
+- Support for dimming the display and LEDs and for writing text;
 - Reading simultaneous button presses on TM1638;
 
 ## Features & limitations
@@ -269,6 +253,23 @@ Functionality in original library by Ricardo Batista:
 #define TM16XX_BUTTONS_MAXBUTTONS 8   // Note: changing this define requires recompilation of the library
 ```
 - An alternative RAM preserving implementation using dynamic memory allocation is optional, but not suitable for small MCUs as using malloc/free will increase the required FLASH program space by over 600 bytes. Modify the TM16XX_OPT_BUTTONS_... defines in the header file at your own risk.
+
+## More information
+
+### Examples
+See the [library examples](/examples) for more information on how to use this library. See also the [original examples](https://github.com/rjbatista/tm1638-library/tree/master/examples) by Ricardo Batista. Most will still work or only require minor changes.
+
+### Links
+- Manufacturer: [Titan Micro Electronics](http://www.titanmec.com/index.php/en/product/lists/typeid/59/p/1.html)
+- Original TM1638/TM1640 library: https://github.com/rjbatista/tm1638-library
+- TM1637 library used for reference: https://github.com/avishorp/TM1637
+- A TM1637 library optimized for speed and size: https://github.com/Erriez/ErriezTM1637
+- TM1650 library that uses the Wire interface: https://github.com/mozgy/Mozz_TM1650
+- MAX7219 LED Matrix library: https://github.com/markruys/arduino-Max72xxPanel
+- OneButton multi-state buttons: https://github.com/mathertel/OneButton
+- Adafruit GFX library: https://github.com/adafruit/Adafruit-GFX-Library
+- Adafruit GFX documentation: https://learn.adafruit.com/adafruit-gfx-graphics-library
+- Matrix transposition used in TM1638QYF: https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Anti-Diagonal
 
 ## Disclaimer
 - All code on this GitHub account, including this library is provided to you on an as-is basis without guarantees and with all liability dismissed. It may be used at your own risk. Unfortunately I have no means to provide support.
