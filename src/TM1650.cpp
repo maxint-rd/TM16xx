@@ -1,5 +1,5 @@
 /*
-TM1650.cpp - Library implementation for TM1637.
+TM1650.cpp - Library implementation for TM1650.
 
 Part of the TM16xx library by Maxint. See https://github.com/maxint-rd/TM16xx
 The Arduino TM16xx library supports LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 as well as individual chips.
@@ -186,8 +186,13 @@ uint32_t TM1650::getButtons()
   send(TM1650_CMD_DATA_READ);		// send read buttons command
 	byte received=receive();
 	stop();
-	if(received<=0x0F)
-		return(0);				// testing shows return value is 0x0C when no button is pressed, 0x04 after button 0x44 was released.
+
+	// Only accept values >= 0x44 as pressed keys (datasheet shows 0x44-0x77 as valid keypresses)
+	// Testing shows return value is below 0x44 when no button is pressed.
+	// The return value is 0x04 after button 0x44 was released or 0x0C after button 0x4C was released.
+	// Testing also shows return value is 0x2E after first powerup (when no buttons were pressed). It changes to 0x0C after button 0x4C was released.
+	if(received<0x44)
+		return(0);
 
 	// map key presses to key-numbers 0-27
 	if(received<=0x47) received=received-0x44;

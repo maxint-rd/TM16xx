@@ -1,5 +1,5 @@
 /*
-TM1650.cpp - Library implementation for TM1637.
+TM1650.cpp - Library implementation for TM1650.
 
 Part of the TM16xx library by Maxint. See https://github.com/maxint-rd/TM16xx
 The Arduino TM16xx library supports LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 as well as individual chips.
