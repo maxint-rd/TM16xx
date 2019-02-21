@@ -6,7 +6,7 @@ The Arduino TM16xx library supports LED & KEY and LED Matrix modules based on TM
 Simply use print() on 7-segment displays and use Adafruit GFX on matrix displays.
 
 Adjusted for TM1650 by Maxint R&D, based on TM1637 code. 
-Partially based on TM1640 library by MRicardo Batista. See ttps://github.com/rjbatista/tm1638-library
+Partially based on TM1640 library by MRicardo Batista. See https://github.com/rjbatista/tm1638-library
 */
 
 #ifndef TM1650_h
@@ -34,11 +34,11 @@ Partially based on TM1640 library by MRicardo Batista. See ttps://github.com/rjb
 class TM1650 : public TM16xx
 {
   public:
-	/** Instantiate a TM1650 module specifying the  data and clock pins, number of digits, display state, the starting intensity (0-7). */
-  	TM1650(byte dataPin, byte clockPin, byte numDigits=4, boolean activateDisplay=true, byte intensity=7, byte displaymode = TM1650_DISPMODE_4x8);
+    /** Instantiate a TM1650 module specifying the  data and clock pins, number of digits, display state, the starting intensity (0-7). */
+    TM1650(byte dataPin, byte clockPin, byte numDigits=4, boolean activateDisplay=true, byte intensity=7, byte displaymode = TM1650_DISPMODE_4x8);
     virtual void clearDisplay();
     virtual void setupDisplay(boolean active, byte intensity);
-		virtual uint32_t getButtons();
+    virtual uint32_t getButtons();
 
   protected:
     virtual void bitDelay();
@@ -46,7 +46,7 @@ class TM1650 : public TM16xx
     virtual void stop();
     virtual void send(byte data);
     virtual void sendData(byte address, byte data);
-    virtual byte TM1650::receive();
-	};
+    virtual byte receive();
+};
 
 #endif
