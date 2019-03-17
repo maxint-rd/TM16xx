@@ -200,7 +200,6 @@ void setup()
 
 In loop() you need to call the tick() function that detects all state changes and calls the callback functions as needed:
 ```C++
-int nCount=0;
 void loop()
 {
   buttons.tick();
