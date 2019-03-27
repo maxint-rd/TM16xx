@@ -26,6 +26,7 @@ class TM16xxDisplay : public Print
 {
  public:
   TM16xxDisplay(TM16xx *pTM16xx, byte nNumDigits);
+  void setIntensity(byte intensity);		// intensity 0-7, 0=off, 7=bright
 
   virtual void clear();
 

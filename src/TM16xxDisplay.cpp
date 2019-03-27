@@ -16,6 +16,12 @@ TM16xxDisplay::TM16xxDisplay(TM16xx *pTM16xx, byte nNumDigits)
 	_nNumDigits=nNumDigits;
 }
 
+void TM16xxDisplay::setIntensity(byte intensity)
+{	// set the intensity of the module; range 0-7, 0=off, 7=bright
+	_pTM16xx->setupDisplay(intensity!=0, intensity);
+}
+
+
 void TM16xxDisplay::setDisplayToString(const char* string, const word dots, const byte pos, const byte font[])
 {	// call basic implementation
 	_pTM16xx->setDisplayToString(string, dots, pos, font);
