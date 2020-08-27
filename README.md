@@ -225,6 +225,7 @@ Added library functionality:
 - Simple display of text and numbers on 7-segment displays using familiar print() and println() methods.
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
 - Full support for QYF-TM1638 module (8 digit common anode LED display and 4x4 keypad)
+- Support for TM1638 in Annode Mode (10 digit common anode LED 8 segment display) [TM1638Anode.h]
 - Support for combining multiple modules into one large Adafruit GFX matrix.
 - Support for scanning all possible keys (K1, K2 and K3 lines) on TM1638.
 - Support for release, click, doubleclick and long press button detection using callback functions.
