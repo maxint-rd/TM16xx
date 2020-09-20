@@ -29,6 +29,7 @@ Initial version was based on the [TM1638 library](https://github.com/rjbatista/t
 
 Type   | segments x digits    | buttons      | interface
 ------ | -------------------- | ------------ | -----------
+TM1620 | 8 x 6 - 10 x 4       | n/a          | DIO/CLK/STB
 TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK
 TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB
 TM1640 | 8 x 16               | n/a          | DIN/CLK
@@ -229,6 +230,7 @@ Added library functionality:
 - Support for scanning all possible keys (K1, K2 and K3 lines) on TM1638.
 - Support for release, click, doubleclick and long press button detection using callback functions.
 - Added [library examples](/examples).
+- Support for TM1620.
 
 Functionality in original library by Ricardo Batista:
 - Support for the TM1638 and TM1640, including common anode TM1638 module;
