@@ -6,7 +6,7 @@ This Arduino library facilitates driving LED displays using TM16xx LED driver ch
 The TM16xx chip family allows driving 7-segment LED displays or LED matrices.
 Next to built-in high-frequency LED multiplexing, they offer control of LED brightness.
 Most TM16xx chips also support reading key-scan data for button presses.
-Currently this library supports the TM1637, TM1638, TM1640, TM1650 and TM1668 chips.
+Currently this library supports the TM1620, TM1628, TM1637, TM1638, TM1640, TM1650 and TM1668 chips.
 Simply use print() on a 7-segment display and use Adafruit GFX on a LED matrix.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
@@ -30,6 +30,7 @@ Initial version was based on the [TM1638 library](https://github.com/rjbatista/t
 Type   | segments x digits    | buttons      | interface
 ------ | -------------------- | ------------ | -----------
 TM1620 | 8 x 6 - 10 x 4       | n/a          | DIO/CLK/STB
+TM1628 | 10 x 6 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB
 TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK
 TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB
 TM1640 | 8 x 16               | n/a          | DIN/CLK
@@ -230,7 +231,8 @@ Added library functionality:
 - Support for scanning all possible keys (K1, K2 and K3 lines) on TM1638.
 - Support for release, click, doubleclick and long press button detection using callback functions.
 - Added [library examples](/examples).
-- Support for TM1620.
+- Support for TM1620 (thanks @eddwhite)
+- Support for TM1628.  Note: TM1628 can be used in 10x7 - 13x4 display modes.
 
 Functionality in original library by Ricardo Batista:
 - Support for the TM1638 and TM1640, including common anode TM1638 module;
@@ -240,14 +242,14 @@ Functionality in original library by Ricardo Batista:
 - Reading simultaneous button presses on TM1638;
 
 ## Features & limitations
-- The current version of this library supports ESP8266, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Please let me know if you've successfully used this library with other MCUs.
+- The current version of this library supports ESP8266/ESP32, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Please let me know if you've successfully used this library with other MCUs.
 - The TM16xx chips offer no support for daisychaining multiple chips, but when separate Clk or Latch lines are used the Din line can be shared for combined displays.
 - The library doesn't support combining multiple 7-segment modules into one display, but it is possible to define multiple display objects for multiple different modules. See the TM1638_TM1637ex_two_modules example. 
 - The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. Please note that the TM1640 supports up to 16 digits or an 8x16 LED matrix. 
 - The [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display) is fully supported. Please note that while multiple buttons can be pressed, pressing more than two buttons can give faulty results due to the lack of short-out preventing diodes on the module.
 - The popular TM1638 LED & KEY module comes in a number of varieties. My version has some odd button wiring sequence: S1=KS1, S5=KS2, S2=KS3, S6=KS4, S3=KS5, S7=KS6, S4=KS7, S8=KS8
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. Most likely future versions will have a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
-- Although the TM1650 datasheet mentions SDA and SCL pins, the used protocol is not I2C complient. For that reason this library doesn't use the I2C Wire library, but (slow) bitbanging using digitalWrite.
+- The TM1650 datasheet mentions SDA and SCL pins. The used protocol resembles I2C, but lacks addressing. For that reason this library doesn't use the I2C Wire library, but (slow) bitbanging using digitalWrite.
 - The WeMOS D1 mini Matrix LED Shield and the TM1640 Mini LED Matrix 8x16 by Maxint R&D have R1 on the right-top. Call setMirror(true) to reverse the x-mirrorring.
 - When using TM16xxButtons, the amount of memory used can become too large. To preserve RAM memory on smaller MCUs such as the ATtiny44A, the number of buttons is limited to 8 on the ATtiny MCUs. This can be changed by setting the maximum in the TM16xxButtons.h header file:
 ```C++
