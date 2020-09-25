@@ -41,7 +41,11 @@ class TM1650 : public TM16xx
     virtual uint32_t getButtons();
 
   protected:
+#if defined(__AVR_ATtiny85__) ||  defined(__AVR_ATtiny13__) ||  defined(__AVR_ATtiny44__)
+		// On slow processors we may not need this bitDelay, so save some flash
+#else
     virtual void bitDelay();
+#endif
     virtual void start();
     virtual void stop();
     virtual void send(byte data);

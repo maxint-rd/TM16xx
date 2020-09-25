@@ -22,6 +22,10 @@ TM1650::TM1650(byte dataPin, byte clockPin, byte numDigits, boolean activateDisp
 	setupDisplay(activateDisplay, intensity);
 }
 
+#if defined(__AVR_ATtiny85__) ||  defined(__AVR_ATtiny13__) ||  defined(__AVR_ATtiny44__)
+	// On slow processors we may not need this bitDelay, so save some flash
+	#define bitDelay(x) 
+#else
 void TM1650::bitDelay()
 {
 	delayMicroseconds(5);
@@ -33,6 +37,7 @@ void TM1650::bitDelay()
 	// Perhaps the bitDelay can be much lower than 5us. Button response time is 40ms with a scan period of 7ms.
 	// Still need to test on ESP8266 to see which speed it can handle.
 }
+#endif
 
 
 void TM1650::start()
