@@ -56,7 +56,7 @@ TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, by
 /*
 	clearDisplay();
 	setupDisplay(activateDisplay, intensity);
-/**/
+*/
 }
 
 void TM16xx::setupDisplay(boolean active, byte intensity)
