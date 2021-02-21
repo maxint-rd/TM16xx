@@ -31,6 +31,7 @@ Type   | segments x digits    | buttons      | interface
 ------ | -------------------- | ------------ | -----------
 TM1620 | 8 x 6 - 10 x 4       | n/a          | DIN/CLK/STB
 TM1628 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB
+TM1630 | 7 x 5 - 8 x 4        | 7 x 1 multi  | DIO/CLK/STB
 TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK
 TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB
 TM1640 | 8 x 16               | n/a          | DIN/CLK
