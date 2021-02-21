@@ -6,8 +6,8 @@ This Arduino library facilitates driving LED displays using TM16xx LED driver ch
 The TM16xx chip family allows driving 7-segment LED displays or LED matrices.
 Next to built-in high-frequency LED multiplexing, they offer control of LED brightness.
 Most TM16xx chips also support reading key-scan data for button presses.
-Currently this library supports the TM1620, TM1628, TM1637, TM1638, TM1640, TM1650 and TM1668 chips.
-Simply use print() on a 7-segment display and use Adafruit GFX on a LED matrix.
+Using this library you can simply use print() on a 7-segment display or use Adafruit GFX on a LED matrix.
+Currently this library supports the TM1620, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650 and TM1668 chips. Note that there are similar chips made by other manufacturers that may be compatible with the Titan Micro chips. For instance: the HBS640 by WINRISE is compatible with the TM1640.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
 
@@ -228,12 +228,13 @@ Added library functionality:
 - Simple display of text and numbers on 7-segment displays using familiar print() and println() methods.
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
 - Full support for QYF-TM1638 module (8 digit common anode LED display and 4x4 keypad)
-- Support for TM1638 in Annode Mode (10 digit common anode LED 8 segment display) [TM1638Anode.h]
+- Support for TM1638 in Anode Mode (10 digit common anode LED 8 segment display) [TM1638Anode.h]
 - Support for combining multiple modules into one large Adafruit GFX matrix.
 - Support for scanning all possible keys (K1, K2 and K3 lines) on TM1638.
 - Support for release, click, doubleclick and long press button detection using callback functions.
 - Added [library examples](/examples).
 - Support for TM1620 (thanks @eddwhite)
+- Support for TM1630 (thanks @tokuhira)
 - Support for TM1628.  Note: TM1628 can be used in 10x7 - 13x4 display modes.
 
 Functionality in original library by Ricardo Batista:
