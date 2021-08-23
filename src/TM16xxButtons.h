@@ -5,47 +5,68 @@ The TM16xxButtons class supports the key-scanning features of TM16xx chips, such
 It extends the getButtons() function of the base class and provides these features:
  - setting callback functions
  - multi-state keys (similar to OneButton): Press, LongPress, Click, Doubleclick
+ - tracking button state of combined key presses
 
 These are some TM16xx chips that support key-scanning:
-   TM1637   8 x 2 single    DIO/CLK
+   TM1628   10 x 2 multi    DIO/CLK/STB
+   TM1630   7 x 1 multi     DIO/CLK/STB
+   TM1637   8 x 2 single    DIO/CLK     (no support for combined key pressing according datasheet)
    TM1638   8 x 3 multi     DIO/CLK/STB
+   TM1650   7 x 4 single    DIO/CLK
    TM1668   10 x 2 multi    DIO/CLK/STB
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
 Partially based on OneButton library by Matthias Hertel. See https://github.com/mathertel/OneButton
 
 */
+
 #ifndef _TM16XX_BUTTONS_H
 #define _TM16XX_BUTTONS_H
 
 #include "TM16xx.h"
 
 #define TM16XX_OPT_BUTTONS_EVENT 0			// use a single callback function instead of multiple (more flash, less heap)
-#define TM16XX_OPT_BUTTONS_MALLOC 0			// use malloc to reserve button-state memory (more flash, less heap)
 
-#ifndef TM16XX_BUTTONS_MAXBUTTONS
-	#if defined(__AVR_ATtiny85__) ||  defined(__AVR_ATtiny13__) ||  defined(__AVR_ATtiny44__)
-#define TM16XX_BUTTONS_MAXBUTTONS 8     // WARNING: changing this define outside of the header file requires recompilation of the library;
-                                        // using without full recompile may cause very obscure crashes/resets
-	#else
-#define TM16XX_BUTTONS_MAXBUTTONS 32		// maximum number of buttons supported (determines heap used when not using malloc)
-	#endif
+//
+// NOTE: Each button-slot uses 6 bytes to store button-state and timings.
+//       To minimize RAM or FLASH memory used, the number of button slots and the method of memory allocation can be set here.
+//       Your usage determines what setting is best. If you're low on RAM, or your module has few buttons or only supports
+//       single presses, you can set the number of slots to minimum (eg. 1 or 2).
+// EXPERIMENTAL:
+//       If you want to try, malloc may be used, but beware of leakage.
+//       This implementation is experimental and there is no destructor (yet) to free the memory. 
+//
+#define TM16XX_OPT_BUTTONS_MALLOC 0			// 1=use malloc to reserve button-state memory (much more flash but less heap and dynamic)
+#define TM16XX_BUTTONS_MAXBUTTONS 32		// maximum number of buttons supported is depending on the chip used, but max 32 bits are used in the base library
+#ifndef TM16XX_BUTTONS_MAXBUTTONSLOTS   // button slots are used to track button states, TM1637/TM1650 don't support combined presses
+  #if defined(__AVR_ATtiny85__) ||  defined(__AVR_ATtiny45__) ||  defined(__AVR_ATtiny13__) ||  defined(__AVR_ATtiny44__) ||  defined(__AVR_ATtiny84__) // NOTE: ATtiny13 and 44 are really too tiny for this.
+    #define TM16XX_BUTTONS_MAXBUTTONSLOTS 2     // WARNING: changing this define outside of the header file requires recompilation of the library;
+                                                // using without full recompile may cause very obscure crashes/resets
+  #else
+    #define TM16XX_BUTTONS_MAXBUTTONSLOTS 4		// maximum number of buttonslots active (determines heap used when not using malloc)
+  #endif
 #endif
 
-#define TM16XX_BUTTONS_STATE_START 0
-#define TM16XX_BUTTONS_STATE_PRESSED 1
-#define TM16XX_BUTTONS_STATE_RELEASED 2
-#define TM16XX_BUTTONS_STATE_DBLPRESS 3
-#define TM16XX_BUTTONS_STATE_LPRESS 4
+
+#define TM16XX_BUTTONS_SLOT_UNUSED 0xFF
+#define TM16XX_BUTTONS_SLOT_NOTFOUND 0xFF
+#define TM16XX_BUTTONS_SLOT_ANYSTATE 0xFF
+#define TM16XX_BUTTONS_SLOT_ANYBUTTON 0xFE
+
+#define TM16XX_BUTTONS_STATE_START 0          // button not pressed
+#define TM16XX_BUTTONS_STATE_PRESSED 1        // button pressed
+#define TM16XX_BUTTONS_STATE_RELEASED 2       // button released
+#define TM16XX_BUTTONS_STATE_DBLPRESS 3       // button double press
+#define TM16XX_BUTTONS_STATE_LPRESS 4         // button long pressed
 
 
 #if(TM16XX_OPT_BUTTONS_EVENT)
-#define TM16XX_BUTTONS_EVENT_RELEASE 10
-#define TM16XX_BUTTONS_EVENT_CLICK 20
-#define TM16XX_BUTTONS_EVENT_DOUBLECLICK 30
-#define TM16XX_BUTTONS_EVENT_LONGPRESSSTART 40
-#define TM16XX_BUTTONS_EVENT_LONGPRESSSTOP 50
-#define TM16XX_BUTTONS_EVENT_LONGPRESSBUSY 60
+  #define TM16XX_BUTTONS_EVENT_RELEASE 10
+  #define TM16XX_BUTTONS_EVENT_CLICK 20
+  #define TM16XX_BUTTONS_EVENT_DOUBLECLICK 30
+  #define TM16XX_BUTTONS_EVENT_LONGPRESSSTART 40
+  #define TM16XX_BUTTONS_EVENT_LONGPRESSSTOP 50
+  #define TM16XX_BUTTONS_EVENT_LONGPRESSBUSY 60
 #endif
 
 // ----- Callback function types -----
@@ -53,14 +74,22 @@ Partially based on OneButton library by Matthias Hertel. See https://github.com/
 extern "C" {
 typedef void (*callbackTM16xxButtons)(byte nButton);
 #if(TM16XX_OPT_BUTTONS_EVENT)
-typedef void (*callbackTM16xxButtonsEvent)(byte btEvent, byte nButton);
+  typedef void (*callbackTM16xxButtonsEvent)(byte btEvent, byte nButton);
 #endif
 }
+
+struct TM16xxButtonSlot
+{
+  byte button;          // number of the button in the slot (0-31 or TM16XX_BUTTONS_SLOT_UNUSED)
+  byte state;			      // current state of the button tracked, initially TM16XX_BUTTONS_STATE_START;
+  uint16_t startTime;   // time started; will be set in state TM16XX_BUTTONS_STATE_PRESSED
+  uint16_t stopTime;    // time stopped; will be set in state TM16XX_BUTTONS_STATE_RELEASED
+};
 
 class TM16xxButtons
 {
  public:
-	TM16xxButtons(TM16xx *pTM16xx, byte nNumButtons=TM16XX_BUTTONS_MAXBUTTONS);
+	TM16xxButtons(TM16xx *pTM16xx, byte nMaxButtons=TM16XX_BUTTONS_MAXBUTTONSLOTS);
 
 
   // set # millisec after single click is assumed.
@@ -98,7 +127,7 @@ class TM16xxButtons
   TM16xx *_pTM16xx;
 
  private:
- 	byte _nNumButtons;
+  byte _nMaxButtons;    // maximum number of buttons tracked (can be less than TM16XX_BUTTONS_MAXBUTTONSLOTS when using malloc)
   unsigned int _clickTicks = 500; // number of ticks that have to pass by
                                   // before a click is detected.
   unsigned int _longPressTicks = 1000; // number of ticks that have to pass by
@@ -120,15 +149,10 @@ class TM16xxButtons
   // They are initialized once on program start and are updated every time the
   // tick function is called.
 #if(TM16XX_OPT_BUTTONS_MALLOC)
-  byte *_state;		// allocated memory array
-  unsigned long *_startTime; 		// allocated memory array, value is set in state TM16XX_BUTTONS_STATE_PRESSED
-  unsigned long *_stopTime; 		// allocated memory array, value is set in state TM16XX_BUTTONS_STATE_RELEASED
+  TM16xxButtonSlot *_ButtonSlots;
 #else
-  byte _state[TM16XX_BUTTONS_MAXBUTTONS];			// = TM16XX_BUTTONS_STATE_START;
-  //unsigned long _startTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_PRESSED
-  //unsigned long _stopTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_RELEASED
-  uint16_t _startTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_PRESSED
-  uint16_t _stopTime[TM16XX_BUTTONS_MAXBUTTONS]; // will be set in state TM16XX_BUTTONS_STATE_RELEASED
+  TM16xxButtonSlot _ButtonSlots[TM16XX_BUTTONS_MAXBUTTONSLOTS];
 #endif
+  byte findSlot(byte nButton, byte nStateFind=TM16XX_BUTTONS_SLOT_ANYSTATE);
 };
 #endif

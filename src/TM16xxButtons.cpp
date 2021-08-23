@@ -5,10 +5,14 @@ The TM16xxButtons class supports the key-scanning features of TM16xx chips, such
 It extends the getButtons() function of the base class and provides these features:
  - setting callback functions
  - multi-state keys (similar to OneButton): Press, LongPress, Click, Doubleclick
+ - tracking button state of combined key presses
 
 These are some TM16xx chips that support key-scanning:
-   TM1637   8 x 2 single    DIO/CLK
+   TM1628   10 x 2 multi    DIO/CLK/STB
+   TM1630   7 x 1 multi     DIO/CLK/STB
+   TM1637   8 x 2 single    DIO/CLK     (no support for combined key pressing according datasheet)
    TM1638   8 x 3 multi     DIO/CLK/STB
+   TM1650   7 x 4 single    DIO/CLK
    TM1668   10 x 2 multi    DIO/CLK/STB
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
@@ -16,21 +20,18 @@ Partially based on OneButton library by Matthias Hertel. See https://github.com/
 
 */
 
+
 //#define TM16XX_DEBUG 1
 
 #include "TM16xxButtons.h"
 
 // constructor
-TM16xxButtons::TM16xxButtons(TM16xx *pTM16xx, byte nNumButtons) : _nNumButtons(nNumButtons), _pTM16xx(pTM16xx)
-{
-	// TODO: reduce memory by using dynamic memory allocation instead of static arrays for button states
-	// requires additional constructor parameter to allow less than TM16XX_BUTTONS_MAXBUTTONS
-
-	//_pTM16xx=pTM16xx;
+TM16xxButtons::TM16xxButtons(TM16xx *pTM16xx, byte nMaxButtons) : _pTM16xx(pTM16xx), _nMaxButtons(nMaxButtons)
+{ // Note: to avoid "warning: 'TM16xxButtons::_nMaxButtons' will be initialized after [-Wreorder]", parameters should be in same order as in class definition
+	// TM16XX_OPT_BUTTONS_MALLOC: reduce memory by using dynamic memory allocation instead of static arrays for button states
+	// requires additional constructor parameter to allow less than TM16XX_BUTTONS_MAXBUTTONSLOTS
 #if(TM16XX_OPT_BUTTONS_MALLOC)
-	_state=malloc(_nNumButtons*sizeof(byte));
-  _startTime=malloc(_nNumButtons*sizeof(unsigned long));
-  _stopTime=malloc(_nNumButtons*sizeof(unsigned long));
+  _ButtonSlots=(TM16xxButtonSlot *)malloc(_nMaxButtons*sizeof(TM16xxButtonSlot));
 #endif
 
 	reset();
@@ -97,36 +98,63 @@ void TM16xxButtons::attachDuringLongPress(callbackTM16xxButtons newFunction)
 } // attachDuringLongPress
 #endif
 
+// For active buttons we use slots to track the state
+// Using slots allows more buttons in less memory
+byte TM16xxButtons::findSlot(byte nButton, byte nStateFind)
+{
+  for(byte n=0; n<_nMaxButtons; n++)
+  {
+    if(_ButtonSlots[n].button==nButton && (_ButtonSlots[n].state==nStateFind || nStateFind==TM16XX_BUTTONS_SLOT_ANYSTATE))
+       { //Serial.print(F(".")); 
+        return(n); }
+    if(_ButtonSlots[n].button==nButton && nButton==TM16XX_BUTTONS_SLOT_UNUSED && (_ButtonSlots[n].state==nStateFind || nStateFind==TM16XX_BUTTONS_SLOT_ANYSTATE))
+       { //Serial.print(F("^")); 
+        return(n); }
+
+    if(nButton==TM16XX_BUTTONS_SLOT_ANYBUTTON && (_ButtonSlots[n].state==nStateFind || nStateFind==TM16XX_BUTTONS_SLOT_ANYSTATE))
+       { //Serial.print(F("~")); 
+        return(n); }
+       //return(n);
+  }
+  //Serial.print(F("*")); 
+  return(TM16XX_BUTTONS_SLOT_NOTFOUND);
+}
+
+
 // function to get the current long pressed state
 bool TM16xxButtons::isPressed(byte nButton)
 {
-	if(nButton>=_nNumButtons) return(false);
-  return(_state[nButton]==TM16XX_BUTTONS_STATE_PRESSED || _state[nButton]==TM16XX_BUTTONS_STATE_DBLPRESS || _state[nButton]==TM16XX_BUTTONS_STATE_LPRESS);
+	//if(nButton>=_nMaxButtons) return(false);
+  nButton=findSlot(nButton);
+  if(nButton==TM16XX_BUTTONS_SLOT_NOTFOUND) return(false);
+  return(_ButtonSlots[nButton].state==TM16XX_BUTTONS_STATE_PRESSED || _ButtonSlots[nButton].state==TM16XX_BUTTONS_STATE_DBLPRESS || _ButtonSlots[nButton].state==TM16XX_BUTTONS_STATE_LPRESS);
 }
 
 // function to get the current long pressed state
 bool TM16xxButtons::isLongPressed(byte nButton)
 {
-	if(nButton>=_nNumButtons) return(false);
-	return(_state[nButton]==TM16XX_BUTTONS_STATE_LPRESS);
+  nButton=findSlot(nButton);
+  if(nButton==TM16XX_BUTTONS_SLOT_NOTFOUND) return(false);
+	return(_ButtonSlots[nButton].state==TM16XX_BUTTONS_STATE_LPRESS);
 }
 
 int TM16xxButtons::getPressedTicks(byte nButton)
 {
-	if(nButton>=_nNumButtons) return(0);
-  return((_stopTime[nButton] - _startTime[nButton]));		// uint16_t subtraction may overflow, but is still fine   0x01 - 0xFC = 0x05
+  nButton=findSlot(nButton);
+  if(nButton==TM16XX_BUTTONS_SLOT_NOTFOUND) return(0);
+  return((_ButtonSlots[nButton].stopTime - _ButtonSlots[nButton].startTime));		// uint16_t subtraction may overflow, but is still fine   0x01 - 0xFC = 0x05
 }
 
 void TM16xxButtons::reset(void)
 {
-  for(byte n=0; n<_nNumButtons; n++)
+  for(byte n=0; n<_nMaxButtons; n++)
   {
-	  _state[n] = TM16XX_BUTTONS_STATE_START; // restart.
-	  _startTime[n] = 0;
-	  _stopTime[n] = 0;
+	  _ButtonSlots[n].button = TM16XX_BUTTONS_SLOT_UNUSED; // reset.
+	  _ButtonSlots[n].state = TM16XX_BUTTONS_STATE_START; // restart.
+	  _ButtonSlots[n].startTime = 0;
+	  _ButtonSlots[n].stopTime = 0;
 	}
 }
-
 
 /**
  * @brief Check input of the configured pin and then advance the finite state
@@ -138,15 +166,31 @@ uint32_t TM16xxButtons::tick(void)
 #ifdef TM16XX_DEBUG
   Serial.print(F("TM16xxButtons: "));
   Serial.print(dwButtons, HEX);
-  Serial.print(F(", state: "));
-  for(byte n=0; n<_nNumButtons; n++)
+  Serial.print(F(", slots: "));
+  for(byte n=0; n<_nMaxButtons; n++)
   {
-	  tick(n, (dwButtons&bit(n))>0);		// MMOLE 181103: _BV only works on 16-bit values!
-	  Serial.print(_state[n]);
+    Serial.print(n);
+    Serial.print(F("="));
+    Serial.print(_ButtonSlots[n].button, HEX);
+    Serial.print(F(", s:"));
+    Serial.print(_ButtonSlots[n].state);
+    Serial.print(F("    "));
+  }
+  // do a tick for each possible button
+  for(byte n=0; n<32; n++)
+  {
+	  tick(n, dwButtons&bit(n));		// MMOLE 181103: _BV only works on 16-bit values!
+	  //Serial.print(_state[n]);
+	  //Serial.print(_state[n]);
 	}
-  Serial.print(F("    "));
+  for(byte n=0; n<_nMaxButtons; n++)
+    Serial.print(_ButtonSlots[n].state);
+//    Serial.print(_state[n]);
+  //Serial.print(F("    "));
+  Serial.println("");
 #else
-  for(byte n=0; n<_nNumButtons; n++)
+  // do a tick for each possible button
+  for(byte n=0; n<32; n++)  // uint32_t dwButtons has 32 buttons at max 
 	  tick(n, dwButtons&bit(n));		// MMOLE 181103: _BV only works on 16-bit values!
 #endif
 	return(dwButtons);
@@ -155,50 +199,86 @@ uint32_t TM16xxButtons::tick(void)
 /**
  * @brief Advance the finite state machine (FSM) using the given level.
  */
-void TM16xxButtons::tick(byte nButton, bool activeLevel)
+void TM16xxButtons::tick(byte nButtonNum, bool activeLevel)
 {
-  //unsigned long now = millis(); // current (relative) time in msecs.
   uint16_t now = (uint16_t) millis(); // current (relative) time in msecs. To safe RAM we only use the bottom word (16 bits for instead of 32 for approx. 50 days)
 
+  // find the slot of the button used, or prepare new slot
+  byte nSlot=findSlot(nButtonNum);
+  if(nSlot==TM16XX_BUTTONS_SLOT_NOTFOUND)
+  { // no slot for same button, find a new one
+    if(!activeLevel) return;    // new slots only get occupied when activated
+//Serial.print(nButtonNum, HEX);
+//Serial.print("@");
+    nSlot=findSlot(TM16XX_BUTTONS_SLOT_UNUSED);
+    if(nSlot==TM16XX_BUTTONS_SLOT_NOTFOUND)
+    {   // no new slot, reuse any slot of state TM16XX_BUTTONS_STATE_START
+//Serial.print("N");
+      nSlot=findSlot(TM16XX_BUTTONS_SLOT_ANYBUTTON, TM16XX_BUTTONS_STATE_START);
+      if(nSlot==TM16XX_BUTTONS_SLOT_NOTFOUND)
+      {   // no more slots!
+//Serial.print("!");
+        return;
+      }
+      else
+      { // found used slot in start state, reuse that slot
+//Serial.print(nSlot, HEX);
+//Serial.print("R");
+        _ButtonSlots[nSlot].button=nButtonNum;
+      }
+    }
+    else
+    { // unused slot found, use it
+//Serial.print(nSlot, HEX);
+//Serial.print("U");
+      _ButtonSlots[nSlot].button=nButtonNum;
+    }
+  }
+  else
+  {
+//Serial.print(nSlot, HEX);
+//Serial.print("F");
+  }
+
   // Implementation of the state machine
-  switch(_state[nButton])
+  switch(_ButtonSlots[nSlot].state)
   {
   case TM16XX_BUTTONS_STATE_START:	// waiting for button being pressed.
     if (activeLevel)
     {
-      _state[nButton] = TM16XX_BUTTONS_STATE_PRESSED; // step to pressed state
-      _startTime[nButton] = now; // remember starting time
+      _ButtonSlots[nSlot].state = TM16XX_BUTTONS_STATE_PRESSED; // step to pressed state
+      _ButtonSlots[nSlot].startTime = now; // remember starting time
     } // if
     break;
 
   case TM16XX_BUTTONS_STATE_PRESSED: // waiting for button being released.
     if (!activeLevel)
     {
-      _state[nButton] = TM16XX_BUTTONS_STATE_RELEASED; // step to released state
-      _stopTime[nButton] = now; // remember stopping time
+      _ButtonSlots[nSlot].state = TM16XX_BUTTONS_STATE_RELEASED; // step to released state
+      _ButtonSlots[nSlot].stopTime = now; // remember stopping time
 #if(TM16XX_OPT_BUTTONS_EVENT)
       if (_eventFunc)
-        _eventFunc(TM16XX_BUTTONS_EVENT_RELEASE, nButton);
+        _eventFunc(TM16XX_BUTTONS_EVENT_RELEASE, nButtonNum);
 #else
       if (_releaseFunc)
-        _releaseFunc(nButton);
+        _releaseFunc(nButtonNum);
 #endif
     }
-    else if ((activeLevel) && ((unsigned long)(now - _startTime[nButton]) > _longPressTicks))
+    else if ((activeLevel) && ((unsigned long)(now - _ButtonSlots[nSlot].startTime) > _longPressTicks))
     {
-      _state[nButton] = TM16XX_BUTTONS_STATE_LPRESS; // step to long press state
-      _stopTime[nButton] = now; // remember stopping time
+      _ButtonSlots[nSlot].state = TM16XX_BUTTONS_STATE_LPRESS; // step to long press state
+      _ButtonSlots[nSlot].stopTime = now; // remember stopping time
 #if(TM16XX_OPT_BUTTONS_EVENT)
       if (_eventFunc)
       {
-        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSSTART, nButton);
-        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSBUSY, nButton);
+        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSSTART, nButtonNum);
+        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSBUSY, nButtonNum);
       }
 #else
       if (_longPressStartFunc)
-        _longPressStartFunc(nButton);
+        _longPressStartFunc(nButtonNum);
       if (_duringLongPressFunc)
-        _duringLongPressFunc(nButton);
+        _duringLongPressFunc(nButtonNum);
 #endif
     } else {
       // wait. Stay in this state.
@@ -207,25 +287,25 @@ void TM16xxButtons::tick(byte nButton, bool activeLevel)
 
   case TM16XX_BUTTONS_STATE_RELEASED: // waiting for button being pressed the second time or timeout.
 #if(TM16XX_OPT_BUTTONS_EVENT)
-    if ((unsigned long)(now - _startTime[nButton]) > _clickTicks)
+    if ((unsigned long)(now - _ButtonSlots[nSlot].startTime) > _clickTicks)
 #else
-    if (_doubleClickFunc == NULL || (unsigned long)(now - _startTime[nButton]) > _clickTicks)
+    if (_doubleClickFunc == NULL || (unsigned long)(now - _ButtonSlots[nSlot].startTime) > _clickTicks)
 #endif
     {
       // this was only a single short click
 #if(TM16XX_OPT_BUTTONS_EVENT)
       if (_eventFunc)
-        _eventFunc(TM16XX_BUTTONS_EVENT_CLICK, nButton);
+        _eventFunc(TM16XX_BUTTONS_EVENT_CLICK, nButtonNum);
 #else
       if (_clickFunc)
-        _clickFunc(nButton);
+        _clickFunc(nButtonNum);
 #endif
-      _state[nButton] = TM16XX_BUTTONS_STATE_START; // restart.
+      _ButtonSlots[nSlot].state = TM16XX_BUTTONS_STATE_START; // restart.
     }
     else if ((activeLevel))
     {
-      _state[nButton] = TM16XX_BUTTONS_STATE_DBLPRESS; // step to doubleclick state
-      _startTime[nButton] = now; // remember starting time
+      _ButtonSlots[nSlot].state = TM16XX_BUTTONS_STATE_DBLPRESS; // step to doubleclick state
+      _ButtonSlots[nSlot].startTime = now; // remember starting time
     } // if
     break;
 
@@ -233,39 +313,39 @@ void TM16xxButtons::tick(byte nButton, bool activeLevel)
     if ((!activeLevel))
    	{
       // this was a 2 click sequence.
-      _state[nButton] = TM16XX_BUTTONS_STATE_START; // restart.
-      _stopTime[nButton] = now; // remember stopping time
+      _ButtonSlots[nSlot].state = TM16XX_BUTTONS_STATE_START; // restart.
+      _ButtonSlots[nSlot].stopTime = now; // remember stopping time
 #if(TM16XX_OPT_BUTTONS_EVENT)
       if (_eventFunc)
       {
-        _eventFunc(TM16XX_BUTTONS_EVENT_RELEASE, nButton);
-        _eventFunc(TM16XX_BUTTONS_EVENT_DOUBLECLICK, nButton);
+        _eventFunc(TM16XX_BUTTONS_EVENT_RELEASE, nButtonNum);
+        _eventFunc(TM16XX_BUTTONS_EVENT_DOUBLECLICK, nButtonNum);
       }
 #else
       if (_releaseFunc)
-        _releaseFunc(nButton);
+        _releaseFunc(nButtonNum);
       if (_doubleClickFunc)
-        _doubleClickFunc(nButton);
+        _doubleClickFunc(nButtonNum);
 #endif
     } // if
     break;
 
-  case TM16XX_BUTTONS_STATE_LPRESS: // waiting for button being release after long press.
+  case TM16XX_BUTTONS_STATE_LPRESS: // waiting for button being released after long press.
     if (!activeLevel)
     {
-      _state[nButton] = TM16XX_BUTTONS_STATE_START; // restart.
-      _stopTime[nButton] = now; // remember stopping time
+      _ButtonSlots[nSlot].state = TM16XX_BUTTONS_STATE_START; // restart.
+      _ButtonSlots[nSlot].stopTime = now; // remember stopping time
 #if(TM16XX_OPT_BUTTONS_EVENT)
       if (_eventFunc)
       {
-        _eventFunc(TM16XX_BUTTONS_EVENT_RELEASE, nButton);
-        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSSTOP, nButton);
+        _eventFunc(TM16XX_BUTTONS_EVENT_RELEASE, nButtonNum);
+        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSSTOP, nButtonNum);
       }
 #else
       if (_releaseFunc)
-        _releaseFunc(nButton);
+        _releaseFunc(nButtonNum);
       if (_longPressStopFunc)
-        _longPressStopFunc(nButton);
+        _longPressStopFunc(nButtonNum);
 #endif
     }
     else
@@ -273,10 +353,10 @@ void TM16xxButtons::tick(byte nButton, bool activeLevel)
       // button is being long pressed
 #if(TM16XX_OPT_BUTTONS_EVENT)
       if (_eventFunc)
-        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSBUSY, nButton);
+        _eventFunc(TM16XX_BUTTONS_EVENT_LONGPRESSBUSY, nButtonNum);
 #else
       if (_duringLongPressFunc)
-        _duringLongPressFunc(nButton);
+        _duringLongPressFunc(nButtonNum);
 #endif
     } // if
 		break;
