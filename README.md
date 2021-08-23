@@ -254,11 +254,12 @@ Functionality in original library by Ricardo Batista:
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. Most likely future versions will have a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
 - The TM1650 datasheet mentions SDA and SCL pins. The used protocol resembles I2C, but lacks addressing. For that reason this library doesn't use the I2C Wire library, but (slow) bitbanging using digitalWrite.
 - The WeMOS D1 mini Matrix LED Shield and the TM1640 Mini LED Matrix 8x16 by Maxint R&D have R1 on the right-top. Call setMirror(true) to reverse the x-mirrorring.
-- When using TM16xxButtons, the amount of memory used can become too large. To preserve RAM memory on smaller MCUs such as the ATtiny44A, the number of buttons is limited to 8 on the ATtiny MCUs. This can be changed by setting the maximum in the TM16xxButtons.h header file:
+- When using TM16xxButtons, the amount of memory used can become too large. To preserve RAM memory on smaller MCUs such as the ATtiny84 and ATtiny85, the number of buttons tracked is limited to 2 combined button presses. This can be changed by setting the maximum button slots in the TM16xxButtons.h header file:
 ```C++
-#define TM16XX_BUTTONS_MAXBUTTONS 8   // Note: changing this define requires recompilation of the library
+#define TM16XX_BUTTONS_MAXBUTTONSLOTS 2   // Note: changing this define requires recompilation of the library
 ```
-- An alternative RAM preserving implementation using dynamic memory allocation is optional, but not suitable for small MCUs as using malloc/free will increase the required FLASH program space by over 600 bytes. Modify the TM16XX_OPT_BUTTONS_... defines in the header file at your own risk.
+- Unfortunately ATtiny44/45 and smaller don't have enough flash to support both TM16xxDisplay and TM16xxButtons classes. However, it is possible to combine the module base class with only TM16xxButtons or only TM16xxDisplay.
+- An experimental RAM implementation using dynamic memory allocation is available, but not suitable for small MCUs as using malloc/free will increase the required FLASH program space by over 600 bytes. Modify the TM16XX_OPT_BUTTONS_... defines in the header file at your own risk.
 
 ## More information
 
