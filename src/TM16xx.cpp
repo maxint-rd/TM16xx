@@ -61,7 +61,7 @@ TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, by
 
 void TM16xx::setupDisplay(boolean active, byte intensity)
 {
-  sendCommand(TM16XX_CMD_DISPLAY | (active ? 8 : 0) | min(7, intensity));
+  sendCommand(TM16XX_CMD_DISPLAY | (active ? 8 : 0) | (7 & intensity));
 }
 
 void TM16xx::clearDisplay()
