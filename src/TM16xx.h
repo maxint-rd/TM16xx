@@ -26,12 +26,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	#include "WProgram.h"
 #endif
 
+/*
+// Removed to allow ESP32 compilation. Not needed for AVR as of 2021-09, tested compile w/ ESP32 and Uno
 #if !defined(max)
 // MMOLE 180325:
 // min, max are no macro in ESP core 2.3.9 libraries, see https://github.com/esp8266/Arduino/issues/398
 #define min(a,b) ((a)<(b)?(a):(b))
 #define max(a,b) ((a)>(b)?(a):(b))
 #endif
+*/
 
 #define TM16XX_CMD_DATA_AUTO 0x40
 #define TM16XX_CMD_DATA_READ 0x42			// command to read data used on two wire interfaces of TM1637
