@@ -121,7 +121,7 @@ void TM1650::clearDisplay()
 void TM1650::setupDisplay(boolean active, byte intensity)
 {	// For the TM1650 level 0 is maximum brightness, 1-7 is low to high.
 	// To align with other TM16XX chips we translate this to the same levels (0-7)
-	intensity=min(7, intensity);
+	intensity=(7 & intensity);
 	intensity+=1;
 	if(intensity==8) intensity=0;
 	start();
