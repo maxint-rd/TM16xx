@@ -20,6 +20,7 @@ TM1638QYF::TM1638QYF(byte dataPin, byte clockPin, byte strobePin, boolean activa
 
 	memset(this->bitmap, 0, TM1638QYF_MAX_POS);
 	clearDisplay();
+	setupDisplay(activateDisplay, intensity);
 }
 
 
@@ -34,7 +35,7 @@ TM1638QYF::TM1638QYF(byte dataPin, byte clockPin, byte strobePin, boolean activa
 uint64_t TM1638QYF::flipDiagA8H1(uint64_t x)
 {
 	uint64_t t;
-  const uint64_t k1 = 0xaa00aa00aa00aa00;
+	const uint64_t k1 = 0xaa00aa00aa00aa00;
 	const uint64_t k2 = 0xcccc0000cccc0000;
 	const uint64_t k4 = 0xf0f0f0f00f0f0f0f;
 	t  =       x ^ (x << 36) ;
