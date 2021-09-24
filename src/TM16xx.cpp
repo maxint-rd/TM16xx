@@ -156,6 +156,17 @@ uint32_t TM16xx::getButtons()
 void TM16xx::bitDelay()
 {	// if needed derived classes can add a delay (eg. for TM1637)
 	//delayMicroseconds(50);
+
+  // On fast MCUs like ESP32 a delay is required, especially when reading buttons
+  // The TM1638 datasheet specifies a max clock speed of 1MHz. 
+  // Testing shows that without delay the CLK line exceeds 1.6 MHz on the ESP32. While displaying data still worked, reading buttons failed.
+  // Adding a 1us delay gives clockpulses of about 1.75us-2.0us (~ 250kHz) on an ESP32 @240MHz and a similar delay on an ESP8266 @160Mhz.
+  // An ESP32 running without delay at 240MHz gave a CLK of  ~0.3us (~ 1.6MHz)
+  // An ESP8266 running without delay at 160MHz gave a CLK of  ~0.9us (~ 470kHz)
+  // An ESP8266 running without delay  at 80MHz gave a CLK of  ~1.8us (~ 240kHz)
+	#if F_CPU>100000000
+  	delayMicroseconds(1);
+  #endif
 }
 
 void TM16xx::start()
