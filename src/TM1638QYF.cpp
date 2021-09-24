@@ -18,7 +18,7 @@ TM1638QYF::TM1638QYF(byte dataPin, byte clockPin, byte strobePin, boolean activa
 {
   _maxSegments=8;		// on the QYF-TM1638 modules the two extra segment lines are not used. The display uses common anode LEDs
 
-	memset(this->bitmap, 0, TM1638QYF_MAX_POS);
+	//memset(this->bitmap, 0, TM1638QYF_MAX_POS);
 	clearDisplay();
 	setupDisplay(activateDisplay, intensity);
 }
@@ -35,7 +35,7 @@ TM1638QYF::TM1638QYF(byte dataPin, byte clockPin, byte strobePin, boolean activa
 uint64_t TM1638QYF::flipDiagA8H1(uint64_t x)
 {
 	uint64_t t;
-	const uint64_t k1 = 0xaa00aa00aa00aa00;
+  const uint64_t k1 = 0xaa00aa00aa00aa00;
 	const uint64_t k2 = 0xcccc0000cccc0000;
 	const uint64_t k4 = 0xf0f0f0f00f0f0f0f;
 	t  =       x ^ (x << 36) ;
@@ -84,24 +84,25 @@ void TM1638QYF::setSegments(byte segments, byte position)
 		//update our memory bitmap
 		this->bitmap[position]=segments;
 
-		// transpose the bitmap to counter Common Anode connections
-		uint64_t t=*((uint64_t *)this->bitmap);
-		t=flipDiagA8H1(t);
-		//t=flipDiagA1H8(t);
+		// Transpose the bitmap to counter Common Anode connections
+    // To avoid an alignment exception on the ESP8266 we cannot use the class-member as uint64_t directly,
+    // but instead we use an intermediate buffer and memcpy. Note: this alignement issue didn't occur on the ESP32.
+		byte buf[TM1638QYF_MAX_POS];
+    memcpy(buf, this->bitmap, TM1638QYF_MAX_POS);
+    *((uint64_t *)buf)=flipDiagA8H1(*((uint64_t *)buf));
+		//*((uint64_t *)buf)=flipDiagA1H8(*((uint64_t *)buf);
 
 		// send each byte of the transposed bitmap
 		for(byte nPos=0; nPos<TM1638QYF_MAX_POS; nPos++)
 		{
-			byte *pVal=(byte *)&t;
-			byte btVal=pVal[nPos];
-			sendData((7-nPos) << 1, btVal);	// flip position to counter Common Anode connections
-			//sendData((nPos) << 1, btVal);
+			sendData(((7-nPos) << 1), buf[nPos]);	// flip position to counter Common Anode connections
 		}
 	}
 }
 
 void TM1638QYF::clearDisplay()
 {
+	memset(this->bitmap, 0, TM1638QYF_MAX_POS);   // clear the memory bitmap
   for(byte nPos=0; nPos<TM1638QYF_MAX_POS; nPos++)
 	  sendData(nPos << 1, 0);
 }
