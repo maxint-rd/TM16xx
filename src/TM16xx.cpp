@@ -92,6 +92,16 @@ void TM16xx::setSegments(byte segments, byte position)
 		//sendData(TM16XX_CMD_ADDRESS | position, segments);
 }
 
+void TM16xx::setSegments16(uint16_t segments, byte position)
+{	// Some modules support more than 8 segments (e.g. 10 max for TM1638)
+  // The position of the additional segments in the second data byte can be different per module,
+  // For that reason this module has no implementation in the base class.
+  // E.g. for TM1638/TM1668 segments 8-9 are in bits 0-1, for TM1630 segment 14 is in bit 5
+  // This method assumes segments 0-7 to be in the lower byte and the extra segments in the upper byte
+  // Depending on the module this method should shift the segments to the proper data position.
+}
+
+
 void TM16xx::sendChar(byte pos, byte data, boolean dot)
 {
 /*

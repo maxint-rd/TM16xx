@@ -39,7 +39,7 @@ Partially based on OneButton library by Matthias Hertel. See https://github.com/
 #define TM16XX_OPT_BUTTONS_MALLOC 0			// 1=use malloc to reserve button-state memory (much more flash but less heap and dynamic)
 #define TM16XX_BUTTONS_MAXBUTTONS 32		// maximum number of buttons supported is depending on the chip used, but max 32 bits are used in the base library
 #ifndef TM16XX_BUTTONS_MAXBUTTONSLOTS   // button slots are used to track button states, TM1637/TM1650 don't support combined presses
-  #if defined(__AVR_ATtiny85__) ||  defined(__AVR_ATtiny45__) ||  defined(__AVR_ATtiny13__) ||  defined(__AVR_ATtiny44__) ||  defined(__AVR_ATtiny84__) // NOTE: ATtiny13 and 44 are really too tiny for this.
+  #if defined(__AVR_ATtiny85__) ||  defined(__AVR_ATtiny45__) ||  defined(__AVR_ATtiny13__) ||  defined(__AVR_ATtiny44__) ||  defined(__AVR_ATtiny84__) // NOTE: ATtiny13 is really too tiny for this.
     #define TM16XX_BUTTONS_MAXBUTTONSLOTS 2     // WARNING: changing this define outside of the header file requires recompilation of the library;
                                                 // using without full recompile may cause very obscure crashes/resets
   #else

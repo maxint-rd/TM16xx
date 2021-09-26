@@ -57,7 +57,10 @@ class TM16xx
 
     /** Clear the display */
 		virtual void clearDisplay();
+
+    /** Set segments of the display */
 	  virtual void setSegments(byte segments, byte position);
+	  virtual void setSegments16(uint16_t segments, byte position);   // some modules support more than 8 segments
 	  
 	  // Basic display functions. For additional display features use the TM16xxDisplay class
     /** Set a single display at pos (starting at 0) to a digit (left to right) */
