@@ -49,6 +49,19 @@ TM1628::TM1628(byte dataPin, byte clockPin, byte strobePin, byte numDigits, bool
 	setupDisplay(activateDisplay, intensity);
 }
 
+void TM1628::bitDelay()
+{
+	delayMicroseconds(5);
+	// When using a fast clock (such as ESP8266) a delay is needed to read bits correctly
+	// NOTE: Testing on TM1628 reading keys shows that CLK should be slower than 50Khz.
+	// faster than 5us delay (44 Khz) worked unreliably.
+	// The datasheet specifies a maximum clock rate of 1MHz, but (unlike the TM1638) testing 
+	// on the ESP8266 shows this appears to be too fast.
+	// for that reason the delay between reading bits should be more than 4us.
+	// TODO: test medium speed MCUs like LGT8F328P (32Mhz) and STM32. Make this delay conditional on F_CPU.
+}
+
+
 void TM1628::setSegments(byte segments, byte position)
 {	// set 8 leds on common grd as specified
   // TM1628 uses 10 segments in two bytes

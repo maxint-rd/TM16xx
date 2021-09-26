@@ -43,6 +43,10 @@ class TM1628 : public TM16xx
 
     /** Returns the pressed buttons as a bit set (left to right). */
     virtual uint32_t getButtons();
+
+  protected:
+    virtual void bitDelay();
+
 };
 
 #endif
