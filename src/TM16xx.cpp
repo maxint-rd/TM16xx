@@ -26,13 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "TM16xx.h"
 //#include "string.h"
 
-TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte digits, boolean activateDisplay,	byte intensity)
+TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, boolean activateDisplay,	byte intensity)
 {
   this->dataPin = dataPin;
   this->clockPin = clockPin;
   this->strobePin = strobePin;
   this->_maxDisplays = maxDisplays;
-  this->digits = digits;
+  this->digits = nDigitsUsed;
 
   pinMode(dataPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
@@ -111,6 +111,15 @@ void TM16xx::sendChar(byte pos, byte data, boolean dot)
 	setSegments(data | (dot ? 0b10000000 : 0), pos);
 }
 
+void TM16xx::sendAsciiChar(byte pos, char c, boolean fDot)
+{ // Method to send an Ascii character to the display
+  // This method is also called by TM16xxDisplay.print to display characters
+  // The base class uses the default 7-segment font to find the LED pattern.
+  // Derived classes for multi-segment displays or alternate layout displays can override this method
+  sendChar(pos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
+}
+
+
 void TM16xx::setDisplayDigit(byte digit, byte pos, boolean dot, const byte numberFont[])
 {
   sendChar(pos, pgm_read_byte_near(numberFont + (digit & 0xF)), dot);
@@ -145,11 +154,17 @@ void TM16xx::setDisplayToString(const char* string, const word dots, const byte 
 {
   for (int i = 0; i < digits - pos; i++) {
   	if (string[i] != '\0') {
-		  sendChar(i + pos, pgm_read_byte_near(font+(string[i] - 32)), (dots & (1 << (digits - i - 1))) != 0);
+		  //sendChar(i + pos, pgm_read_byte_near(font+(string[i] - 32)), (dots & (1 << (digits - i - 1))) != 0);
+  	  sendAsciiChar(i + pos, string[i], (dots & (1 << (digits - i - 1))) != 0);
 		} else {
 		  break;
 		}
   }
+}
+
+byte TM16xx::getNumDigits()
+{	// get the number of digits used (needed by TM16xxDisplay to combine modules)
+  return(digits);
 }
 
 // key-scanning method, implemented in chip specific derived class

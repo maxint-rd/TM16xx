@@ -22,10 +22,16 @@ Made by Maxint R&D. See https://github.com/maxint-rd/
 #include <Print.h>
 //#include "TM16xxFonts.h"
 
+// Set TM16XX_OPT_COMBIDISPLAY to 1 to support using print() on combined displays. Set it to 0 to save some memory.
+#define TM16XX_OPT_COMBIDISPLAY 1
+
 class TM16xxDisplay : public Print
 {
  public:
   TM16xxDisplay(TM16xx *pTM16xx, byte nNumDigits);
+#if(TM16XX_OPT_COMBIDISPLAY)
+  TM16xxDisplay(TM16xx *apTM16xx[], byte nNumModules, byte nNumDigitsTotal);
+#endif
   void setIntensity(byte intensity);		// intensity 0-7, 0=off, 7=bright
 
   virtual void clear();
@@ -54,8 +60,21 @@ class TM16xxDisplay : public Print
   TM16xx *_pTM16xx;
   byte _nNumDigits;
   int8_t _nPrintPos=0;
+
+#if(TM16XX_OPT_COMBIDISPLAY)
+  TM16xx *_apTM16xx[1];           // place to hold value when only one module is used
+  TM16xx **_aModules;   // pointer to external array of modules
+  byte _nNumModules=1;
+#endif
+
  
  private:
   void setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, boolean leadingZeros, const byte numberFont[]);
+#if(TM16XX_OPT_COMBIDISPLAY)
+  //TM16xx *TM16xxDisplay::findModuleByPos(const byte nPosFind);
+  void sendCharAtCombi(const byte nPosCombi, byte btData, bool fDot);
+  void sendAsciiCharAtCombi(const byte nPosCombi, char c, bool fDot);
+#endif
+
 };
 #endif

@@ -45,12 +45,12 @@ class TM16xx
 {
   public:
     /**
-     * Instantiate a tm16xx module specifying data, clock and stobe pins,
-     * the maximum number of displays supported by the chip, 
+     * Instantiate a TM16xx module specifying data, clock and strobe pins (no strobe on some modules),
+     * the maximum number of displays supported by the chip (as provided by derived chip specific class), 
      * the number of digits used to display numbers or text, 
      * display state and the starting intensity (0-7).
      */
-    TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte digits, boolean activateDisplay=true,	byte intensity=7);
+    TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, boolean activateDisplay=true,	byte intensity=7);
 
     /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
     virtual void setupDisplay(boolean active, byte intensity);
@@ -75,6 +75,8 @@ class TM16xx
     /** Set the display to the string (defaults to built in font) */
 		virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
 		virtual void sendChar(byte pos, byte data, boolean dot); // made public to allow calling from TM16xxDisplay
+		virtual byte getNumDigits(); // added as public menthod to allow calling from TM16xxDisplay
+		virtual void sendAsciiChar(byte pos, char c, boolean dot); // made public to allow calling from TM16xxDisplay
 
 		// Key-scanning functions
 		// Note: not all TM16xx chips support key-scanning and sizes are different per chip

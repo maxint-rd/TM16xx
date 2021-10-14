@@ -11,14 +11,91 @@ Based on TM1638/1640 library by Ricardo Batista.
 #include "string.h"
 
 TM16xxDisplay::TM16xxDisplay(TM16xx *pTM16xx, byte nNumDigits)
-{
+{ // constructor for a display having only one module
 	_pTM16xx=pTM16xx;
 	_nNumDigits=nNumDigits;
+#if(TM16XX_OPT_COMBIDISPLAY)
+  // set number of modules to 1
+  
+ 	_apTM16xx[0]=pTM16xx;   // use array allocated in class
+	_aModules=_apTM16xx;
+	_nNumModules=1;
+#endif
 }
+
+#if(TM16XX_OPT_COMBIDISPLAY)
+TM16xxDisplay::TM16xxDisplay(TM16xx *apTM16xx[], byte nNumModules, byte nNumDigitsTotal)
+{ // constructor for a display combined out of one or more module
+  // TODO: currently only print() is supported, not the other display methods!
+  _aModules=apTM16xx;   // use array provided
+	_pTM16xx=apTM16xx[0];   // set default module to first module in array
+	_nNumModules=nNumModules;
+	_nNumDigits=nNumDigitsTotal;	// set n_numDigita to total in modules
+}
+
+/*
+TM16xx *TM16xxDisplay::findModuleByPos(const byte nPosFind)
+{ // find the module that holds the specified position
+  //TM16xx *pModule=NULL;
+  int nPosDone=0;
+  for(int i=0; i<_nNumModules; i++)
+  {
+    if(nPosFind < nPosDone+_aModules[i]->_numDigits)
+    {
+      return(_aModules[i]);
+    }
+    nPosDone+=_aModules[i]->_numDigits;
+  }
+  return(NULL);
+}
+*/
+
+void TM16xxDisplay::sendCharAtCombi(const byte nPosCombi, byte btData, bool fDot)
+{   // set the specified data at specified position of the module that has that position
+  byte nPos=nPosCombi;
+  for(int i=0; i<_nNumModules; i++)
+  {
+    if(nPos<0)
+      return;
+    if(nPos < _aModules[i]->getNumDigits())
+    {
+  	  _aModules[i]->sendChar(nPos, btData, fDot);
+      return;
+    }
+    else
+      nPos-=_aModules[i]->getNumDigits();
+  }
+}
+
+void TM16xxDisplay::sendAsciiCharAtCombi(const byte nPosCombi, char c, bool fDot)
+{   // set the specified Ascii character at specified position of the module that has that position
+  byte nPos=nPosCombi;
+  for(int i=0; i<_nNumModules; i++)
+  {
+    if(nPos<0)
+      return;
+    if(nPos < _aModules[i]->getNumDigits())
+    {
+  	  _aModules[i]->sendAsciiChar(nPos, c, fDot);
+      return;
+    }
+    else
+      nPos-=_aModules[i]->getNumDigits();
+  }
+}
+
+#endif
 
 void TM16xxDisplay::setIntensity(byte intensity)
 {	// set the intensity of the module; range 0-7, 0=off, 7=bright
+#if(TM16XX_OPT_COMBIDISPLAY)
 	_pTM16xx->setupDisplay(intensity!=0, intensity);
+#else
+  for(int i=0; i<_nNumModules; i++)
+  {
+  	_aModules[i]->setupDisplay(intensity!=0, intensity);
+  }
+#endif
 }
 
 
@@ -111,7 +188,14 @@ void TM16xxDisplay::setDisplayToBinNumber(byte number, byte dots, const byte num
 
 void TM16xxDisplay::clear()
 {
+#if(TM16XX_OPT_COMBIDISPLAY)
 	_pTM16xx->clearDisplay();
+#else
+  for(int i=0; i<_nNumModules; i++)
+  {
+  	_aModules[i]->clearDisplay();
+  }
+#endif
 }
 	
 void TM16xxDisplay::setCursor(int8_t nPos)
@@ -145,7 +229,11 @@ size_t TM16xxDisplay::write(uint8_t c)
 	{
 		while(_nPrintPos>0 && _nPrintPos<_nNumDigits)
 		{	// clear the remainder of the line
+#if(TM16XX_OPT_COMBIDISPLAY)
+      sendCharAtCombi(_nPrintPos, 0, false);    // sending 0 is same as clearDisplayDigit()
+#else
 			_pTM16xx->clearDisplayDigit(_nPrintPos);
+#endif
 			//Serial.println(_nPrintPos);
 			_nPrintPos++;
 		}
@@ -160,7 +248,15 @@ size_t TM16xxDisplay::write(uint8_t c)
 		if(_nPrintPos>0) _nPrintPos--; // use same position to display the dot
 	}
 	if(_nPrintPos>=0 && _nPrintPos<_nNumDigits)
-	  _pTM16xx->sendChar(_nPrintPos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
+	  //_pTM16xx->sendChar(_nPrintPos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
+	  //_pTM16xx->sendAsciiChar(_nPrintPos, c, fDot);
+#if(TM16XX_OPT_COMBIDISPLAY)
+      //sendCharAtCombi(_nPrintPos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
+			sendAsciiCharAtCombi(_nPrintPos, c, fDot);
+#else
+	  //_pTM16xx->sendChar(_nPrintPos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
+	  _pTM16xx->sendAsciiChar(_nPrintPos, c, fDot);
+#endif
 	cPrevious=c;
 	_nPrintPos++;
 	return(1);
