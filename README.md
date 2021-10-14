@@ -27,16 +27,20 @@ Initial version was based on the [TM1638 library](https://github.com/rjbatista/t
 
 ## TM16xx chip features
 
-Type   | segments x digits    | buttons      | interface
------- | -------------------- | ------------ | -----------
-TM1620 | 8 x 6 - 10 x 4       | n/a          | DIN/CLK/STB
-TM1628 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB
-TM1630 | 7 x 5 - 8 x 4        | 7 x 1 multi  | DIO/CLK/STB
-TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK
-TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB
-TM1640 | 8 x 16               | n/a          | DIN/CLK
-TM1650 | 8 x 4                | 7 x 4 single | DIO/CLK (SDA/SCL)
-TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB
+The TM16xx family is quite large. Currently the following chips are supported:
+
+Type   | Segments x digits    | Buttons      | Interface   | Notes
+------ | -------------------- | ------------ | ------------|-------------
+TM1620 | 8 x 6 - 10 x 4       | n/a          | DIN/CLK/STB |
+TM1628 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
+TM1630 | 7 x 5 - 8 x 4        | 7 x 1 multi  | DIO/CLK/STB |
+TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK     |
+TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB | Anode/Inverted/QYF*
+TM1640 | 8 x 16               | n/a          | DIN/CLK     | Anode*
+TM1650 | 8 x 4                | 7 x 4 single | DIO/CLK     | Not real I2C SDA/SCL
+TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
+
+\* Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638 and TM1640Anode are also supported.
 
 See the [documents folder](/documents) for datasheets containing more information about these chips and their pinouts.
 
@@ -108,6 +112,7 @@ void loop() {
   display.println(nCount++);
 }
 ```
+If you want you can combine multiple modules into a single TM16xxDisplay object. When combined print() and println() will use all available digits to print the string.
 See [TM16xxDisplay.h](/src/TM16xxDisplay.h) for the provided methods.
 
 ## TM16xxMatrix class
@@ -129,6 +134,8 @@ These methods can be used to set the pixels of the matrix:
 See [TM16xxMatrix.h](/src/TM16xxMatrix.h) for the provided methods.
 
 ## TM16xxMatrixGFX class
+___NOTE: AdafruitGFX needs to be installed, even if you don't use TM16xxMatrixGFX. If you don't want to install AdafruitGFX you can remove TM16xxMatrixGFX.h and TM16xxMatrixGFX.cpp from the library directory to avoid compilation errors.___
+
 The _TM16xxMatrixGFX_ class implements the popular [Adafruit GFX](https://learn.adafruit.com/adafruit-gfx-graphics-library/overview) interface to drive one or more TM16xx based LED-matrix modules. To use the _TM16xxMatrixGFX_ class you first need to include the proper header files:
 ```C++
 #include <Adafruit_GFX.h>
@@ -221,17 +228,19 @@ Added library functionality:
 - Basic functionality in base class for a uniform API.
 - Reduced required RAM memory by using PROGMEM fonts.
 - Separate classes for LED matrix and advanced LED display support.
-- Simple display of text and numbers on 7-segment displays using familiar print() and println() methods.
+- Simple display of text and numbers on 7-segment and 14-segment displays using familiar print() and println() methods.
+- Support for combining multiple 7-segment and 14-segment display modules into one large display.
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
-- Support for combining multiple modules into one large Adafruit GFX matrix.
-- Support for scanning all possible keys (K1, K2 and K3 lines) on TM1638.
-- Full support for QYF-TM1638 module (8 digit common anode LED display and 4x4 keypad)
-- Support for TM1638 in Anode Mode (10 digit common anode LED 8 segment display) [TM1638Anode.h]
+- Support for combining multiple matrix modules into one large Adafruit GFX matrix.
 - Support for TM1620 (thanks @eddwhite)
 - Support for TM1628.  Note: TM1628 can be used in 10x7 - 13x4 display modes.
 - Support for TM1630 (thanks @tokuhira)
 - Support for TM1637. Note: TM1637 does not support simultaneous button presses.
   (Method derived from [TM1637 library](https://github.com/avishorp/TM1637) but using pins in standard output mode when writing).
+- Support for scanning all possible keys (K1, K2 and K3 lines) on TM1638.
+- Full support for QYF-TM1638 module (8 digit common anode LED display and 4x4 keypad)
+- Support for TM1638 in Anode Mode (10 digit common anode LED 8 segment display) (see [TM1638Anode.h](/src/TM1638Anode.h))
+- Support for TM1640 in Anode Mode (8 digit common anode LED 16 segment display) (see [TM1640Anode.h](/src/TM1640Anode.h))
 - Support for TM1650. Note: TM1650 can be used in 8x4 or 7x4 display mode. Datasheet fully translated.
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes. Datasheet partly translated.
 - Support for release, click, doubleclick and long press button detection using callback functions.
@@ -247,12 +256,13 @@ Functionality in original library by Ricardo Batista:
 ## Features & limitations
 - The current version of this library supports ESP8266/ESP32, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Compatible MCUs such as LGT8F328P are also supported. Please let me know if you've successfully used this library with other MCUs.
 - The TM16xx chips offer no support for daisychaining multiple chips, but when separate Clk or Latch lines are used the Din line can be shared for combined displays.
-- The library doesn't support combining multiple 7-segment modules into one display, but it is possible to define multiple display objects for multiple different modules. See the TM1638_TM1637ex_two_modules example. 
+- It is possible to define multiple display objects for multiple different modules (see the TM1638_TM1637ex_two_modules example). The library now supports combining multiple 7-segment modules into one display using the TM16xxDisplay class (example for combined TM16xxDisplay to be included soon). 
 - The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. Please note that the TM1640 supports up to 16 digits or an 8x16 LED matrix. 
 - The [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display) is fully supported. Please note that while multiple buttons can be pressed, pressing more than two buttons can give faulty results due to the lack of short-out preventing diodes on the module.
 - The popular TM1638 LED & KEY module comes in a number of varieties. My version has some odd button wiring sequence: S1=KS1, S5=KS2, S2=KS3, S6=KS4, S3=KS5, S7=KS6, S4=KS7, S8=KS8
-- The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. In future versions this functionality may be replaced by a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
+- The TM1640Anode class can be used with a Common Anode configuration to support 8 digits of 16 segments, such as the 5241BS 14-segment plus dot LED display (example for combined TM1640Anode to be included soon). 
 - The TM1650 datasheet mentions SDA and SCL pins. The used protocol resembles I2C, but lacks addressing. For that reason this library doesn't use the I2C Wire library, but (slow) bitbanging using digitalWrite.
+- The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. In future versions this functionality may be replaced by a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
 - The WeMOS D1 mini Matrix LED Shield and the TM1640 Mini LED Matrix 8x16 by Maxint R&D have R1 on the right-top. Call setMirror(true) to reverse the x-mirrorring.
 - When using TM16xxButtons, the amount of memory used can become too large. To preserve RAM memory on smaller MCUs such as the ATtiny84 and ATtiny85, the number of buttons tracked is limited to 2 combined button presses. This can be changed by setting the maximum button slots in the TM16xxButtons.h header file:
 ```C++
