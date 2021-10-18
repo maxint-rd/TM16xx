@@ -16,6 +16,7 @@ Initial version was based on the [TM1638 library](https://github.com/rjbatista/t
 ## Table of contents
 - [TM16xx chip features](#tm16xx-chip-features)
 - [Library structure](#library-structure)
+- [Library installation](#library-installation)
 - [Basic usage](#basic-usage)
 - [TM16xxDisplay class](#tm16xxdisplay-class)
 - [TM16xxMatrix class](#tm16xxmatrix-class)
