@@ -53,8 +53,15 @@ The figure below illustrates that concept:
 
 ![Layered structure](/images/structure.png)
 
+## Library installation
+The easiest way to install this library is using the Arduino Library Manager. Just search for "TM16xx LEDs and Buttons" and click the install button.
+You can also download the [latest version](https://github.com/maxint-rd/TM16xx/archive/refs/heads/master.zip) or select one from the [releases](https://github.com/maxint-rd/TM16xx/releases) as zipfile and use Add .ZIP library in the Arduino IDE.
+
+___NOTE: AdafruitGFX needs to be installed, even if you don't use TM16xxMatrixGFX. If you don't want to install AdafruitGFX you can remove TM16xxMatrixGFX.h and TM16xxMatrixGFX.cpp from the library directory to avoid compilation errors.___
+
+
 ## Basic usage
-To use this library you need to include the class that matches the chip on your module and instantiate the object:
+After installation you can use this library by including the class header that matches the chip on your module and then instantiate the object:
 ```C++
 #include <TM1638.h>
 
@@ -134,8 +141,6 @@ These methods can be used to set the pixels of the matrix:
 See [TM16xxMatrix.h](/src/TM16xxMatrix.h) for the provided methods.
 
 ## TM16xxMatrixGFX class
-___NOTE: AdafruitGFX needs to be installed, even if you don't use TM16xxMatrixGFX. If you don't want to install AdafruitGFX you can remove TM16xxMatrixGFX.h and TM16xxMatrixGFX.cpp from the library directory to avoid compilation errors.___
-
 The _TM16xxMatrixGFX_ class implements the popular [Adafruit GFX](https://learn.adafruit.com/adafruit-gfx-graphics-library/overview) interface to drive one or more TM16xx based LED-matrix modules. To use the _TM16xxMatrixGFX_ class you first need to include the proper header files:
 ```C++
 #include <Adafruit_GFX.h>
