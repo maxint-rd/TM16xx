@@ -70,6 +70,15 @@ void TM16xxDisplay::sendCharAtCombi(const byte nPosCombi, byte btData, bool fDot
 void TM16xxDisplay::sendAsciiCharAtCombi(const byte nPosCombi, char c, bool fDot)
 {   // set the specified Ascii character at specified position of the module that has that position
   byte nPos=nPosCombi;
+
+/*
+Serial.print(F("TM16xx::sendAsciiCharAtCombi("));
+Serial.print(nPosCombi);
+Serial.print(",'");
+Serial.print(c);
+Serial.println("');");
+*/
+
   for(int i=0; i<_nNumModules; i++)
   {
     if(nPos<0)
@@ -225,6 +234,8 @@ size_t TM16xxDisplay::write(uint8_t c)
 	Serial.write(cPrevious);
 	Serial.println("");
 	*/
+
+  // handle end-of-line
 	if(c=='\0' || c=='\n' || c=='\r' || _nPrintPos>=_nNumDigits)
 	{
 		while(_nPrintPos>0 && _nPrintPos<_nNumDigits)
@@ -237,8 +248,14 @@ size_t TM16xxDisplay::write(uint8_t c)
 			//Serial.println(_nPrintPos);
 			_nPrintPos++;
 		}
-		_nPrintPos=0;
-		return(0);	// returning zero will stop printing rest of the string
+
+    // MMOLE 211103: Returning zero from write should stop printing rest of the string.
+    // However, on ESP32 print() won't stop when returning 0, so for compatibility we return 1.
+    // and only reset the print position when we're at the end. This should work on all platforms.
+    if(c=='\0' || c=='\n' || c=='\r')
+  		_nPrintPos=0;
+		return(1);
+//#endif
 	}
 	bool fDot=false;
 	if(c=='.' || c==',' || c==':' || c==';')
