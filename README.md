@@ -284,15 +284,16 @@ See the [library examples](/examples) for more information on how to use this li
 
 ### Links
 - Manufacturer: [Titan Micro Electronics](http://www.titanmec.com/index.php/en/index/index.html) - [LED driver datasheets](http://www.titanmec.com/index.php/en/product/lists/typeid/88/p/1.html)
-- Original TM1638/TM1640 library: https://github.com/rjbatista/tm1638-library
-- TM1637 library used for reference: https://github.com/avishorp/TM1637
-- A TM1637 library optimized for speed and size: https://github.com/Erriez/ErriezTM1637
-- TM1650 library that uses the Wire interface: https://github.com/mozgy/Mozz_TM1650
-- MAX7219 LED Matrix library: https://github.com/markruys/arduino-Max72xxPanel
-- OneButton multi-state buttons: https://github.com/mathertel/OneButton
-- Adafruit GFX library: https://github.com/adafruit/Adafruit-GFX-Library
-- Adafruit GFX documentation: https://learn.adafruit.com/adafruit-gfx-graphics-library
-- Matrix transposition used in TM1638QYF: https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Anti-Diagonal
+- Original TM1638/TM1640 library: [/rjbatista/tm1638-library](https://github.com/rjbatista/tm1638-library)
+- TM1637 library used for reference: [/avishorp/TM1637](https://github.com/avishorp/TM1637)
+- A TM1637 library optimized for speed and size: [/Erriez/ErriezTM1637](https://github.com/Erriez/ErriezTM1637)
+- TM1637 library optimized for ATtiny85 with alphanumeric animations: [/jasonacox/TM1637TinyDisplay](https://github.com/jasonacox/TM1637TinyDisplay) and [online animator](https://jasonacox.github.io/TM1637TinyDisplay/examples/7-segment-animator.html)
+- TM1650 library that uses the Wire interface: [/mozgy/Mozz_TM1650](https://github.com/mozgy/Mozz_TM1650)
+- MAX7219 LED Matrix library: [/markruys/arduino-Max72xxPanel](https://github.com/markruys/arduino-Max72xxPanel)
+- OneButton multi-state buttons: [/mathertel/OneButton](https://github.com/mathertel/OneButton)
+- Adafruit GFX library: [/adafruit/Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)
+- Adafruit GFX documentation: [adafruit-gfx-graphics-library](https://learn.adafruit.com/adafruit-gfx-graphics-library)
+- Matrix transposition used in TM1638QYF: [Flipping_Mirroring_and_Rotating](https://www.chessprogramming.org/Flipping_Mirroring_and_Rotating#Anti-Diagonal)
 
 ## Disclaimer
 - All code on this GitHub account, including this library is provided to you on an as-is basis without guarantees and with all liability dismissed. It may be used at your own risk. Unfortunately I have no means to provide support.
