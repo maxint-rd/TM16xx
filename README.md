@@ -32,6 +32,7 @@ The TM16xx family is quite large. Currently the following chips are supported:
 
 Type   | Segments x digits    | Buttons      | Interface   | Notes
 ------ | -------------------- | ------------ | ------------|-------------
+TM1616 | 7 x 4                | n/a          | DIN/CLK/STB | Use TM1620.h
 TM1620 | 8 x 6 - 10 x 4       | n/a          | DIN/CLK/STB |
 TM1628 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
 TM1630 | 7 x 5 - 8 x 4        | 7 x 1 multi  | DIO/CLK/STB |
