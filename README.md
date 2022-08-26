@@ -32,7 +32,7 @@ The TM16xx family is quite large. Currently the following chips are supported:
 
 Type   | Segments x digits    | Buttons      | Interface   | Notes
 ------ | -------------------- | ------------ | ------------|-------------
-TM1616 | 7 x 4                | n/a          | DIN/CLK/STB | Use TM1620.h
+TM1616 | 7 x 4                | n/a          | DIN/CLK/STB | 
 TM1620 | 8 x 6 - 10 x 4       | n/a          | DIN/CLK/STB |
 TM1628 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
 TM1630 | 7 x 5 - 8 x 4        | 7 x 1 multi  | DIO/CLK/STB |
@@ -239,8 +239,9 @@ Added library functionality:
 - Support for combining multiple 7-segment and 14-segment display modules into one large display.
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
 - Support for combining multiple matrix modules into one large Adafruit GFX matrix.
+- Support for TM1616 (suggested by @NickLplus)
 - Support for TM1620 (thanks @eddwhite)
-- Support for TM1628.  Note: TM1628 can be used in 10x7 - 13x4 display modes.
+- Support for TM1628. Note: TM1628 can be used in 10x7 - 13x4 display modes.
 - Support for TM1630 (thanks @tokuhira)
 - Support for TM1637. Note: TM1637 does not support simultaneous button presses.
   (Method derived from [TM1637 library](https://github.com/avishorp/TM1637) but using pins in standard output mode when writing).
