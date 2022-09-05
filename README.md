@@ -7,7 +7,7 @@ The TM16xx chip family allows driving 7-segment LED displays or LED matrices.
 Next to built-in high-frequency LED multiplexing, they offer control of LED brightness.
 Most TM16xx chips also support reading key-scan data for button presses.
 Using this library you can simply use print() on a 7-segment display or use Adafruit GFX on a LED matrix.
-Currently this library supports the TM1620, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650 and TM1668 chips. Note that there are similar chips made by other manufacturers that may be compatible with the Titan Micro chips. For instance: the HBS640 by WINRISE is compatible with the TM1640.
+Currently this library supports the TM1616, TM1620, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650 TM1652 and TM1668 chips. Note that there are similar chips made by other manufacturers that may be compatible with the Titan Micro chips. For instance: the HBS640 by WINRISE is compatible with the TM1640.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
 
@@ -40,6 +40,7 @@ TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK     |
 TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB | Anode/Inverted/QYF*
 TM1640 | 8 x 16               | n/a          | DIN/CLK     | Anode*
 TM1650 | 8 x 4                | 7 x 4 single | DIO/CLK     | Not real I2C SDA/SCL
+TM1652 | 8 x 5 - 8 x6         | n/a          | DIN         | Single data line
 TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
 
 \* Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638 and TM1640Anode are also supported.
@@ -250,6 +251,7 @@ Added library functionality:
 - Support for TM1638 in Anode Mode (10 digit common anode LED 8 segment display) (see [TM1638Anode.h](/src/TM1638Anode.h))
 - Support for TM1640 in Anode Mode (8 digit common anode LED 16 segment display) (see [TM1640Anode.h](/src/TM1640Anode.h))
 - Support for TM1650. Note: TM1650 can be used in 8x4 or 7x4 display mode. Datasheet fully translated.
+- Support for TM1652. Note: TM1652 uses a single dataline and timing to determine the clock. Datasheet fully translated.
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes. Datasheet partly translated.
 - Support for release, click, doubleclick and long press button detection using callback functions.
 - Added [library examples](/examples).
@@ -268,9 +270,11 @@ Functionality in original library by Ricardo Batista:
 - The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. Please note that the TM1640 supports up to 16 digits or an 8x16 LED matrix. 
 - The [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display) is fully supported. Please note that while multiple buttons can be pressed, pressing more than two buttons can give faulty results due to the lack of short-out preventing diodes on the module.
 - The popular TM1638 LED & KEY module comes in a number of varieties. My version has some odd button wiring sequence: S1=KS1, S5=KS2, S2=KS3, S6=KS4, S3=KS5, S7=KS6, S4=KS7, S8=KS8
-- The TM1640Anode class can be used with a Common Anode configuration to support 8 digits of 16 segments, such as the 5241BS 14-segment plus dot LED display (example for combined TM1640Anode to be included soon). 
+- The TM1640Anode class can be used with a Common Anode configuration to support 8 digits of 16 segments, such as the 5241BS 14-segment plus dot LED display (example for combined TM1640Anode to be included soon).
+- TM1628/TM1668 allow 13 segment mode, support for using 13-segment displays is still outstanding due to lack of having such dsiplays for testing.
 - The TM1650 datasheet mentions SDA and SCL pins. The used protocol resembles I2C, but lacks addressing. For that reason this library doesn't use the I2C Wire library, but (slow) bitbanging using digitalWrite.
-- The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. In future versions this functionality may be replaced by a specific class for using RGB LEDs. The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display.
+- The TM1652 allows more levels of LED dimming than supported. For uniformity only 8 levels of duty cycle are used, at maximum grid current.
+- The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. In future versions this functionality may be replaced by a specific class for using RGB LEDs. (TODO: The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display).
 - The WeMOS D1 mini Matrix LED Shield and the TM1640 Mini LED Matrix 8x16 by Maxint R&D have R1 on the right-top. Call setMirror(true) to reverse the x-mirrorring.
 - When using TM16xxButtons, the amount of memory used can become too large. To preserve RAM memory on smaller MCUs such as the ATtiny84 and ATtiny85, the number of buttons tracked is limited to 2 combined button presses. This can be changed by setting the maximum button slots in the TM16xxButtons.h header file:
 ```C++
