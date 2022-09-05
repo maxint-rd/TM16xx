@@ -7,6 +7,7 @@
 #######################################
 
 TM16xx	KEYWORD1
+TM1616	KEYWORD1
 TM1620	KEYWORD1
 TM1628	KEYWORD1
 TM1630	KEYWORD1
@@ -17,6 +18,7 @@ TM1638QYF	KEYWORD1
 TM1640	KEYWORD1
 TM1640Anode	KEYWORD1
 TM1650	KEYWORD1
+TM1652	KEYWORD1
 TM1668	KEYWORD1
 TM16xxMatrix	KEYWORD1
 TM16xxDisplay	KEYWORD1
@@ -27,6 +29,7 @@ TM16xxButtons	KEYWORD1
 # Methods and Functions (KEYWORD2)
 #######################################
 
+begin	KEYWORD2
 setupDisplay	KEYWORD2
 setDisplayToString	KEYWORD2
 setDisplayToHexNumber	KEYWORD2
