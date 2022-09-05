@@ -40,7 +40,7 @@ TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK     |
 TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB | Anode/Inverted/QYF*
 TM1640 | 8 x 16               | n/a          | DIN/CLK     | Anode*
 TM1650 | 8 x 4                | 7 x 4 single | DIO/CLK     | Not real I2C SDA/SCL
-TM1652 | 8 x 5 - 8 x6         | n/a          | DIN         | Single data line
+TM1652 | 8 x 5 - 7 x 6        | n/a          | DIN         | Single data line
 TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
 
 \* Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638 and TM1640Anode are also supported.
