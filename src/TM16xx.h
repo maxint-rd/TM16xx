@@ -26,11 +26,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	#include "WProgram.h"
 #endif
 
-#if !defined(max)
-// MMOLE 180325:
-// min, max are no macro in ESP core 2.3.9 libraries, see https://github.com/esp8266/Arduino/issues/398
-#define min(a,b) ((a)<(b)?(a):(b))
-#define max(a,b) ((a)>(b)?(a):(b))
+#if !defined(__max)
+// MMOLE 180325: min, max are no macro in ESP core 2.3.9 libraries, see https://github.com/esp8266/Arduino/issues/398
+// MMOLE 211229: Redefining min/max has issues in newer ESP cores with certain wifi libraries.
+//               See definition as function template below.
+#define __min(a,b) ((a)<(b)?(a):(b))
+#define __max(a,b) ((a)>(b)?(a):(b))
+#endif
+
+#if !defined(_BV)
+// MMOLE 220909: _BV is not defined in Raspberry Pi Pico RP2040 core v2.4.0 or v2.5.2 by Earle F. Philhower
+// TM16xx uses it in some classes to determine button presses (TM1628/30/37/38/38Anode
+// Note that _BV works on int values (16-bit in Arduino). For that reason using bit() would be better.
+// This is how _BV is defined in the AVR libraries used within Arduino:
+#define _BV( x )( 1<<(x))
 #endif
 
 #define TM16XX_CMD_DATA_AUTO 0x40
@@ -93,6 +102,27 @@ class TM16xx
 		virtual void sendCommand(byte led);
     virtual void sendData(byte add, byte data);
     virtual byte receive();
+
+#if !defined(max)
+// MMOLE 211229: use c++ function templates to implement our own min/max, as redefining them wont work in newer ESP cores when using certain wifi libraries
+// NOTE: min, max are no macro in ESP core 2.3.9 libraries, see https://github.com/esp8266/Arduino/issues/398
+// See also
+//   https://www.cplusplus.com/doc/oldtutorial/templates/
+//   https://www.alltestanswers.com/c-templates-for-the-two-functions-minimum-and-maximum/
+//   https://www.learncpp.com/cpp-tutorial/function-templates-with-multiple-template-types/
+// MMOLE 220814: Arduino IDE 1.8.12 for LGT328P required "#if !defined(max)" to prevent compilation errors
+template <typename T, typename U>
+auto max(T x, U y) -> decltype(x>y ? x : y)
+{
+  return x>y ? x : y;
+}
+template <typename T, typename U>
+auto min(T x, U y) -> decltype(x>y ? x : y)
+{
+  return x<y ? x : y;
+}
+#endif  // !defined(max)
+
     byte _maxDisplays=2;		// maximum number of digits (grids), chip-dependent
     byte _maxSegments=8;		// maximum number of segments per display, chip-dependent
 
