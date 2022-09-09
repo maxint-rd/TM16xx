@@ -231,7 +231,7 @@ To implement a shift key, you can use the isPressed() function. See [TM16xxButto
 ## New in this library
 
 Added library functionality:
-- Support for ATtiny's (44A, 84A, 85), ESP8266, ESP32, LGT8F328P in addition to regular Arduinos.
+- Support for ATtiny's (44A, 84A, 85), ESP8266, ESP32, LGT8F328P, Pi Pico, in addition to regular Arduinos.
 - Revised library structure to simplify support of other TM16xx chips in addition to TM1638/TM1640.
 - Basic functionality in base class for a uniform API.
 - Reduced required RAM memory by using PROGMEM fonts.
@@ -251,7 +251,7 @@ Added library functionality:
 - Support for TM1638 in Anode Mode (10 digit common anode LED 8 segment display) (see [TM1638Anode.h](/src/TM1638Anode.h))
 - Support for TM1640 in Anode Mode (8 digit common anode LED 16 segment display) (see [TM1640Anode.h](/src/TM1640Anode.h))
 - Support for TM1650. Note: TM1650 can be used in 8x4 or 7x4 display mode. Datasheet fully translated.
-- Support for TM1652. Note: TM1652 uses a single dataline and timing to determine the clock. Datasheet fully translated.
+- Support for TM1652. Note: TM1652 uses a single data line and fixed timing to determine the clock. Datasheet fully translated.
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes. Datasheet partly translated.
 - Support for release, click, doubleclick and long press button detection using callback functions.
 - Added [library examples](/examples).
@@ -264,7 +264,7 @@ Functionality in original library by Ricardo Batista:
 - Reading simultaneous button presses on TM1638;
 
 ## Features & limitations
-- The current version of this library supports ESP8266/ESP32, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Compatible MCUs such as LGT8F328P are also supported. Please let me know if you've successfully used this library with other MCUs.
+- The current version of this library supports ESP8266/ESP32, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Compatible MCUs such as LGT8F328P are also supported. Raspberry Pi Pico RP2040 is supported too (tested with core 2.5.2 by Earle Philhower). Please let me know if you've successfully used this library with other MCUs.
 - The TM16xx chips offer no support for daisychaining multiple chips, but when separate Clk or Latch lines are used the Din line can be shared for combined displays.
 - It is possible to define multiple display objects for multiple different modules (see the TM1638_TM1637ex_two_modules example). The library now supports combining multiple 7-segment modules into one display using the TM16xxDisplay class (example for combined TM16xxDisplay to be included soon). 
 - The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. Please note that the TM1640 supports up to 16 digits or an 8x16 LED matrix. 
