@@ -89,6 +89,10 @@ void TM1620B::setSegments16(uint16_t segments, byte position)
 
 uint32_t TM1620B::getButtons(void)
 {
+	// Pull-up off
+	pinMode(dataPin, OUTPUT);
+	digitalWrite(dataPin, LOW);
+
 	word keys_K2 = 0;
 	byte received;
 
