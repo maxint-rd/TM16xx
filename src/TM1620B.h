@@ -43,8 +43,6 @@ public:
   /** Returns the pressed buttons as a bit set (left to right). */
   virtual uint32_t getButtons();
 
-  virtual void sendData(byte address, byte data);
-
 protected:
   virtual void bitDelay();
 };

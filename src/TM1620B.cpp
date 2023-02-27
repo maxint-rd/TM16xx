@@ -106,16 +106,3 @@ uint32_t TM1620B::getButtons(void)
 	stop();
 	return (uint32_t)keys_K2;
 }
-
-void TM1620B::sendData(byte address, byte data)
-{
-	// Pull-up off
-	pinMode(dataPin, OUTPUT);
-	digitalWrite(dataPin, LOW);
-
-	sendCommand(TM16XX_CMD_DATA_FIXED); // use fixed addressing for data
-	start();
-	send(TM16XX_CMD_ADDRESS | address); // address command + address
-	send(data);
-	stop();
-}
