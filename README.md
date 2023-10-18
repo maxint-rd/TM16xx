@@ -298,6 +298,7 @@ Some users found a TM16xx chip in their device and shared their experience:
 - [TM1680 in the Denver BTL - 350 bluetooth speaker](/issues/2#issuecomment-1406738635)
 - [TM1680 in the thermostat MH3901-Z from MCO HOME](/issues/2#issuecomment-1501193063)
 - [TM1616 in the Gosund SW7 dual-channel dimmer](#22)
+
 If you happen to own a device featuring a TM16xx chip, feel free to open a new issue, sharing your experience. All contributions are appreciated!
 
 ### Links
