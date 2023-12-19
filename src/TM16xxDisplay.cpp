@@ -16,7 +16,6 @@ TM16xxDisplay::TM16xxDisplay(TM16xx *pTM16xx, byte nNumDigits)
 	_nNumDigits=nNumDigits;
 #if(TM16XX_OPT_COMBIDISPLAY)
   // set number of modules to 1
-  
  	_apTM16xx[0]=pTM16xx;   // use array allocated in class
 	_aModules=_apTM16xx;
 	_nNumModules=1;
@@ -98,12 +97,12 @@ Serial.println("');");
 void TM16xxDisplay::setIntensity(byte intensity)
 {	// set the intensity of the module; range 0-7, 0=off, 7=bright
 #if(TM16XX_OPT_COMBIDISPLAY)
-	_pTM16xx->setupDisplay(intensity!=0, intensity);
-#else
   for(int i=0; i<_nNumModules; i++)
   {
   	_aModules[i]->setupDisplay(intensity!=0, intensity);
   }
+#else
+	_pTM16xx->setupDisplay(intensity!=0, intensity);
 #endif
 }
 
@@ -198,12 +197,12 @@ void TM16xxDisplay::setDisplayToBinNumber(byte number, byte dots, const byte num
 void TM16xxDisplay::clear()
 {
 #if(TM16XX_OPT_COMBIDISPLAY)
-	_pTM16xx->clearDisplay();
-#else
   for(int i=0; i<_nNumModules; i++)
   {
   	_aModules[i]->clearDisplay();
   }
+#else
+	_pTM16xx->clearDisplay();
 #endif
 }
 	
