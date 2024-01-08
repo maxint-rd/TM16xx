@@ -36,8 +36,8 @@ class TM1652 : public TM16xx
     TM1652(byte dataPin, byte numDigits=4, boolean activateDisplay=true, byte intensity=7, byte displaymode = TM1652_DISPMODE_5x8);
     // TODO: remove deprecated parameters - TM1652(byte dataPin, byte numDigits=4);
     virtual void clearDisplay();
-    virtual void setupDisplay(boolean active, byte intensity);
-    virtual void begin(boolean activateDisplay=true, byte intensity=7);
+    virtual void setupDisplay(boolean active, byte intensity, byte driveCurrent = 6);
+    virtual void begin(boolean activateDisplay=true, byte intensity=7, byte driveCurrent = 6);
 
   protected:
     virtual void start();

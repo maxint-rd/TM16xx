@@ -29,7 +29,7 @@ TM1652::TM1652(byte dataPin, byte numDigits)
 	: TM16xx(dataPin, dataPin, dataPin, TM1652_MAX_POS, numDigits, true, 7)
 */
 
-void TM1652::begin(boolean activateDisplay, byte intensity)
+void TM1652::begin(boolean activateDisplay, byte intensity, byte driveCurrent)
 { // Call begin() in setup() to clear the display and set initial activation and intensity.
   // begin() is implicitly called upon first sending of display data, but only executes once.
   static bool fBeginDone=false;
@@ -37,7 +37,7 @@ void TM1652::begin(boolean activateDisplay, byte intensity)
     return;
   fBeginDone=true;
   clearDisplay();
-  setupDisplay(activateDisplay, intensity);
+  setupDisplay(activateDisplay, intensity, driveCurrent);
 } 
   
 void TM1652::start()
@@ -55,7 +55,6 @@ void TM1652::send(byte data)
   //  - start bit, 8x data bits, parity bit, stop bit; 52 us = 19200bps
   #define TM1652_BITDELAY 49     // NOTE: core 1.0.6 of LGT8F328@32MHz miscalculates delayMicroseconds() (should be 52us delay). For fix see https://github.com/dbuezas/lgt8fx/issues/18
   bool fParity=true;
-  bool fBit;
 
   noInterrupts();
 
@@ -129,13 +128,14 @@ void TM1652::clearDisplay()
   endCmd();
 }
 
-void TM1652::setupDisplay(boolean active, byte intensity)
+void TM1652::setupDisplay(boolean active, byte intensity, byte driveCurrent)
 {	// For the TM1652 level 0-7 is low to high.
 	// In addition to setting drive current in 8 steps, TM1652 also allows setting the duty cycle in 16 steps
 	// To align with other TM16XX chips we translate intensity to the same comparible scale (0-7) to set the duty cycle
-	//sendCommand(0xEE);
-  //sendCommand((active ? 0xF0 : 0) | reverseByte((intensity&0x07)<<4) | (_maxSegments==8? TM1652_DISPMODE_5x8 : TM1652_DISPMODE_6x7));
-  sendCommand((active ? reverseByte(((intensity&0x07)<<1)|0x01) : 0) | (active ? 0x0E : 0) | (_maxSegments==8? 0 : 1));
+	// added capability to change the drive current on a scale from (0-6), there are 8 levels, but only 7 usable (note in datasheet).
+	// sendCommand(0xEE);
+    // sendCommand((active ? 0xF0 : 0) | reverseByte((intensity&0x07)<<4) | (_maxSegments==8? TM1652_DISPMODE_5x8 : TM1652_DISPMODE_6x7));
+  sendCommand((active ? reverseByte(((intensity&0x07)<<1)|0x01) : 0) | (active ? (reverseByte((driveCurrent + 0x01)&0x07) >> 4) : 0) | (_maxSegments==8? 0 : 1));
 }
 
 /*
