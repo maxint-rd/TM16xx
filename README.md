@@ -185,6 +185,9 @@ can be shared to reduce the number of pins:
 ```  
 See  [Adafruit GFX documentation](https://learn.adafruit.com/adafruit-gfx-graphics-library/graphics-primitives) and [TM16xxMatrixGFX.h](/src/TM16xxMatrixGFX.h) for the provided methods. See the [library examples](/examples) for more information.
 
+___NOTE: AdafruitGFX needs to be installed, even if you don't use TM16xxMatrixGFX. If you don't want to install AdafruitGFX you can remove TM16xxMatrixGFX.h and TM16xxMatrixGFX.cpp from the library directory to avoid compilation errors. To reduce this dependency, the TM16xxMatrixGFX class may be moved to a separate library in future versions___
+
+
 ## TM16xxButtons class
 The _TM16xxButtons_ class enlarges the footprint a bit, but based on the popular [OneButton library](https://github.com/mathertel/OneButton) library, it adds more advanced methods to use buttons. Next to simply polling the state of each button, you can define callback functions that will be called when a button is released, clicked, double-clicked or long pressed. To use this class on top of the base class, all you need to do is include the proper headers and instantiate the buttons object, refering to the chip specific class, for example:
 ```C++
@@ -265,6 +268,7 @@ Functionality in original library by Ricardo Batista:
 
 ## Features & limitations
 - The current version of this library supports ESP8266/ESP32, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Compatible MCUs such as LGT8F328P are also supported. Raspberry Pi Pico RP2040 is supported too (tested with core 2.5.2 by Earle Philhower). Please let me know if you've successfully used this library with other MCUs.
+- For TM1640 on Pi Pico [stability issues](https://github.com/maxint-rd/TM16xx/issues/34) were reported (requiring further analysis).
 - The TM16xx chips offer no support for daisychaining multiple chips, but when separate Clk or Latch lines are used the Din line can be shared for combined displays.
 - It is possible to define multiple display objects for multiple different modules (see the TM1638_TM1637ex_two_modules example). The library now supports combining multiple 7-segment modules into one display using the TM16xxDisplay class (example for combined TM16xxDisplay to be included soon). 
 - The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. Please note that the TM1640 supports up to 16 digits or an 8x16 LED matrix. 
@@ -287,6 +291,15 @@ Functionality in original library by Ricardo Batista:
 
 ### Examples
 See the [library examples](/examples) for more information on how to use this library. See also the [original examples](https://github.com/rjbatista/tm1638-library/tree/master/examples) by Ricardo Batista. Most will still work or only require minor changes.
+
+### Real world devices using a TM16xx chip
+Some users found a TM16xx chip in their device and shared their experience:
+- [TM1652 in the Xiaomi XIAO AI Smart Alarm Clock](https://github.com/maxint-rd/TM16xx/issues/41#issue-1940161388)
+- [TM1680 in the Denver BTL - 350 bluetooth speaker](https://github.com/maxint-rd/TM16xx/issues/2#issuecomment-1406738635)
+- [TM1680 in the thermostat MH3901-Z from MCO HOME](https://github.com/maxint-rd/TM16xx/issues/2#issuecomment-1501193063)
+- [TM1616 in the Gosund SW7 dual-channel dimmer](https://github.com/maxint-rd/TM16xx/issues/22#issue-1285063037)
+
+If you happen to own a device featuring a TM16xx chip, feel free to open a new issue, sharing your experience. All contributions are appreciated!
 
 ### Links
 - Manufacturer: [Titan Micro Electronics](http://www.titanmec.com/index.php/en/index/index.html) - [LED driver datasheets](http://www.titanmec.com/index.php/en/product/lists/typeid/88/p/1.html)
