@@ -27,7 +27,7 @@ Partially based on TM1640 library by MRicardo Batista. See https://github.com/rj
 #define TM1650_DISPMODE_4x7 0x09
 
 #define TM1650_CMD_MODE  0x48
-#define TM1650_CMD_DATA_READ  0x4f
+#define TM1650_CMD_DATA_READ  0x4F		// 0x4F is compatible with FD650 FD650B, TM1650 datasheet mentions both 0x49 and 0xFF, see pull request #19
 #define TM1650_CMD_ADDRESS  0x68
 
 
