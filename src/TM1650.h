@@ -27,7 +27,7 @@ Partially based on TM1640 library by MRicardo Batista. See https://github.com/rj
 #define TM1650_DISPMODE_4x7 0x09
 
 #define TM1650_CMD_MODE  0x48
-#define TM1650_CMD_DATA_READ  0x49
+#define TM1650_CMD_DATA_READ  0x4f
 #define TM1650_CMD_ADDRESS  0x68
 
 
