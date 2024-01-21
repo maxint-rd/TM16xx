@@ -294,10 +294,11 @@ See the [library examples](/examples) for more information on how to use this li
 
 ### Real world devices using a TM16xx chip
 Some users found a TM16xx chip in their device and shared their experience:
-- [TM1652 in the Xiaomi XIAO AI Smart Alarm Clock](https://github.com/maxint-rd/TM16xx/issues/41#issue-1940161388)
-- [TM1680 in the Denver BTL - 350 bluetooth speaker](https://github.com/maxint-rd/TM16xx/issues/2#issuecomment-1406738635)
-- [TM1680 in the thermostat MH3901-Z from MCO HOME](https://github.com/maxint-rd/TM16xx/issues/2#issuecomment-1501193063)
-- [TM1616 in the Gosund SW7 dual-channel dimmer](https://github.com/maxint-rd/TM16xx/issues/22#issue-1285063037)
+- [TM1628 in a Royal Sovereign BDH-450 dehumidifier](https://github.com/maxint-rd/TM16xx/issues/45)  - nice mod to make a dumb device smarter
+- [TM1652 in the Xiaomi XIAO AI Smart Alarm Clock](https://github.com/maxint-rd/TM16xx/issues/41#issue-1940161388) - make it smarter with NTP
+- [TM1680 in the Denver BTL - 350 bluetooth speaker](https://github.com/maxint-rd/TM16xx/issues/2#issuecomment-1406738635) - make sense of a 11x11 RGB matrix
+- [TM1680 in the thermostat MH3901-Z from MCO HOME](https://github.com/maxint-rd/TM16xx/issues/2#issuecomment-1501193063) - how PCB designers make developers crazy
+- [TM1616 in the Gosund SW7 dual-channel dimmer](https://github.com/maxint-rd/TM16xx/issues/22#issue-1285063037) - make an ESP8285 dimmer talk to Tasmota
 
 If you happen to own a device featuring a TM16xx chip, feel free to open a new issue, sharing your experience. All contributions are appreciated!
 
