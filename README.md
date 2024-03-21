@@ -229,7 +229,7 @@ void loop()
   // do your other things
 }
 ```
-To implement a shift key, you can use the isPressed() function. See [TM16xxButtons.h](/src/TM16xxButtons.h) for the provided methods and the [Button clicks example](/examples/TM16xxButtons_clicks) for more information.
+Some [TM16xx chips](#tm16xx-chip-features) support multiple simultaneous key presses. To implement a shift key, you can use the isPressed() function. See [TM16xxButtons.h](/src/TM16xxButtons.h) for the provided methods and the [Button clicks example](/examples/TM16xxButtons_clicks) for more information.
 
 ## New in this library
 
