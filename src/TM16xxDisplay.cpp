@@ -135,7 +135,7 @@ void TM16xxDisplay::setDisplayToError()
 	}
 }
 
-void TM16xxDisplay::setDisplayToHexNumber(unsigned long number, byte dots, boolean leadingZeros, const byte numberFont[])
+void TM16xxDisplay::setDisplayToHexNumber(unsigned long number, byte dots, bool leadingZeros, const byte numberFont[])
 {
 	for (int i = 0; i < _nNumDigits; i++) {
 		if (!leadingZeros && number == 0) {
@@ -147,7 +147,7 @@ void TM16xxDisplay::setDisplayToHexNumber(unsigned long number, byte dots, boole
 	}
 }
 
-void TM16xxDisplay::setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, boolean leadingZeros, const byte numberFont[])
+void TM16xxDisplay::setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, bool leadingZeros, const byte numberFont[])
 {
 	if (number > 99999999L) {
 		setDisplayToError();
@@ -167,13 +167,13 @@ void TM16xxDisplay::setDisplayToDecNumberAt(unsigned long number, byte dots, byt
 	}
 }
 
-void TM16xxDisplay::setDisplayToDecNumber(unsigned long number, byte dots, boolean leadingZeros,
+void TM16xxDisplay::setDisplayToDecNumber(unsigned long number, byte dots, bool leadingZeros,
 	const byte numberFont[])
 {
 	setDisplayToDecNumberAt(number, dots, 0, leadingZeros, numberFont);
 }
 
-void TM16xxDisplay::setDisplayToSignedDecNumber(signed long number, byte dots, boolean leadingZeros, const byte numberFont[])
+void TM16xxDisplay::setDisplayToSignedDecNumber(signed long number, byte dots, bool leadingZeros, const byte numberFont[])
 {
 	if (number >= 0) {
 		setDisplayToDecNumberAt(number, dots, 0, leadingZeros, numberFont);

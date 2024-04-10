@@ -15,7 +15,7 @@ Schemathics of Anode connection available here https://github.com/SkullKill/ESP3
 
 #include "TM1638Anode.h"
 
-TM1638Anode::TM1638Anode(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay, byte intensity)
+TM1638Anode::TM1638Anode(byte dataPin, byte clockPin, byte strobePin, bool activateDisplay, byte intensity)
 	: TM16xx(dataPin, clockPin, strobePin, TM1638Anode_MAX_POS, 10, activateDisplay, intensity)
 {
   _maxSegments=8;		// on the QYF-TM1638 modules the two extra segment lines are not used. The display uses common anode LEDs

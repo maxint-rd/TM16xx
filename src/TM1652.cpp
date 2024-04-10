@@ -10,7 +10,7 @@ Made by Maxint R&D. See https://github.com/maxint-rd
 
 #include "TM1652.h"
 
-TM1652::TM1652(byte dataPin, byte numDigits, boolean activateDisplay, byte intensity,  byte displaymode)
+TM1652::TM1652(byte dataPin, byte numDigits, bool activateDisplay, byte intensity,  byte displaymode)
 	: TM16xx(dataPin, dataPin, dataPin, TM1652_MAX_POS, numDigits, activateDisplay, intensity)
 { // The TM1652 only has DIN, no CLK or STB. Therefor the DIN-pin is initialized in the parent-constructor as CLK and STB, but not used for anything else.
   // DEPRECATED: activation, intensity (0-7) and display mode are no longer used by constructor.  
@@ -29,7 +29,7 @@ TM1652::TM1652(byte dataPin, byte numDigits)
 	: TM16xx(dataPin, dataPin, dataPin, TM1652_MAX_POS, numDigits, true, 7)
 */
 
-void TM1652::begin(boolean activateDisplay, byte intensity, byte driveCurrent)
+void TM1652::begin(bool activateDisplay, byte intensity, byte driveCurrent)
 { // Call begin() in setup() to clear the display and set initial activation and intensity.
   // begin() is implicitly called upon first sending of display data, but only executes once.
   static bool fBeginDone=false;
@@ -128,7 +128,7 @@ void TM1652::clearDisplay()
   endCmd();
 }
 
-void TM1652::setupDisplay(boolean active, byte intensity, byte driveCurrent)
+void TM1652::setupDisplay(bool active, byte intensity, byte driveCurrent)
 {	// For the TM1652 level 0-7 is low to high.
 	// In addition to setting drive current in 8 steps, TM1652 also allows setting the duty cycle in 16 steps
 	// To align with other TM16XX chips we translate intensity to the same comparible scale (0-7) to set the duty cycle

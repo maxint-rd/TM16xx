@@ -35,7 +35,7 @@ class TM1630 : public TM16xx
 {
   public:
     /** Instantiate a TM1630 module specifying data, clock and stobe pins, the number of digits, the display state, the starting intensity (0-7). */
-    TM1630(byte dataPin, byte clockPin, byte strobePin, byte numDigits = TM1630_MAX_POS, boolean activateDisplay = true, byte intensity = 7);
+    TM1630(byte dataPin, byte clockPin, byte strobePin, byte numDigits = TM1630_MAX_POS, bool activateDisplay = true, byte intensity = 7);
 
     /** Set the segments at a specific position on or off */
     virtual void setSegments(byte segments, byte position);

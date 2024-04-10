@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TM1638.h"
 
-TM1638::TM1638(byte dataPin, byte clockPin, byte strobePin, byte numDigits, boolean activateDisplay, byte intensity)
+TM1638::TM1638(byte dataPin, byte clockPin, byte strobePin, byte numDigits, bool activateDisplay, byte intensity)
 	: TM16xx(dataPin, clockPin, strobePin, TM1638_MAX_POS, numDigits, activateDisplay, intensity)
 {
   _maxSegments=10;		// on the LED & KEY modules the extra segments are used to drive individual red or red/green LEDs

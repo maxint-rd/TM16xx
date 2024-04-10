@@ -21,7 +21,7 @@ class TM1616 : public TM16xx
 {
   public:
     /** Instantiate a TM1616 module specifying data, clock and strobe pins, the number of digits, the display state, the starting intensity (0-7). */
-    TM1616(byte dataPin, byte clockPin, byte strobePin, byte numDigits=TM1616_MAX_POS, boolean activateDisplay = true, byte intensity = 7);
+    TM1616(byte dataPin, byte clockPin, byte strobePin, byte numDigits=TM1616_MAX_POS, bool activateDisplay = true, byte intensity = 7);
 
 		/** Override standard behaviour where this chip acts differently */
 	  virtual void setSegments(byte segments, byte position);

@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TM1668.h"
 
-TM1668::TM1668(byte dataPin, byte clockPin, byte strobePin, byte numDigits, boolean activateDisplay, byte intensity, byte displaymode)
+TM1668::TM1668(byte dataPin, byte clockPin, byte strobePin, byte numDigits, bool activateDisplay, byte intensity, byte displaymode)
 	: TM16xx(dataPin, clockPin, strobePin, 7, numDigits, activateDisplay, intensity)		// "numDigits" is the number of digits
 {
 	// set the display mode

@@ -41,7 +41,7 @@ Made by Maxint R&D, partly based on TM1638Anode class. See https://github.com/ma
 
 #include "TM1640Anode.h"
 
-TM1640Anode::TM1640Anode(byte dataPin, byte clockPin, byte numDigits, boolean activateDisplay, byte intensity)
+TM1640Anode::TM1640Anode(byte dataPin, byte clockPin, byte numDigits, bool activateDisplay, byte intensity)
 	: TM1640(dataPin, clockPin, numDigits, activateDisplay, intensity)
 {
   _maxSegments=TM1640Anode_MAX_SEG; 	// On the 5241BS LED display modules the 15 segments are connected to the GRD1-GRD16 lines of the TM1640.
@@ -52,7 +52,7 @@ TM1640Anode::TM1640Anode(byte dataPin, byte clockPin, byte numDigits, boolean ac
 }
 
 
-void TM1640Anode::sendAsciiChar(byte pos, char c, boolean fDot)
+void TM1640Anode::sendAsciiChar(byte pos, char c, bool fDot)
 { // Method to send an Ascii character to the display.
   // This method is also called by TM16xxDisplay.print() to display characters.
   // The base class uses the default 7-segment font to find the LED pattern.

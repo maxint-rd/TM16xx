@@ -34,7 +34,7 @@ class TM1640 : public TM16xx
 {
   public:
 		// Instantiate a TM1640 module specifying data and clock pins, number of digits, the display state, the starting intensity (0-7).
-  	TM1640(byte dataPin, byte clockPin, byte numDigits=16, boolean activateDisplay = true, byte intensity = 7);
+  	TM1640(byte dataPin, byte clockPin, byte numDigits=16, bool activateDisplay = true, byte intensity = 7);
 
   protected:
     //virtual void bitDelay();

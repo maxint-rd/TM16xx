@@ -59,10 +59,10 @@ class TM16xx
      * the number of digits used to display numbers or text, 
      * display state and the starting intensity (0-7).
      */
-    TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, boolean activateDisplay=true,	byte intensity=7);
+    TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, bool activateDisplay=true,	byte intensity=7);
 
     /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
-    virtual void setupDisplay(boolean active, byte intensity);
+    virtual void setupDisplay(bool active, byte intensity);
 
     /** Clear the display */
 		virtual void clearDisplay();
@@ -73,19 +73,19 @@ class TM16xx
 	  
 	  // Basic display functions. For additional display features use the TM16xxDisplay class
     /** Set a single display at pos (starting at 0) to a digit (left to right) */
-    virtual void setDisplayDigit(byte digit, byte pos=0, boolean dot=false, const byte numberFont[] = TM16XX_NUMBER_FONT);
+    virtual void setDisplayDigit(byte digit, byte pos=0, bool dot=false, const byte numberFont[] = TM16XX_NUMBER_FONT);
 		/** Set the display to a decimal number */
 	  virtual void setDisplayToDecNumber(int nNumber, byte bDots=0);
 		/** Clear  a single display at pos (starting at 0, left to right) */ 
-    virtual void clearDisplayDigit(byte pos, boolean dot=false);
+    virtual void clearDisplayDigit(byte pos, bool dot=false);
     /** Set the display to the values (left to right) */
     virtual void setDisplay(const byte values[], byte size=8);
 
     /** Set the display to the string (defaults to built in font) */
 		virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
-		virtual void sendChar(byte pos, byte data, boolean dot); // made public to allow calling from TM16xxDisplay
+		virtual void sendChar(byte pos, byte data, bool dot); // made public to allow calling from TM16xxDisplay
 		virtual byte getNumDigits(); // added as public menthod to allow calling from TM16xxDisplay
-		virtual void sendAsciiChar(byte pos, char c, boolean dot); // made public to allow calling from TM16xxDisplay
+		virtual void sendAsciiChar(byte pos, char c, bool dot); // made public to allow calling from TM16xxDisplay
 
 		// Key-scanning functions
 		// Note: not all TM16xx chips support key-scanning and sizes are different per chip
@@ -94,7 +94,7 @@ class TM16xx
 		virtual uint32_t getButtons();  // return state of up to 32 keys.
 
   protected:
-//		virtual void sendChar(byte pos, byte data, boolean dot);
+//		virtual void sendChar(byte pos, byte data, bool dot);
 	  virtual void bitDelay();
     virtual void start();
     virtual void stop();

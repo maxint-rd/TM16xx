@@ -23,10 +23,10 @@ class TM1640Anode : public TM1640
 {
   public:
     /** Instantiate a TM1640 module specifying data, clock and stobe pins, the display state, the starting intensity (0-7). */
-    TM1640Anode(byte dataPin, byte clockPin, byte numDigits=4, boolean activateDisplay = true, byte intensity = 7);
+    TM1640Anode(byte dataPin, byte clockPin, byte numDigits=4, bool activateDisplay = true, byte intensity = 7);
 
     /** Set an Ascii character on a specific location (overloaded for 15-segment display) */
-		virtual void sendAsciiChar(byte pos, char c, boolean dot); // public method to allow calling from TM16xxDisplay
+		virtual void sendAsciiChar(byte pos, char c, bool dot); // public method to allow calling from TM16xxDisplay
 
 		/** Set the segments at a specific position on or off */
 	  virtual void setSegments(byte segments, byte position);   // will duplicate G to G1/G2 in 15-segment

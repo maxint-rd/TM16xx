@@ -22,7 +22,7 @@ class TM1638QYF : public TM16xx
 {
   public:
     /** Instantiate a tm1638 module specifying the display state, the starting intensity (0-7) data, clock and stobe pins. */
-    TM1638QYF(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay = true, byte intensity = 7);
+    TM1638QYF(byte dataPin, byte clockPin, byte strobePin, bool activateDisplay = true, byte intensity = 7);
 
 		/** Set the segments at a specific position on or off */
 	  virtual void setSegments(byte segments, byte position);

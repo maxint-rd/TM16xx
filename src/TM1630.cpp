@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TM1630.h"
 
-TM1630::TM1630(byte dataPin, byte clockPin, byte strobePin, byte numDigits, boolean activateDisplay, byte intensity)
+TM1630::TM1630(byte dataPin, byte clockPin, byte strobePin, byte numDigits, bool activateDisplay, byte intensity)
   : TM16xx(dataPin, clockPin, strobePin, TM1630_MAX_POS, numDigits, activateDisplay, intensity)
 {
   // Display mode command setting

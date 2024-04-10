@@ -67,7 +67,7 @@ class TM1668 : public TM16xx
 {
   public:
     /** Instantiate a TM1668 module specifying the display state, the starting intensity (0-7) data, clock and stobe pins. */
-    TM1668(byte dataPin, byte clockPin, byte strobePin, byte numDigits = 4, boolean activateDisplay = true, byte intensity = 7, byte displaymode = TM1668_DISPMODE_7x10);
+    TM1668(byte dataPin, byte clockPin, byte strobePin, byte numDigits = 4, bool activateDisplay = true, byte intensity = 7, byte displaymode = TM1668_DISPMODE_7x10);
 
 		/** Set the segments at a specific position on or off */
 	  virtual void setSegments(byte segments, byte position);

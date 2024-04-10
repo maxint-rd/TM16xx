@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "InvertedTM1638.h"
 
-InvertedTM1638::InvertedTM1638(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay,
+InvertedTM1638::InvertedTM1638(byte dataPin, byte clockPin, byte strobePin, bool activateDisplay,
 	byte intensity) : TM1638(dataPin, clockPin, strobePin, activateDisplay, intensity)
 {
 	// nothing to do
@@ -51,7 +51,7 @@ uint32_t InvertedTM1638::getButtons()
 	return buttons;
 }
 
-void InvertedTM1638::sendChar(byte pos, byte data, boolean dot)
+void InvertedTM1638::sendChar(byte pos, byte data, bool dot)
 {
 	TM1638::sendChar(7 - pos, (data & 0xC0) | (data & 0x07) << 3 | (data & 0x38) >> 3, dot);
 }

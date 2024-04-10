@@ -33,11 +33,11 @@ class TM1652 : public TM16xx
   public:
     /** Instantiate a TM1652 module specifying the data pin, number of digits */
     /** DEPRECATED: activation, intensity (0-7) and display mode are no longer used by constructor. */
-    TM1652(byte dataPin, byte numDigits=4, boolean activateDisplay=true, byte intensity=7, byte displaymode = TM1652_DISPMODE_5x8);
+    TM1652(byte dataPin, byte numDigits=4, bool activateDisplay=true, byte intensity=7, byte displaymode = TM1652_DISPMODE_5x8);
     // TODO: remove deprecated parameters - TM1652(byte dataPin, byte numDigits=4);
     virtual void clearDisplay();
-    virtual void setupDisplay(boolean active, byte intensity, byte driveCurrent = 6);
-    virtual void begin(boolean activateDisplay=true, byte intensity=7, byte driveCurrent = 6);
+    virtual void setupDisplay(bool active, byte intensity, byte driveCurrent = 6);
+    virtual void begin(bool activateDisplay=true, byte intensity=7, byte driveCurrent = 6);
 
   protected:
     virtual void start();

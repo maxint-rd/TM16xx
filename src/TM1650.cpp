@@ -11,7 +11,7 @@ Partially based on TM1640 library by MRicardo Batista. See ttps://github.com/rjb
 
 #include "TM1650.h"
 
-TM1650::TM1650(byte dataPin, byte clockPin, byte numDigits, boolean activateDisplay, byte intensity,  byte displaymode)
+TM1650::TM1650(byte dataPin, byte clockPin, byte numDigits, bool activateDisplay, byte intensity,  byte displaymode)
 	: TM16xx(dataPin, clockPin, dataPin, TM1650_MAX_POS, numDigits, activateDisplay, intensity)
 { // NOTE: Like the TM1640 and TM1637, the TM1650 only has DIO and CLK (SDA/SCL). Therefor the DIO-pin is initialized as strobe in the constructor
 	clearDisplay();
@@ -118,7 +118,7 @@ void TM1650::clearDisplay()
   }
 }
 
-void TM1650::setupDisplay(boolean active, byte intensity)
+void TM1650::setupDisplay(bool active, byte intensity)
 {	// For the TM1650 level 0 is maximum brightness, 1-7 is low to high.
 	// To align with other TM16XX chips we translate this to the same levels (0-7)
 	intensity=min(7, intensity);

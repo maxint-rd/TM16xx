@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TM1637.h"
 
-TM1637::TM1637(byte dataPin, byte clockPin, byte numDigits, boolean activateDisplay, byte intensity)
+TM1637::TM1637(byte dataPin, byte clockPin, byte numDigits, bool activateDisplay, byte intensity)
 	: TM16xx(dataPin, clockPin, dataPin, TM1637_MAX_POS, numDigits, activateDisplay, intensity)
 { // NOTE: Like the TM1640, the TM1637 only has DIO and CLK. Therefor the DIO-pin is initialized as strobe in the constructor
 	clearDisplay();

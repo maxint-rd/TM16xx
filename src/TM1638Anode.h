@@ -24,7 +24,7 @@ class TM1638Anode : public TM16xx
 {
   public:
     /** Instantiate a tm1638 module specifying data, clock and stobe pins, the display state, the starting intensity (0-7). */
-    TM1638Anode(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay = true, byte intensity = 7);
+    TM1638Anode(byte dataPin, byte clockPin, byte strobePin, bool activateDisplay = true, byte intensity = 7);
 
 		/** Set the segments at a specific position on or off */
 	  virtual void setSegments(byte segments, byte position);

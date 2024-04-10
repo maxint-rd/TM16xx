@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "TM16xx.h"
 //#include "string.h"
 
-TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, boolean activateDisplay,	byte intensity)
+TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, bool activateDisplay,	byte intensity)
 {
   this->dataPin = dataPin;
   this->clockPin = clockPin;
@@ -59,7 +59,7 @@ TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, by
 */
 }
 
-void TM16xx::setupDisplay(boolean active, byte intensity)
+void TM16xx::setupDisplay(bool active, byte intensity)
 {
   sendCommand(TM16XX_CMD_DISPLAY | (active ? 8 : 0) | min(7, intensity));
 }
@@ -102,7 +102,7 @@ void TM16xx::setSegments16(uint16_t segments, byte position)
 }
 
 
-void TM16xx::sendChar(byte pos, byte data, boolean dot)
+void TM16xx::sendChar(byte pos, byte data, bool dot)
 {
 /*
 	if(pos<_maxDisplays)
@@ -111,7 +111,7 @@ void TM16xx::sendChar(byte pos, byte data, boolean dot)
 	setSegments(data | (dot ? 0b10000000 : 0), pos);
 }
 
-void TM16xx::sendAsciiChar(byte pos, char c, boolean fDot)
+void TM16xx::sendAsciiChar(byte pos, char c, bool fDot)
 { // Method to send an Ascii character to the display
   // This method is also called by TM16xxDisplay.print to display characters
   // The base class uses the default 7-segment font to find the LED pattern.
@@ -120,7 +120,7 @@ void TM16xx::sendAsciiChar(byte pos, char c, boolean fDot)
 }
 
 
-void TM16xx::setDisplayDigit(byte digit, byte pos, boolean dot, const byte numberFont[])
+void TM16xx::setDisplayDigit(byte digit, byte pos, bool dot, const byte numberFont[])
 {
   sendChar(pos, pgm_read_byte_near(numberFont + (digit & 0xF)), dot);
 }
@@ -138,7 +138,7 @@ void TM16xx::setDisplayToDecNumber(int nNumber, byte bDots)		// byte bDots=0
   }
 }
 
-void TM16xx::clearDisplayDigit(byte pos, boolean dot)
+void TM16xx::clearDisplayDigit(byte pos, bool dot)
 {
   sendChar(pos, 0, dot);
 }

@@ -35,9 +35,9 @@ class TM1650 : public TM16xx
 {
   public:
     /** Instantiate a TM1650 module specifying the  data and clock pins, number of digits, display state, the starting intensity (0-7). */
-    TM1650(byte dataPin, byte clockPin, byte numDigits=4, boolean activateDisplay=true, byte intensity=7, byte displaymode = TM1650_DISPMODE_4x8);
+    TM1650(byte dataPin, byte clockPin, byte numDigits=4, bool activateDisplay=true, byte intensity=7, byte displaymode = TM1650_DISPMODE_4x8);
     virtual void clearDisplay();
-    virtual void setupDisplay(boolean active, byte intensity);
+    virtual void setupDisplay(bool active, byte intensity);
     virtual uint32_t getButtons();
 
   protected:

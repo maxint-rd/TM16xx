@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TM1620.h"
 
-TM1620::TM1620(byte dataPin, byte clockPin, byte strobePin, byte numDigits, boolean activateDisplay, byte intensity)
+TM1620::TM1620(byte dataPin, byte clockPin, byte strobePin, byte numDigits, bool activateDisplay, byte intensity)
 	: TM16xx(dataPin, clockPin, strobePin, TM1620_MAX_POS, numDigits, activateDisplay, intensity)
 {
   _maxSegments=10;

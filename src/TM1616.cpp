@@ -11,7 +11,7 @@ Made by Maxint R&D. See https://github.com/maxint-rd/TM16xx
 
 #include "TM1616.h"
 
-TM1616::TM1616(byte dataPin, byte clockPin, byte strobePin, byte numDigits, boolean activateDisplay, byte intensity)
+TM1616::TM1616(byte dataPin, byte clockPin, byte strobePin, byte numDigits, bool activateDisplay, byte intensity)
 	: TM16xx(dataPin, clockPin, strobePin, TM1616_MAX_POS, numDigits, activateDisplay, intensity)
 {
   _maxSegments=7;

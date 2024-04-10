@@ -31,7 +31,7 @@ class InvertedTM1638 : public TM1638
 {
   public:
     /** Instantiate an inverted tm1638 module specifying the display state, the starting intensity (0-7) data, clock and stobe pins. */
-    InvertedTM1638(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay = true, byte intensity = 7);
+    InvertedTM1638(byte dataPin, byte clockPin, byte strobePin, bool activateDisplay = true, byte intensity = 7);
 
     /** Set the LED at pos to color (TM1638_COLOR_RED, TM1638_COLOR_GREEN or both) */
     virtual void setLED(byte color, byte pos);
@@ -39,7 +39,7 @@ class InvertedTM1638 : public TM1638
     virtual uint32_t getButtons();
 
   protected:
-    virtual void sendChar(byte pos, byte data, boolean dot);
+    virtual void sendChar(byte pos, byte data, bool dot);
 };
 
 #endif

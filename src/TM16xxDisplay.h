@@ -42,11 +42,11 @@ class TM16xxDisplay : public Print
   virtual void setDisplayToError();
 
   // Set the display to a unsigned hexadecimal number (with or without leading zeros)
-  void setDisplayToHexNumber(unsigned long number, byte dots, boolean leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
+  void setDisplayToHexNumber(unsigned long number, byte dots, bool leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
   // Set the display to a unsigned decimal number (with or without leading zeros)
-  void setDisplayToDecNumber(unsigned long number, byte dots, boolean leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
+  void setDisplayToDecNumber(unsigned long number, byte dots, bool leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
   // Set the display to a signed decimal number (with or without leading zeros)
-  void setDisplayToSignedDecNumber(signed long number, byte dots, boolean leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
+  void setDisplayToSignedDecNumber(signed long number, byte dots, bool leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
   // Set the display to a unsigned binary number
   void setDisplayToBinNumber(byte number, byte dots, const byte numberFont[] = TM16XX_NUMBER_FONT);
 
@@ -69,7 +69,7 @@ class TM16xxDisplay : public Print
 
  
  private:
-  void setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, boolean leadingZeros, const byte numberFont[]);
+  void setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, bool leadingZeros, const byte numberFont[]);
 #if(TM16XX_OPT_COMBIDISPLAY)
   //TM16xx *TM16xxDisplay::findModuleByPos(const byte nPosFind);
   void sendCharAtCombi(const byte nPosCombi, byte btData, bool fDot);

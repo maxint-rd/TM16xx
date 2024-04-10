@@ -13,7 +13,7 @@ Made by Maxint R&D, based on TM1638 class. See https://github.com/maxint-rd/
 
 #include "TM1638QYF.h"
 
-TM1638QYF::TM1638QYF(byte dataPin, byte clockPin, byte strobePin, boolean activateDisplay, byte intensity)
+TM1638QYF::TM1638QYF(byte dataPin, byte clockPin, byte strobePin, bool activateDisplay, byte intensity)
 	: TM16xx(dataPin, clockPin, strobePin, TM1638QYF_MAX_POS, 8, activateDisplay, intensity)
 {
   _maxSegments=8;		// on the QYF-TM1638 modules the two extra segment lines are not used. The display uses common anode LEDs
