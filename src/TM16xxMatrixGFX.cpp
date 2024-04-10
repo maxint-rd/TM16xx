@@ -57,7 +57,7 @@ void TM16xxMatrixGFX::setIntensity(byte intensity)
 			_aModules[n]->setupDisplay(true, intensity);
 }
 
-void TM16xxMatrixGFX::setMirror(boolean fMirrorX, boolean fMirrorY)	// fMirrorX=false, fMirrorY=false
+void TM16xxMatrixGFX::setMirror(bool fMirrorX, bool fMirrorY)	// fMirrorX=false, fMirrorY=false
 {
 	_fMirrorX=fMirrorX;
 	_fMirrorY=fMirrorY;

@@ -28,7 +28,7 @@ class TM16xxMatrixGFX : public Adafruit_GFX
 	TM16xxMatrixGFX(TM16xx *pModule, byte nColumns, byte nRows);
 	TM16xxMatrixGFX(TM16xx *aModules[], byte nColumns, byte nRows, byte nModulesCol, byte nModulesRow);  // module layout left-top to right-bottom
   void setIntensity(byte intensity);		// intensity 0-7, 0=off, 7=bright
-  void setMirror(boolean fMirrorX=false, boolean fMirrorY=false);
+  void setMirror(bool fMirrorX=false, bool fMirrorY=false);
   void fillScreen(uint16_t color);
   void drawPixel(int16_t x, int16_t y, uint16_t color);
   uint16_t getPixel(int16_t x, int16_t y); // required for scroll support as implemented by Adafruit GFX pull request #60
@@ -43,8 +43,8 @@ class TM16xxMatrixGFX : public Adafruit_GFX
 
   byte _nColumns;
   byte _nRows;
-  boolean _fMirrorX;
-  boolean _fMirrorY;
+  bool _fMirrorX;
+  bool _fMirrorY;
   
   byte *bitmap;
   byte bitmapSize;
