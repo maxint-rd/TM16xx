@@ -36,6 +36,20 @@ The bits are displayed by the mapping below:
 |       |
  -- 3 --  .7
 
+
+Common pinout 7-segments x 4 digits:
+    12 11 10  9  8  7
+     |  |  |  |  |  |
++------------------------+     12, 9, 8, 6: GRD1-GRD4
+|   --   --   --   --    |
+|  |  | |  | |  | |  |   |     1: SEG_E    5: SEG_G
+|   --   --   --   --    |     2: SEG_D    7: SEG_B
+|  |  | |  | |  | |  |   |     3: SEG_DP  10: SEG_F
+|   -- . -- . -- . -- .  |     4: SEG_C   11: SEG_A
++------------------------+
+     |  |  |  |  |  |
+     1  2  3  4  5  6
+
 */
 
 #ifndef TM16XXFonts_h
