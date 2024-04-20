@@ -234,6 +234,15 @@ size_t TM16xxDisplay::write(uint8_t c)
 	Serial.println("");
 	*/
 
+  // first check for dot
+	bool fDot=false;
+	if(c=='.' || c==',' || c==':' || c==';')
+	{
+		c=cPrevious;
+		fDot=true;
+		if(_nPrintPos>0) _nPrintPos--; // use same position to display the dot
+	}
+
   // handle end-of-line
 	if(c=='\0' || c=='\n' || c=='\r' || _nPrintPos>=_nNumDigits)
 	{
@@ -256,13 +265,7 @@ size_t TM16xxDisplay::write(uint8_t c)
 		return(1);
 //#endif
 	}
-	bool fDot=false;
-	if(c=='.' || c==',' || c==':' || c==';')
-	{
-		c=cPrevious;
-		fDot=true;
-		if(_nPrintPos>0) _nPrintPos--; // use same position to display the dot
-	}
+
 	if(_nPrintPos>=0 && _nPrintPos<_nNumDigits)
 	  //_pTM16xx->sendChar(_nPrintPos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
 	  //_pTM16xx->sendAsciiChar(_nPrintPos, c, fDot);
