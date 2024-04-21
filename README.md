@@ -33,6 +33,7 @@ The TM16xx family is quite large. Currently the following chips are supported:
 Type   | Segments x digits    | Buttons      | Interface   | Notes
 ------ | -------------------- | ------------ | ------------|-------------
 TM1616 | 7 x 4                | n/a          | DIN/CLK/STB | 
+TM1618 | 5 x 7 - 8 x 4        | 5 x 1 multi  | DIO/CLK/STB | Anode*
 TM1620 | 8 x 6 - 10 x 4       | n/a          | DIN/CLK/STB |
 TM1628 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
 TM1630 | 7 x 5 - 8 x 4        | 7 x 1 multi  | DIO/CLK/STB |
@@ -43,7 +44,7 @@ TM1650 | 8 x 4                | 7 x 4 single | DIO/CLK     | Not real I2C SDA/SC
 TM1652 | 8 x 5 - 7 x 6        | n/a          | DIN         | Single data line
 TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
 
-\* Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638 and TM1640Anode are also supported.
+\* Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638, TM1618Anode and TM1640Anode are also supported.
 
 See the [documents folder](/documents) for datasheets containing more information about these chips and their pinouts.
 
@@ -244,6 +245,7 @@ Added library functionality:
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
 - Support for combining multiple matrix modules into one large Adafruit GFX matrix.
 - Support for TM1616 (suggested by @NickLplus)
+- Support for TM1616 with 8x4 common cathode or 7x5 common anode displays (suggested by @ArnieO).
 - Support for TM1620 (thanks @eddwhite)
 - Support for TM1628. Note: TM1628 can be used in 10x7 - 13x4 display modes.
 - Support for TM1630 (thanks @tokuhira)
@@ -267,7 +269,7 @@ Functionality in original library by Ricardo Batista:
 - Reading simultaneous button presses on TM1638;
 
 ## Features & limitations
-- The current version of this library supports ESP8266/ESP32, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Compatible MCUs such as LGT8F328P are also supported. Raspberry Pi Pico RP2040 is supported too (tested with core 2.5.2 by Earle Philhower). Please let me know if you've successfully used this library with other MCUs.
+- The current version of this library supports ESP8266/ESP32, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Compatible MCUs such as LGT8F328P are also supported. Raspberry Pi Pico RP2040 is supported too (tested with core 2.5.2 by Earle Philhower). Support for CH32/STM32 is under development. Please let me know if you've successfully used this library with other MCUs.
 - For TM1640 on Pi Pico [stability issues](https://github.com/maxint-rd/TM16xx/issues/34) were reported (requiring further analysis).
 - The TM16xx chips offer no support for daisychaining multiple chips, but when separate Clk or Latch lines are used the Din line can be shared for combined displays.
 - It is possible to define multiple display objects for multiple different modules (see the TM1638_TM1637ex_two_modules example). The library now supports combining multiple 7-segment modules into one display using the TM16xxDisplay class (example for combined TM16xxDisplay to be included soon). 
@@ -309,6 +311,7 @@ If you happen to own a device featuring a TM16xx chip, feel free to open a new i
 - A TM1637 library optimized for speed and size: [/Erriez/ErriezTM1637](https://github.com/Erriez/ErriezTM1637)
 - TM1637 library optimized for ATtiny85 with alphanumeric animations: [/jasonacox/TM1637TinyDisplay](https://github.com/jasonacox/TM1637TinyDisplay) and [online animator](https://jasonacox.github.io/TM1637TinyDisplay/examples/7-segment-animator.html)
 - TM1650 library that uses the Wire interface: [/mozgy/Mozz_TM1650](https://github.com/mozgy/Mozz_TM1650)
+- A TM16XX library with an interesting generic approach: [sufzoli/TM16XX](https://github.com/sufzoli/TM16XX)
 - MAX7219 LED Matrix library: [/markruys/arduino-Max72xxPanel](https://github.com/markruys/arduino-Max72xxPanel)
 - OneButton multi-state buttons: [/mathertel/OneButton](https://github.com/mathertel/OneButton)
 - Adafruit GFX library: [/adafruit/Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library)
