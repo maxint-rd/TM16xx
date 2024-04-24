@@ -70,14 +70,6 @@ void TM16xxDisplay::sendAsciiCharAtCombi(const byte nPosCombi, char c, bool fDot
 {   // set the specified Ascii character at specified position of the module that has that position
   byte nPos=nPosCombi;
 
-/*
-Serial.print(F("TM16xx::sendAsciiCharAtCombi("));
-Serial.print(nPosCombi);
-Serial.print(",'");
-Serial.print(c);
-Serial.println("');");
-*/
-
   for(int i=0; i<_nNumModules; i++)
   {
     if(nPos<0)
@@ -108,7 +100,7 @@ void TM16xxDisplay::setIntensity(byte intensity)
 
 
 void TM16xxDisplay::setDisplayToString(const char* string, const word dots, const byte pos, const byte font[])
-{	// call basic implementation
+{	// call base implementation
 	_pTM16xx->setDisplayToString(string, dots, pos, font);
 }
 
@@ -222,7 +214,7 @@ size_t TM16xxDisplay::write(uint8_t c)
   static uint8_t cPrevious=' ';		// remember last character prnted, to add a dot when needed
   static bool fPrevDot=false;     // remember last dot, for showing ...
 
-  // first check for dot
+  // first check for dot to possibly combine with previous character
   bool fDot=false;
   if(c=='.' || c==',' || c==':' || c==';')
   {
@@ -233,9 +225,9 @@ size_t TM16xxDisplay::write(uint8_t c)
       if(_nPrintPos>0) _nPrintPos--; // use same position to display the dot
       c=cPrevious;
     }
-		fDot=true;
+    fDot=true;
     fPrevDot=true;
-	}
+  }
   else
     fPrevDot=false;
 
