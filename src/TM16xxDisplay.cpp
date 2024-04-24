@@ -219,66 +219,59 @@ void TM16xxDisplay::setCursor(int8_t nPos)
 */
 size_t TM16xxDisplay::write(uint8_t c)
 {	//Code to display letter when given the ASCII code for it
-	static uint8_t cPrevious=' ';		// remember last character prnted, to add a dot when needed
-	/*
-	Serial.print(F("Pos "));
-	Serial.print(_nPrintPos);
-	Serial.print(F(" chr "));
-	Serial.print(c);
-	Serial.print("=");
-	Serial.write(c);
-	Serial.print(F(", prev "));
-	Serial.print(cPrevious);
-	Serial.print("=");
-	Serial.write(cPrevious);
-	Serial.println("");
-	*/
+  static uint8_t cPrevious=' ';		// remember last character prnted, to add a dot when needed
+  static bool fPrevDot=false;     // remember last dot, for showing ...
 
   // first check for dot
-	bool fDot=false;
-	if(c=='.' || c==',' || c==':' || c==';')
-	{
-		c=cPrevious;
+  bool fDot=false;
+  if(c=='.' || c==',' || c==':' || c==';')
+  {
+    if(fPrevDot)
+      c=' ';
+    else
+    {
+      if(_nPrintPos>0) _nPrintPos--; // use same position to display the dot
+      c=cPrevious;
+    }
 		fDot=true;
-		if(_nPrintPos>0) _nPrintPos--; // use same position to display the dot
+    fPrevDot=true;
 	}
+  else
+    fPrevDot=false;
 
   // handle end-of-line
-	if(c=='\0' || c=='\n' || c=='\r' || _nPrintPos>=_nNumDigits)
-	{
-		while(_nPrintPos>0 && _nPrintPos<_nNumDigits)
-		{	// clear the remainder of the line
-#if(TM16XX_OPT_COMBIDISPLAY)
+  if(c=='\0' || c=='\n' || c=='\r' || _nPrintPos>=_nNumDigits)
+  {
+    while(_nPrintPos>0 && _nPrintPos<_nNumDigits)
+    {	// clear the remainder of the line
+    #if(TM16XX_OPT_COMBIDISPLAY)
       sendCharAtCombi(_nPrintPos, 0, false);    // sending 0 is same as clearDisplayDigit()
-#else
-			_pTM16xx->clearDisplayDigit(_nPrintPos);
-#endif
-			//Serial.println(_nPrintPos);
-			_nPrintPos++;
-		}
+    #else
+      _pTM16xx->clearDisplayDigit(_nPrintPos);
+    #endif
+      _nPrintPos++;
+    }
 
     // MMOLE 211103: Returning zero from write should stop printing rest of the string.
     // However, on ESP32 print() won't stop when returning 0, so for compatibility we return 1.
     // and only reset the print position when we're at the end. This should work on all platforms.
     if(c=='\0' || c=='\n' || c=='\r')
-  		_nPrintPos=0;
-		return(1);
-//#endif
-	}
+    _nPrintPos=0;
+    cPrevious=' ';
+    fPrevDot=false;
+    return(1);
+  }
 
-	if(_nPrintPos>=0 && _nPrintPos<_nNumDigits)
-	  //_pTM16xx->sendChar(_nPrintPos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
-	  //_pTM16xx->sendAsciiChar(_nPrintPos, c, fDot);
-#if(TM16XX_OPT_COMBIDISPLAY)
-      //sendCharAtCombi(_nPrintPos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
-			sendAsciiCharAtCombi(_nPrintPos, c, fDot);
-#else
-	  //_pTM16xx->sendChar(_nPrintPos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
-	  _pTM16xx->sendAsciiChar(_nPrintPos, c, fDot);
-#endif
-	cPrevious=c;
-	_nPrintPos++;
-	return(1);
+  // print character
+  if(_nPrintPos>=0 && _nPrintPos<_nNumDigits)
+  #if(TM16XX_OPT_COMBIDISPLAY)
+    sendAsciiCharAtCombi(_nPrintPos, c, fDot);
+  #else
+    _pTM16xx->sendAsciiChar(_nPrintPos, c, fDot);
+  #endif
+  cPrevious=c;
+  _nPrintPos++;
+  return(1);
 }
 
 /* MMOLE: not called by print()
