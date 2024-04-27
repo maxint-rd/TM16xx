@@ -215,8 +215,9 @@ size_t TM16xxDisplay::write(uint8_t c)
   static bool fPrevDot=false;     // remember last dot, for showing ...
 
   // first check for dot to possibly combine with previous character
+  // note that dot at end might still fit, eg. "HELP."
   bool fDot=false;
-  if(c=='.' || c==',' || c==':' || c==';')
+  if((c=='.' || c==',' || c==':' || c==';') && _nPrintPos<=_nNumDigits && cPrevious!='\0')
   {
     if(fPrevDot)
       c=' ';
@@ -248,8 +249,8 @@ size_t TM16xxDisplay::write(uint8_t c)
     // However, on ESP32 print() won't stop when returning 0, so for compatibility we return 1.
     // and only reset the print position when we're at the end. This should work on all platforms.
     if(c=='\0' || c=='\n' || c=='\r')
-    _nPrintPos=0;
-    cPrevious=' ';
+      _nPrintPos=0;
+    cPrevious='\0';
     fPrevDot=false;
     return(1);
   }
