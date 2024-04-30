@@ -7,7 +7,7 @@ The TM16xx chip family allows driving 7-segment LED displays or LED matrices.
 Next to built-in high-frequency LED multiplexing, they offer control of LED brightness.
 Most TM16xx chips also support reading key-scan data for button presses.
 Using this library you can simply use print() on a 7-segment display or use Adafruit GFX on a LED matrix.
-Currently this library supports the TM1616, TM1620, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650 TM1652 and TM1668 chips. Note that there are similar chips made by other manufacturers that may be compatible with the Titan Micro chips. For instance: the HBS640 by WINRISE is compatible with the TM1640.
+Currently this library supports the TM1616, TM1618, TM1620, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650 TM1652 and TM1668 chips. Note that there are similar chips made by other manufacturers that may be compatible with the Titan Micro chips. For instance: the HBS640 by WINRISE is compatible with the TM1640.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
 
@@ -245,7 +245,7 @@ Added library functionality:
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
 - Support for combining multiple matrix modules into one large Adafruit GFX matrix.
 - Support for TM1616 (suggested by @NickLplus)
-- Support for TM1616 with 8x4 common cathode or 7x5 common anode displays (suggested by @ArnieO).
+- Support for TM1618 with 8x4 common cathode or 7x5 common anode displays (suggested by @ArnieO).
 - Support for TM1620 (thanks @eddwhite)
 - Support for TM1628. Note: TM1628 can be used in 10x7 - 13x4 display modes.
 - Support for TM1630 (thanks @tokuhira)
