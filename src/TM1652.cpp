@@ -56,7 +56,10 @@ void TM1652::send(byte data)
   #define TM1652_BITDELAY 49     // NOTE: core 1.0.6 of LGT8F328@32MHz miscalculates delayMicroseconds() (should be 52us delay). For fix see https://github.com/dbuezas/lgt8fx/issues/18
   bool fParity=true;
 
-  noInterrupts();
+  // To improve timing accuracy sending data should not be interrupted. 
+  // However, having interrupts may be required by delayMicroseconds (e.g. on RP2040)
+  // Interrupts during data could be a bigger issue on slower processors.
+  //noInterrupts();
 
   // start - low
   digitalWrite(dataPin, LOW);
@@ -77,7 +80,7 @@ void TM1652::send(byte data)
 
   // stop - high
   digitalWrite(dataPin, HIGH);
-  interrupts();
+  //interrupts();
 
   delayMicroseconds(TM1652_BITDELAY);
   // idle - remain high
