@@ -231,6 +231,10 @@ void TM16xx::sendCommand(byte cmd)
 
 void TM16xx::sendData(byte address, byte data)
 {
+  // Pull-up off
+	pinMode(dataPin, OUTPUT);
+	digitalWrite(dataPin, LOW);
+  
   sendCommand(TM16XX_CMD_DATA_FIXED);							// use fixed addressing for data
 	start();
   send(TM16XX_CMD_ADDRESS | address);						// address command + address
