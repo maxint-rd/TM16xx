@@ -108,7 +108,12 @@ void TM16xx::sendChar(byte pos, byte data, bool dot)
 	if(pos<_maxDisplays)
 	  sendData(pos, data | (dot ? 0b10000000 : 0));
 */
-	setSegments(data | (dot ? 0b10000000 : 0), pos);
+  if(this->flipped)
+  {
+    byte xored = (data ^ (data >> 3)) & (7);
+    data = data ^ (xored | (xored << 3));
+  }
+	setSegments(data | (dot ? 0b10000000 : 0), this->flipped ? this->_maxDisplays - 1 - pos : pos);
 }
 
 void TM16xx::sendAsciiChar(byte pos, char c, bool fDot)
@@ -119,6 +124,11 @@ void TM16xx::sendAsciiChar(byte pos, char c, bool fDot)
   sendChar(pos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
 }
 
+
+void TM16xx::setDisplayFlipped(bool flipped)
+{
+  this->flipped = flipped;
+}
 
 void TM16xx::setDisplayDigit(byte digit, byte pos, bool dot, const byte numberFont[])
 {
