@@ -80,6 +80,8 @@ class TM16xx
 	  virtual void setSegments16(uint16_t segments, byte position);   // some modules support more than 8 segments
 	  
 	  // Basic display functions. For additional display features use the TM16xxDisplay class
+    /** sets flipped state of the display */
+    virtual void setDisplayFlipped(bool flipped);
     /** Set a single display at pos (starting at 0) to a digit (left to right) */
     virtual void setDisplayDigit(byte digit, byte pos=0, bool dot=false, const byte numberFont[] = TM16XX_NUMBER_FONT);
 		/** Set the display to a decimal number */
@@ -138,6 +140,8 @@ auto min(T x, U y) -> decltype(x>y ? x : y)
     byte dataPin;
     byte clockPin;
     byte strobePin;
+
+    bool flipped=0; // sets the flipped state of the display
 };
 
 #endif
