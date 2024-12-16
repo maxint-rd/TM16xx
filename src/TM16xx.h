@@ -16,15 +16,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 #ifndef TM16XX_h
 #define TM16XX_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
-#else
-	#include "WProgram.h"
-#endif
+#include "Arduino.h"
 
 #if !defined(__max)
 // MMOLE 180325: min, max are no macro in ESP core 2.3.9 libraries, see https://github.com/esp8266/Arduino/issues/398
@@ -63,11 +58,11 @@ class TM16xx
   public:
     /**
      * Instantiate a TM16xx module specifying data, clock and strobe pins (no strobe on some modules),
-     * the maximum number of displays supported by the chip (as provided by derived chip specific class), 
-     * the number of digits used to display numbers or text, 
-     * display state and the starting intensity (0-7).
+     * maxDisplays - the maximum number of displays supported by the chip (as provided by derived chip specific class), 
+     * nDigitsUsed - the number of digits used to display numbers or text, 
      */
     TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, bool activateDisplay=true,	byte intensity=7);
+    /** DEPRECATED: activation, intensity (0-7) and display mode are no longer used by constructor. */
 
     /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
     virtual void setupDisplay(bool active, byte intensity);
@@ -75,12 +70,15 @@ class TM16xx
     /** Clear the display */
 		virtual void clearDisplay();
 
+    /** Use explicit call in setup() or rely on implicit call by sendData(); calls setupDisplay() and clearDisplay() */
+    virtual void begin(bool activateDisplay=true, byte intensity=7);
+
     /** Set segments of the display */
 	  virtual void setSegments(byte segments, byte position);
 	  virtual void setSegments16(uint16_t segments, byte position);   // some modules support more than 8 segments
 	  
 	  // Basic display functions. For additional display features use the TM16xxDisplay class
-    /** sets flipped state of the display */
+    /** sets flipped state of the display (every digit is rotated 180 degrees) */
     virtual void setDisplayFlipped(bool flipped);
     /** Set a single display at pos (starting at 0) to a digit (left to right) */
     virtual void setDisplayDigit(byte digit, byte pos=0, bool dot=false, const byte numberFont[] = TM16XX_NUMBER_FONT);
@@ -133,15 +131,12 @@ auto min(T x, U y) -> decltype(x>y ? x : y)
 }
 #endif  // !defined(max)
 
-    byte _maxDisplays=2;		// maximum number of digits (grids), chip-dependent
-    byte _maxSegments=8;		// maximum number of segments per display, chip-dependent
-
-    byte digits;		// number of digits in the display, module dependent
+    byte _maxDisplays=2;  // maximum number of digits (grids), chip-dependent
+    byte _maxSegments=8;  // maximum number of segments per display, chip-dependent
+    bool flipped=false;   // sets the flipped state of the display};
+    byte digits;          // number of digits in the display, module dependent
     byte dataPin;
     byte clockPin;
     byte strobePin;
-
-    bool flipped=0; // sets the flipped state of the display
 };
-
 #endif

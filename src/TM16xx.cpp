@@ -1,5 +1,5 @@
 /*
-TM16xx.h - Library for TM1637, TM1638 and similar chips.
+TM16xx.cpp - Library for TM1637, TM1638 and similar chips.
 Modified by Maxint R&D. See https://github.com/maxint-rd/
 
 Copyright (C) 2011 Ricardo Batista (rjbatista <at> gmail <dot> com)
@@ -17,17 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
-#else
-	#include "WProgram.h"
-#endif
-
 #include "TM16xx.h"
-//#include "string.h"
 
 TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, bool activateDisplay,	byte intensity)
 {
+  // DEPRECATED: activation, intensity (0-7) and display mode are no longer used by constructor.  
   this->dataPin = dataPin;
   this->clockPin = clockPin;
   this->strobePin = strobePin;
@@ -41,26 +35,17 @@ TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, by
   digitalWrite(strobePin, HIGH);
   digitalWrite(clockPin, HIGH);
 
-  //sendCommand(TM16XX_CMD_DISPLAY | (activateDisplay ? 8 : 0) | min(7, intensity));		// display command: on or intensity
-
-/*
-  sendCommand(TM16XX_CMD_DATA_AUTO);			// data command: set data mode to auto-increment write mode
-	start();
-  send(TM16XX_CMD_ADDRESS);					// address command + address C0H
-  for (int i = 0; i < 16; i++) {		// TM1638 and TM1640 have 16 data addresses, TM1637 and TM1668 have less, but will wrap.
-    send(0x00);
-  }
-	stop();
-*/	
-	// Note: calling these methods should be done in constructor of derived class in order to use properly initialized members!
-/*
-	clearDisplay();
-	setupDisplay(activateDisplay, intensity);
-*/
+  // NOTE: CONSTRUCTORS SHOULD NOT CALL DELAY() <= gives hanging on certain ESP8266/ESP32 cores as well as on LGT8F328P 
+  // Using micros() or millis() in constructor also gave issues on LST8F328P and CH32V003.
+  // Some TM16xx chips uses bit-timing to communicate, so clearDisplay() and setupDisplay() cannot be called in constructor.
+  // Call begin() in setup() to clear the display and set initial activation and intensity.
+  // To make begin() optional, sendData() implicitely calls begin(). Although it will execute only once, it may cause a
+  // second call to clearDisplay() by an explicit call to clearDisplay(). Therefor sketches should preferably call begin().
 }
 
 void TM16xx::setupDisplay(bool active, byte intensity)
-{
+{ // Set the display intensity and switch it on/off
+  // Some TM16xx classes (e.g. TM1650) use _maxSegments in setupDisplay() to also set the display mode.
   sendCommand(TM16XX_CMD_DISPLAY | (active ? 8 : 0) | min(7, intensity));
 }
 
@@ -77,12 +62,25 @@ void TM16xx::clearDisplay()
   send(TM16XX_CMD_ADDRESS);
   for (int i = 0; i < _maxDisplays; i++) {
     send(0x00);
-    if(_maxSegments>8)
+    if(_maxSegments>8)    // TODO: some chips (e.g. TM1618) have 8-segments or less, but still use two bytes!
     	send(0x00);		// send second byte (applicable to TM1638 and TM1668)
   }
 	stop();
 
 }
+
+void TM16xx::begin(bool activateDisplay, byte intensity)
+{ // Call begin() in setup() to clear the display and set initial activation and intensity.
+  // begin() is implicitly called upon first sending of display data, but only executes once.
+  // Some chips may require begin() to initialize communication or other things.
+  static bool fBeginDone=false;
+  if(fBeginDone)
+    return;
+  fBeginDone=true;
+  clearDisplay();
+  setupDisplay(activateDisplay, intensity);
+} 
+  
 
 void TM16xx::setSegments(byte segments, byte position)
 {	// set 8 leds on common grd as specified
@@ -109,7 +107,9 @@ void TM16xx::sendChar(byte pos, byte data, bool dot)
 	  sendData(pos, data | (dot ? 0b10000000 : 0));
 */
   if(this->flipped)
-  {
+  { // Flip the character 180 degrees by some clever bit-manipulation.
+    // (see PR #58 and issue #20 for info and references)
+    // NOTE: for now only support for 7-segment characters
     byte xored = (data ^ (data >> 3)) & (7);
     data = data ^ (xored | (xored << 3));
   }
@@ -124,9 +124,9 @@ void TM16xx::sendAsciiChar(byte pos, char c, bool fDot)
   sendChar(pos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
 }
 
-
 void TM16xx::setDisplayFlipped(bool flipped)
-{
+{ // Set flipped state of the display (every digit is rotated 180 degrees)
+  // Note: this only changes subsequent displayed characters, not the current 
   this->flipped = flipped;
 }
 
@@ -241,6 +241,7 @@ void TM16xx::sendCommand(byte cmd)
 
 void TM16xx::sendData(byte address, byte data)
 {
+  begin();    // begin() is implicitly called upon first sending of display data, but executes only once.
   sendCommand(TM16XX_CMD_DATA_FIXED);							// use fixed addressing for data
 	start();
   send(TM16XX_CMD_ADDRESS | address);						// address command + address
