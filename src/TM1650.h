@@ -12,17 +12,12 @@ Partially based on TM1640 library by MRicardo Batista. See https://github.com/rj
 #ifndef TM1650_h
 #define TM1650_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
-#else
-	#include "WProgram.h"
-#endif
-
 #include "TM16xx.h"
 
 #define TM1650_MAX_POS 4
 
-// TM1650 has two display modes: 8 seg x 4 grd and 7 seg x 4 grd
+// TM1650 has two display modes: 8 seg x 4 grd and 7 seg x 4 grd. 
+// In 7-segment mode the DP/KP pin can be used to signal an interrupt when a key is pressed.
 #define TM1650_DISPMODE_4x8 0x01
 #define TM1650_DISPMODE_4x7 0x09
 
@@ -34,8 +29,10 @@ Partially based on TM1640 library by MRicardo Batista. See https://github.com/rj
 class TM1650 : public TM16xx
 {
   public:
-    /** Instantiate a TM1650 module specifying the  data and clock pins, number of digits, display state, the starting intensity (0-7). */
+    /** Instantiate a TM1650 module specifying the data and clock pins, number of digits. */
+    /** DEPRECATED: activation, intensity (0-7) are no longer used by TM16xx constructor. */
     TM1650(byte dataPin, byte clockPin, byte numDigits=4, bool activateDisplay=true, byte intensity=7, byte displaymode = TM1650_DISPMODE_4x8);
+    // TODO: remove deprecated parameters - how about displaymode that is needed by TM1650 and cannot be determined using numDigits?
     virtual void clearDisplay();
     virtual void setupDisplay(bool active, byte intensity);
     virtual uint32_t getButtons();
