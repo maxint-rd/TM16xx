@@ -36,6 +36,9 @@ class TM16xxDisplay : public Print
 
   virtual void clear();
 
+  /** sets flipped state of the display (every digit is rotated 180 degrees) */
+  virtual void setDisplayFlipped(bool flipped);
+
   // Set the display to the String (defaults to built in font)
   virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
   virtual void setDisplayToString(String string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
@@ -60,6 +63,7 @@ class TM16xxDisplay : public Print
   TM16xx *_pTM16xx;
   byte _nNumDigits;
   int8_t _nPrintPos=0;
+  bool _fFlipped=false;
 
 #if(TM16XX_OPT_COMBIDISPLAY)
   TM16xx *_apTM16xx[1];           // place to hold value when only one module is used
@@ -72,7 +76,7 @@ class TM16xxDisplay : public Print
   void setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, bool leadingZeros, const byte numberFont[]);
 #if(TM16XX_OPT_COMBIDISPLAY)
   //TM16xx *TM16xxDisplay::findModuleByPos(const byte nPosFind);
-  void sendCharAtCombi(const byte nPosCombi, byte btData, bool fDot);
+  //void sendCharAtCombi(const byte nPosCombi, byte btData, bool fDot);
   void sendAsciiCharAtCombi(const byte nPosCombi, char c, bool fDot);
 #endif
 

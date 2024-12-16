@@ -49,6 +49,7 @@ TM16xx *TM16xxDisplay::findModuleByPos(const byte nPosFind)
 }
 */
 
+/*
 void TM16xxDisplay::sendCharAtCombi(const byte nPosCombi, byte btData, bool fDot)
 {   // set the specified data at specified position of the module that has that position
   byte nPos=nPosCombi;
@@ -65,18 +66,23 @@ void TM16xxDisplay::sendCharAtCombi(const byte nPosCombi, byte btData, bool fDot
       nPos-=_aModules[i]->getNumDigits();
   }
 }
+*/
 
 void TM16xxDisplay::sendAsciiCharAtCombi(const byte nPosCombi, char c, bool fDot)
-{   // set the specified Ascii character at specified position of the module that has that position
+{ // Set the specified Ascii character at specified position of the module that has that position
+  // If the display is flipped, the position should be reversed as a whole, but also position in the module (to compensate for reversal done in TM16xx).
+  // Note that each individual module can have a different size (just to complicate things).
   byte nPos=nPosCombi;
 
+  if(this->_fFlipped)
+    nPos=_nNumDigits-1-nPos;
   for(int i=0; i<_nNumModules; i++)
   {
     if(nPos<0)
       return;
     if(nPos < _aModules[i]->getNumDigits())
     {
-  	  _aModules[i]->sendAsciiChar(nPos, c, fDot);
+  	  _aModules[i]->sendAsciiChar(this->_fFlipped ? _aModules[i]->getNumDigits()-1-nPos : nPos, c, fDot);
       return;
     }
     else
@@ -95,6 +101,20 @@ void TM16xxDisplay::setIntensity(byte intensity)
   }
 #else
 	_pTM16xx->setupDisplay(intensity!=0, intensity);
+#endif
+}
+
+void TM16xxDisplay::setDisplayFlipped(bool flipped)
+{ // set flipped state of each module used in the display (every digit is rotated 180 degrees)
+  // note: this only changes subsequent displayed characters, not the current 
+  this->_fFlipped = flipped;
+#if(TM16XX_OPT_COMBIDISPLAY)
+  for(int i=0; i<_nNumModules; i++)
+  {
+  	_aModules[i]->setDisplayFlipped(flipped);
+  }
+#else
+	_pTM16xx->setDisplayFlipped(flipped);
 #endif
 }
 
@@ -238,7 +258,8 @@ size_t TM16xxDisplay::write(uint8_t c)
     while(_nPrintPos>0 && _nPrintPos<_nNumDigits)
     {	// clear the remainder of the line
     #if(TM16XX_OPT_COMBIDISPLAY)
-      sendCharAtCombi(_nPrintPos, 0, false);    // sending 0 is same as clearDisplayDigit()
+      //sendCharAtCombi(_nPrintPos, 0, false);    // sending 0 is same as clearDisplayDigit()
+      sendAsciiCharAtCombi(_nPrintPos, ' ', false);    // sending space is same as clearDisplayDigit()
     #else
       _pTM16xx->clearDisplayDigit(_nPrintPos);
     #endif
