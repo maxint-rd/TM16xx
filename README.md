@@ -40,7 +40,7 @@ TM1630 | 7 x 5 - 8 x 4        | 7 x 1 multi  | DIO/CLK/STB |
 TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK     |
 TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB | Anode/Inverted/QYF*
 TM1640 | 8 x 16               | n/a          | DIN/CLK     | Anode*
-TM1650 | 8 x 4                | 7 x 4 single | DIO/CLK     | Not real I2C SDA/SCL
+TM1650 | 8 x 4                | 7 x 4 multi  | DIO/CLK     | Not real I2C SDA/SCL
 TM1652 | 8 x 5 - 7 x 6        | n/a          | DIN         | Single data line
 TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
 
@@ -255,7 +255,7 @@ Added library functionality:
 - Full support for QYF-TM1638 module (8 digit common anode LED display and 4x4 keypad)
 - Support for TM1638 in Anode Mode (10 digit common anode LED 8 segment display) (see [TM1638Anode.h](/src/TM1638Anode.h))
 - Support for TM1640 in Anode Mode (8 digit common anode LED 16 segment display) (see [TM1640Anode.h](/src/TM1640Anode.h))
-- Support for TM1650. Note: TM1650 can be used in 8x4 or 7x4 display mode. Datasheet fully translated.
+- Support for TM1650. Note: TM1650 can be used in 8x4 or 7x4 display mode and supports simultaneous presses on K1/K2.
 - Support for TM1652. Note: TM1652 uses a single data line and fixed timing to determine the clock. Datasheet fully translated.
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes. Datasheet partly translated.
 - Support for release, click, doubleclick and long press button detection using callback functions.
