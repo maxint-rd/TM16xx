@@ -14,9 +14,12 @@ TM1652::TM1652(byte dataPin, byte numDigits, bool activateDisplay, byte intensit
 	: TM16xx(dataPin, dataPin, dataPin, TM1652_MAX_POS, numDigits, activateDisplay, intensity)
 { // The TM1652 only has DIN, no CLK or STB. Therefor the DIN-pin is initialized in the parent-constructor as CLK and STB, but not used for anything else.
   // DEPRECATED: activation, intensity (0-7) and display mode are no longer used by constructor.  
+  // For TM1652 the display mode is either 5x8 or 6x7. setupDisplay() will set display mode to 7 segments when numDigits is larger than 5.
 
   // NOTE: CONSTRUCTORS SHOULD NOT CALL DELAY() <= gives hanging on certain ESP8266 cores as well as on LGT8F328P
-  // Using micros() or millis() in constructor also gave issues on LST8F328P.
+  // Using micros() or millis() in constructor also gave issues on LST8F328P and CH32.
+  // Root cause is that the timer interrupt to update these counters may not be set until setup() is called.
+
   // TM1652 uses bit timing to communicate, so clearDisplay() and setupDisplay() cannot be called in constructor.
   // Call begin() in setup() to clear the display and set initial activation and intensity.
 
@@ -53,13 +56,15 @@ void TM1652::send(byte data)
 	// Note: while segment data is LSB-first, address bits and SEG/GRID intensity bit are reversed
 	// The address command can be followed by multiple databytes, requiring specific timing to distinguish multiple commands
   //  - start bit, 8x data bits, parity bit, stop bit; 52 us = 19200bps
+  // (Datasheet: "The baud rate range supported by TM1652 is: 17500bps ~ 21200bps [...] the time range of each bit is: 47us ~ 57us."
+  // To compensate for processing instructions on slower processors, BITDELAY is set lower than 52
+  // Testing on CH32V003 @ 48Mhz, showed that value working fine. Faster processors may need a higher delay. TODO: test other MCU's.
   #define TM1652_BITDELAY 49     // NOTE: core 1.0.6 of LGT8F328@32MHz miscalculates delayMicroseconds() (should be 52us delay). For fix see https://github.com/dbuezas/lgt8fx/issues/18
   bool fParity=true;
 
-  // To improve timing accuracy sending data should not be interrupted. 
-  // However, having interrupts may be required by delayMicroseconds (e.g. on RP2040)
+  // Note: To improve timing accuracy, sending data should not be interrupted. 
+  // However, having interrupts may be required by timing functions such as delayMicroseconds (e.g. on RP2040)
   // Interrupts during data could be a bigger issue on slower processors.
-  //noInterrupts();
 
   // start - low
   digitalWrite(dataPin, LOW);
@@ -80,21 +85,17 @@ void TM1652::send(byte data)
 
   // stop - high
   digitalWrite(dataPin, HIGH);
-  //interrupts();
-
   delayMicroseconds(TM1652_BITDELAY);
+
   // idle - remain high
   delayMicroseconds(TM1652_BITDELAY);
 }
 
 void TM1652::waitCmd(void)
-{ // wait for at least 3ms since previous call to ensure TM1652 treats next byte as new command
-  #define TM1652_WAITCMD 3000
-  //static uint32_t tLastCmd=micros();
-  while(micros()-tLastCmd < TM1652_WAITCMD);    // wait 3 ms to ensure next byte is interpreted as a command
-  //tLastCmd=micros();
-  // NOTE: CONSTRUCTORS SHOULD NOT CALL DELAY() <= gives hanging on certain ESP8266 cores as well as on LGT8F328P
-  // Using micros() or millis() in constructor also gave issues on LST8F328P
+{ // Wait for at least 3ms since previous call to ensure TM1652 treats next byte as new command
+  // Datasheet: "Time: Data line high time (minimum time is 3ms)"
+  #define TM1652_WAITCMD 3000L
+  while(micros() < tLastCmd + TM1652_WAITCMD);    // NOTE: tLastCmd is 32-bit => wrap-around is about 4295 sec
 }
 
 void TM1652::endCmd(void)
@@ -105,7 +106,7 @@ void TM1652::endCmd(void)
 void TM1652::sendData(byte address, byte data)
 {	// TM1652 uses different commands than other TM16XX chips
   //   byte positions[]={B00001000, B10001000, B01001000, B11001000, B00101000, B10101000};
-  begin();    // begin() is implicitly called upon first sending of display data, but ony executes once.
+  begin();    // begin() is implicitly called upon first sending of display data, but only executes once.
   waitCmd();
   send(TM1652_CMD_ADDRESS | reverseByte(address&0x07));						// address command + address (reversed as documented)
   send(data);
@@ -132,24 +133,17 @@ void TM1652::clearDisplay()
 }
 
 void TM1652::setupDisplay(bool active, byte intensity, byte driveCurrent)
-{	// For the TM1652 level 0-7 is low to high.
-	// In addition to setting drive current in 8 steps, TM1652 also allows setting the duty cycle in 16 steps
-	// To align with other TM16XX chips we translate intensity to the same comparible scale (0-7) to set the duty cycle
-	// added capability to change the drive current on a scale from (0-6), there are 8 levels, but only 7 usable (note in datasheet).
+{	// Set the display active/inactive, set display mode and set intensity/driveCurrent.
+  // For the TM1652 the levels 0-7 are low to high.
+	// In addition to setting drive current in 8 steps, TM1652 also allows setting the duty cycle in 16 steps.
+	// To align with other TM16XX chips we translate intensity to the same comparible scale (0-7) to set the duty cycle.
+	// Drive current can be set on a scale from (0-6). There are 8 levels, but only 7 are usable.
+  // Datasheet: "When the segment drive current is 1/8, the current provided by the chip is not enough to light
+  //             the ordinary digital tube, so it is recommended to set the segment drive current to 2/8 at least".
 	// sendCommand(0xEE);
-    // sendCommand((active ? 0xF0 : 0) | reverseByte((intensity&0x07)<<4) | (_maxSegments==8? TM1652_DISPMODE_5x8 : TM1652_DISPMODE_6x7));
+  // sendCommand((active ? 0xF0 : 0) | reverseByte((intensity&0x07)<<4) | (_maxSegments==8? TM1652_DISPMODE_5x8 : TM1652_DISPMODE_6x7));
   sendCommand((active ? reverseByte(((intensity&0x07)<<1)|0x01) : 0) | (active ? (reverseByte((driveCurrent + 0x01)&0x07) >> 4) : 0) | (_maxSegments==8? 0 : 1));
 }
-
-/*
-void TM16xx::setSegments(byte segments, byte position)
-{	// set 8 leds on common grd as specified
-	// TODO: support 10-14 segments on chips like TM1638/TM1668
-	if(position<_maxDisplays)
-		sendData(position, segments);
-		//sendData(TM16XX_CMD_ADDRESS | position, segments);
-}
-*/
 
 byte TM1652::reverseByte(byte b)
 { // Reverse the bits in a byte LSB<->MSB

@@ -11,17 +11,12 @@ Made by Maxint R&D. See https://github.com/maxint-rd
 #ifndef TM1652_h
 #define TM1652_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
-#else
-	#include "WProgram.h"
-#endif
-
 #include "TM16xx.h"
 
 #define TM1652_MAX_POS 6
 
 // TM1652 has two display modes: 8 seg x 4 grd and 7 seg x 4 grd
+// setupDisplay() will set display mode to 7 segments when numDigits is larger than 5.
 #define TM1652_DISPMODE_5x8 0x00
 #define TM1652_DISPMODE_6x7 0x01
 
