@@ -102,12 +102,11 @@ class TM16xx
 		virtual uint32_t getButtons();  // return state of up to 32 keys.
 
   protected:
-//		virtual void sendChar(byte pos, byte data, bool dot);
-	  virtual void bitDelay();
+    virtual void bitDelay();
     virtual void start();
     virtual void stop();
     virtual void send(byte data);
-		virtual void sendCommand(byte led);
+    virtual void sendCommand(byte led);
     virtual void sendData(byte add, byte data);
     virtual byte receive();
 

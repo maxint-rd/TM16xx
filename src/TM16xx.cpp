@@ -110,10 +110,11 @@ void TM16xx::sendChar(byte pos, byte data, bool dot)
   { // Flip the character 180 degrees by some clever bit-manipulation.
     // (see PR #58 and issue #20 for info and references)
     // NOTE: for now only support for 7-segment characters
+    // NOTE: The dot (DP) will change position too (from after a character to before; right-bottom to left-top)
     byte xored = (data ^ (data >> 3)) & (7);
     data = data ^ (xored | (xored << 3));
   }
-	setSegments(data | (dot ? 0b10000000 : 0), this->flipped ? this->_maxDisplays - 1 - pos : pos);
+  setSegments(data | (dot ? 0b10000000 : 0), this->flipped ? this->digits - 1 - pos : pos);
 }
 
 void TM16xx::sendAsciiChar(byte pos, char c, bool fDot)
