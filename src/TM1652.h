@@ -15,7 +15,7 @@ Made by Maxint R&D. See https://github.com/maxint-rd
 
 #define TM1652_MAX_POS 6
 
-// TM1652 has two display modes: 8 seg x 4 grd and 7 seg x 4 grd
+// TM1652 has two display modes: 8 seg x 5 grd and 7 seg x 6 grd.
 // setupDisplay() will set display mode to 7 segments when numDigits is larger than 5.
 #define TM1652_DISPMODE_5x8 0x00
 #define TM1652_DISPMODE_6x7 0x01
@@ -31,7 +31,11 @@ class TM1652 : public TM16xx
     TM1652(byte dataPin, byte numDigits=4, bool activateDisplay=true, byte intensity=7, byte displaymode = TM1652_DISPMODE_5x8);
     // TODO: remove deprecated parameters - TM1652(byte dataPin, byte numDigits=4);
     virtual void clearDisplay();
-    virtual void setupDisplay(bool active, byte intensity, byte driveCurrent = 6);
+    virtual void setupDisplay(bool active, byte intensity, byte driveCurrent);
+    virtual void setupDisplay(bool active, byte intensity) { setupDisplay(active, intensity, 6); };
+       // NOTE: When called from TM16xxDisplay via TM16xx object pointer, default parameters are not supplied and the 
+       //       TM16xx method may be called instead of overloaded class method. To avoid this we explicitely 
+       //       implementent a version setupDisplay() that uuses that default.
     virtual void begin(bool activateDisplay=true, byte intensity=7, byte driveCurrent = 6);
 
   protected:

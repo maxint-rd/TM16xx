@@ -93,14 +93,18 @@ void TM16xxDisplay::sendAsciiCharAtCombi(const byte nPosCombi, char c, bool fDot
 #endif
 
 void TM16xxDisplay::setIntensity(byte intensity)
-{	// set the intensity of the module; range 0-7, 0=off, 7=bright
+{	// set the intensity of the module; range 0-8, 0=off, 8=brightest
+  if(intensity>8) intensity=8;
 #if(TM16XX_OPT_COMBIDISPLAY)
   for(int i=0; i<_nNumModules; i++)
-  {
-  	_aModules[i]->setupDisplay(intensity!=0, intensity);
+  { // set the insensity of each individual module
+    // NOTE: when the inherited class has overloaded setupDisplay() with default extra parameters, 
+    // this will call TM16xx::setupDisplay(), not TM16nn::setupDisplay(). (See TM1652.h)
+    // Solution is to have derived classes use separate method for the call without the extra parameters
+  	_aModules[i]->setupDisplay(intensity!=0, intensity>0 ? intensity-1: 0);
   }
 #else
-	_pTM16xx->setupDisplay(intensity!=0, intensity);
+	_pTM16xx->setupDisplay(intensity!=0, intensity>0 ? intensity-1: 0);
 #endif
 }
 
