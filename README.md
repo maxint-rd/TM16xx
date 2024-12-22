@@ -17,7 +17,8 @@ Initial version was based on the [TM1638 library](https://github.com/rjbatista/t
 - [TM16xx chip features](#tm16xx-chip-features)
 - [Library structure](#library-structure)
 - [Library installation](#library-installation)
-- [Basic usage](#basic-usage)
+- [Base class usage](#base-class-usage-tm1637-tm1638-tm16)
+- [Generic class (TM16xxIC)](#generic-class-tm16xxic)
 - [TM16xxDisplay class](#tm16xxdisplay-class)
 - [TM16xxMatrix class](#tm16xxmatrix-class)
 - [TM16xxMatrixGFX class](#tm16xxmatrixgfx-class)
@@ -28,23 +29,25 @@ Initial version was based on the [TM1638 library](https://github.com/rjbatista/t
 
 ## TM16xx chip features
 
-The TM16xx family is quite large. Currently the following chips are supported:
+The TM16xx family is quite large. Several family members found their way to Arduino compatible LED display modules, for instance these:
 
 Type   | Segments x digits    | Buttons      | Interface   | Notes
 ------ | -------------------- | ------------ | ------------|-------------
-TM1616 | 7 x 4                | n/a          | DIN/CLK/STB | 
-TM1618 | 5 x 7 - 8 x 4        | 5 x 1 multi  | DIO/CLK/STB | Anode*
-TM1620 | 8 x 6 - 10 x 4       | n/a          | DIN/CLK/STB |
-TM1628 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
-TM1630 | 7 x 5 - 8 x 4        | 7 x 1 multi  | DIO/CLK/STB |
-TM1637 | 8 x 6 (common anode) | 8 x 2 single | DIO/CLK     |
+TM1637 | 8 x 6 (CA)           | 8 x 2 single | DIO/CLK     |
 TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB | Anode/Inverted/QYF*
 TM1640 | 8 x 16               | n/a          | DIN/CLK     | Anode*
-TM1650 | 8 x 4                | 7 x 4 multi  | DIO/CLK     | Not real I2C SDA/SCL
-TM1652 | 8 x 5 - 7 x 6        | n/a          | DIN         | Single data line
-TM1668 | 10 x 7 - 13 x 4      | 10 x 2 multi | DIO/CLK/STB |
+TM1650 | 8 x 4                | 7 x 4 multi  | DIO/CLK     | 
 
-\* Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638, TM1618Anode and TM1640Anode are also supported.
+These chips are fully supported and tested to work: TM1616, TM1618, TM1620, TM1624, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650, TM1652, TM1668.
+\*) Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638, TM1618Anode and TM1640Anode are also supported.
+
+As of version 0.7.2412 many more chips are supported: TM1620B, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667.
+Note that while their features are supported via the generic class TM16xxIC, I don't have them all in my collection and they have not all been tested. Please please let me know your findings if you have tested one of them.
+
+For a full overview of all the chips and their level of support go to [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
+
+
+
 
 See the [documents folder](/documents) for datasheets containing more information about these chips and their pinouts.
 
@@ -64,7 +67,7 @@ You can also download the [latest version](https://github.com/maxint-rd/TM16xx/a
 ___NOTE: AdafruitGFX needs to be installed, even if you don't use TM16xxMatrixGFX. If you don't want to install AdafruitGFX you can remove TM16xxMatrixGFX.h and TM16xxMatrixGFX.cpp from the library directory to avoid compilation errors.___
 
 
-## Basic usage
+## Base class usage (TM1637, TM1638, TM16..)
 After installation you can use this library by including the class header that matches the chip on your module and then instantiate the object:
 ```C++
 #include <TM1638.h>
@@ -96,6 +99,16 @@ To check if a button was pressed you can use the getButtons() method:
   Serial.println(dwButtons, HEX);
 ```
 Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something. For advanced detection of button clicks, double clicks and long presses you can use the [_TM16xxButtons_](#tm16xxbuttons-class) class.
+
+## Generic class TM16xxIC
+___NEW___  - To support a large range of TM16xx chips, the generic class TM16xxIC was added. If your chip has no chip specific header file, your chip has not been tested yet, but may still be supported via the generic class if it has supported chip features. To use it include the generic class header and specify your chip when instantiating the module object:
+```C++
+#include <TM16xxIC.h>
+
+TM16xxIC module(IC_TM1638, 8, 9, 7);   // IC is TM1638, DIO=8, CLK=9, STB=7
+```
+These untested chips have supported features: TM1620B, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667.
+For a full overview of all the chips and their level of support go to [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
 
 ## TM16xxDisplay class
 The _TM16xxDisplay_ class adds some bytes to the memory footprint, but it provides the familiar easy to use print() and println() functions. Next to that it also provides some more advanced display methods. To use that class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
@@ -258,6 +271,9 @@ Added library functionality:
 - Support for TM1650. Note: TM1650 can be used in 8x4 or 7x4 display mode and supports simultaneous presses on K1/K2.
 - Support for TM1652. Note: TM1652 uses a single data line and fixed timing to determine the clock. Datasheet fully translated.
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes. Datasheet partly translated.
+- (Untested) support for many more TM16xx family members via TM16xxIC class: e.g. TM1620B, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667.
+- List of all the chips and their level of support: [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
+
 - Support for release, click, doubleclick and long press button detection using callback functions.
 - Added [library examples](/examples).
 
@@ -306,6 +322,7 @@ If you happen to own a device featuring a TM16xx chip, feel free to open a new i
 
 ### Links
 - Manufacturer: [Titan Micro Electronics](http://www.titanmec.com/index.php/en/index/index.html) - [LED driver datasheets](http://www.titanmec.com/index.php/en/product/lists/typeid/88/p/1.html)
+- List of all the chips and their level of support: [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
 - Original TM1638/TM1640 library: [/rjbatista/tm1638-library](https://github.com/rjbatista/tm1638-library)
 - TM1637 library used for reference: [/avishorp/TM1637](https://github.com/avishorp/TM1637)
 - A TM1637 library optimized for speed and size: [/Erriez/ErriezTM1637](https://github.com/Erriez/ErriezTM1637)
