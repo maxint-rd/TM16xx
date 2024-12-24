@@ -66,7 +66,7 @@ struct if_ctrl_tm16xx
 	uint8_t seg_bytes;	// Width of the segment memory (usually 1 or 2 bytes per GRID) combined with the number of SEG pins that can be used as GRD
 	uint16_t seg_mask;	// Mask specifying which segment bits are actually used (e.g. 0x03FF for the lower 10 bits)
 	uint8_t key_scan;   // Number of bytes needed to read the state of the buttons combined with decoding method
-	uint8_t key_mask;	  // Mask specifying which key bits are artually used (0x77 for the lower 3 bits of each nibble)
+	uint8_t key_mask;	  // Mask specifying which key bits are artually used (0x77 for the lower 3 bits of each nibble, 0xEE for the higher 3 bits)
 };
 
 //
