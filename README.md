@@ -75,21 +75,22 @@ After installation you can use this library by including the class header that m
 TM1638 module(8, 9, 7);   // DIO=8, CLK=9, STB=7
 ```
 
-In the setup() function you can set the intensity of the display, but that's not mandatory:
+In the setup() function you can initialize and set the intensity of the display, but that's not mandatory:
 ```C++
 void setup() {
-  module.setupDisplay(true, 2);   // on=true, intensity-2 (range 0-7)
+  module.begin(true, 2);   // on=true, intensity-2 (range 0-7)
   module.setDisplayToString("HALO");    // display simple text
 }
 ```
 
-In the loop() function you can use basic display methods provided by the base class:
+In the loop() function you can use basic display methods provided by the [TM16xx base class ](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-base-class-reference):
 ```C++
 void loop() {
   int nTime = ((millis() / 1000) / 60) * 100 + (millis() / 1000) % 60; // convert time to minutes+seconds as integer
   module.setDisplayToDecNumber(nTime, _BV(4)); // display milliseconds with dot on digit 4
 }
 ```
+
 For the easy to use print() method and more advance display methods you can use the [_TM16xxDisplay_](#tm16xxdisplay-class) class.
 
 The TM16xx chip makes it easy to see if a button is pressed.
@@ -99,6 +100,8 @@ To check if a button was pressed you can use the getButtons() method:
   Serial.println(dwButtons, HEX);
 ```
 Please note that while you don't need to write any code for debouncing, the button state may be reset when you display something. For advanced detection of button clicks, double clicks and long presses you can use the [_TM16xxButtons_](#tm16xxbuttons-class) class.
+
+For detailed documentation of the TM16xx base class go to the [TM16xx base class function reference](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-base-class-reference).
 
 ## Generic class TM16xxIC
 ___NEW___  - To support a large range of TM16xx chips, the generic class TM16xxIC was added. If your chip has no chip specific header file, your chip has not been tested yet, but may still be supported via the generic class if it has supported chip features. To use it include the generic class header and specify your chip when instantiating the module object:
