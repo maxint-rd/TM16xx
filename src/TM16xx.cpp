@@ -106,6 +106,8 @@ void TM16xx::sendChar(byte pos, byte data, bool dot)
 	if(pos<_maxDisplays)
 	  sendData(pos, data | (dot ? 0b10000000 : 0));
 */
+  if(this->reversed)
+    pos=this->digits - 1 - pos;
   if(this->flipped)
   { // Flip the character 180 degrees by some clever bit-manipulation.
     // (see PR #58 and issue #20 for info and references)
@@ -125,26 +127,37 @@ void TM16xx::sendAsciiChar(byte pos, char c, bool fDot)
   sendChar(pos, pgm_read_byte_near(TM16XX_FONT_DEFAULT+(c - 32)), fDot);
 }
 
-void TM16xx::setDisplayFlipped(bool flipped)
+void TM16xx::setDisplayFlipped(bool fFlipped)
 { // Set flipped state of the display (every digit is rotated 180 degrees)
   // Note: this only changes subsequent displayed characters, not the current 
-  this->flipped = flipped;
+  this->flipped = fFlipped;
 }
+
+void TM16xx::setDisplayReversed(bool fReversed)
+{ // Set reversed state of the display (digits use reversed position, first is last and vise versa)
+  // Note: this only changes subsequent displayed characters, not the current 
+  this->reversed = fReversed;
+}
+
 
 void TM16xx::setDisplayDigit(byte digit, byte pos, bool dot, const byte numberFont[])
 {
   sendChar(pos, pgm_read_byte_near(numberFont + (digit & 0xF)), dot);
 }
 
-void TM16xx::setDisplayToDecNumber(int nNumber, byte bDots)		// byte bDots=0
+void TM16xx::setDisplayToDecNumber(int nNumber, byte bDots, bool fLeadingZeros)		// byte bDots=0, bool fLeadingZeros=true
 {	// Function to display a decimal number on a n-digit clock display.
 	// Kept simple to fit in ATtiny44A
 	// For extended display features use the TM16xxDisplay class
 
 	// TODO: support large displays such as 8segx16 on TM1640
-  for(byte nPos=1; nPos<=digits; nPos++)
+  // TODO: how about negative numbers?
+  for(byte nPos=0; nPos<digits; nPos++)
   {
-    setDisplayDigit(nNumber % 10, digits - nPos, bDots&_BV(nPos));
+    if(nPos==0 || nNumber>0 || fLeadingZeros)
+      setDisplayDigit(nNumber % 10, digits - 1 - nPos, bDots&_BV(nPos));
+    else
+      sendChar(digits - 1 - nPos, 0, bDots&_BV(nPos));
     nNumber/=10;
   }
 }
@@ -178,6 +191,22 @@ byte TM16xx::getNumDigits()
   return(digits);
 }
 
+void TM16xx::setNumDigits(byte numDigitsUsed)
+{	// Set the number of digits used.
+  // Used by setDisplayToDecNumber() and setDisplayToString() to right align
+  // Also used by TM16xxDisplay to combine modules.
+  this->digits=numDigitsUsed;
+
+  // The maximum number of digits _maxDisplays is now set by a parameter in the constructor.
+  // Some TM16xx chips support multiple display modes. Derived classes use _maxDisplays
+  // or _maxSegments to set the display mode when setupDisplay() is called.
+  // Those classes could override setNumDigits() to change these maxima.
+  // (if numDigitsUsed != _maxDisplays change display mode and adjust maxima)
+  // Unfortunately this doesn't work for chips like TM1650, which has TM1650_DISPMODE_4x8
+  // and TM1650_DISPMODE_4x7. Mode 4x7 is to allow the DP/KP pin to signal key presses.
+  // At the moment that class still uses a display mode parameter in the constructor.
+}
+
 // key-scanning method, implemented in chip specific derived class
 uint32_t TM16xx::getButtons()
 {	// return state of up to 32 keys.
@@ -201,6 +230,7 @@ void TM16xx::bitDelay()
   // An ESP8266 running without delay at 160MHz gave a CLK of  ~0.9us (~ 470kHz)
   // An ESP8266 running without delay  at 80MHz gave a CLK of  ~1.8us (~ 240kHz)
 	#if F_CPU>100000000
+	//#if F_CPU>40000000    // semi-fast processeors like CH32V003 @48Mhz may also need some delay
   	delayMicroseconds(1);
   #endif
 }

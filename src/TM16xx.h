@@ -67,6 +67,12 @@ class TM16xx
     /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
     virtual void setupDisplay(bool active, byte intensity);
 
+    /** Set flipped state of the display (every digit is rotated 180 degrees) */
+    virtual void setDisplayFlipped(bool fFlipped);
+
+    /**Set reversed state of the display (digits use reversed position, first is last and vise versa) */
+    virtual void setDisplayReversed(bool fReversed);
+
     /** Clear the display */
 		virtual void clearDisplay();
 
@@ -77,22 +83,27 @@ class TM16xx
 	  virtual void setSegments(byte segments, byte position);
 	  virtual void setSegments16(uint16_t segments, byte position);   // some modules support more than 8 segments
 	  
+    //
 	  // Basic display functions. For additional display features use the TM16xxDisplay class
-    /** sets flipped state of the display (every digit is rotated 180 degrees) */
-    virtual void setDisplayFlipped(bool flipped);
+    //
+
     /** Set a single display at pos (starting at 0) to a digit (left to right) */
     virtual void setDisplayDigit(byte digit, byte pos=0, bool dot=false, const byte numberFont[] = TM16XX_NUMBER_FONT);
+
 		/** Set the display to a decimal number */
-	  virtual void setDisplayToDecNumber(int nNumber, byte bDots=0);
-		/** Clear  a single display at pos (starting at 0, left to right) */ 
+	  virtual void setDisplayToDecNumber(int nNumber, byte bDots=0, bool fLeadingZeros=true);
+
+		/** Clear a single display at pos (starting at 0, left to right) */ 
     virtual void clearDisplayDigit(byte pos, bool dot=false);
     /** Set the display to the values (left to right) */
     virtual void setDisplay(const byte values[], byte size=8);
 
-    /** Set the display to the string (defaults to built in font) */
+    /** Set the display to the string (defaults to built in 7-segment alphanumeric font) */
 		virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
 		virtual void sendChar(byte pos, byte data, bool dot); // made public to allow calling from TM16xxDisplay
-		virtual byte getNumDigits(); // added as public menthod to allow calling from TM16xxDisplay
+		virtual void setNumDigits(byte numDigitsUsed);   // set number of digits used for alignment
+		virtual byte getNumDigits(); // called by TM16xxDisplay to combine multiple modules
+
 		virtual void sendAsciiChar(byte pos, char c, bool dot); // made public to allow calling from TM16xxDisplay
 
 		// Key-scanning functions
@@ -132,7 +143,8 @@ auto min(T x, U y) -> decltype(x>y ? x : y)
 
     byte _maxDisplays=2;  // maximum number of digits (grids), chip-dependent
     byte _maxSegments=8;  // maximum number of segments per display, chip-dependent
-    bool flipped=false;   // sets the flipped state of the display};
+    bool flipped=false;   // sets the flipped state of the display;
+    bool reversed=false;   // sets the reversed state of the display;
     byte digits;          // number of digits in the display, module dependent
     byte dataPin;
     byte clockPin;
