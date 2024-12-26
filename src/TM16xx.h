@@ -100,11 +100,11 @@ class TM16xx
 
     /** Set the display to the string (defaults to built in 7-segment alphanumeric font) */
 		virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
+
 		virtual void sendChar(byte pos, byte data, bool dot); // made public to allow calling from TM16xxDisplay
 		virtual void setNumDigits(byte numDigitsUsed);   // set number of digits used for alignment
 		virtual byte getNumDigits(); // called by TM16xxDisplay to combine multiple modules
-
-		virtual void sendAsciiChar(byte pos, char c, bool dot); // made public to allow calling from TM16xxDisplay
+		virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // made public to allow calling from TM16xxDisplay
 
 		// Key-scanning functions
 		// Note: not all TM16xx chips support key-scanning and sizes are different per chip
