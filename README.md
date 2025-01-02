@@ -1,13 +1,13 @@
 # TM16xx
-Arduino TM16xx library for LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 and similar chips. Simply use print() on 7-segment displays and use Adafruit GFX on matrix displays.
+Arduino TM16xx library for LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 and similar chips. Simply use print() on 7-segment end 14-segment displays and use Adafruit GFX on matrix displays.
 
 ## TM16xx LEDs and Buttons library
 This Arduino library facilitates driving LED displays using TM16xx LED driver chips.
-The TM16xx chip family allows driving 7-segment LED displays or LED matrices.
+The TM16xx chip family by Titan Micro allows driving LED displays or LED matrices.
 Next to built-in high-frequency LED multiplexing, they offer control of LED brightness.
 Most TM16xx chips also support reading key-scan data for button presses.
-Using this library you can simply use print() on a 7-segment display or use Adafruit GFX on a LED matrix.
-Currently this library supports the TM1616, TM1618, TM1620, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650 TM1652 and TM1668 chips. Note that there are similar chips made by other manufacturers that may be compatible with the Titan Micro chips. For instance: the HBS640 by WINRISE is compatible with the TM1640.
+Using this library you can simply use print() on a 7-segment or 14-segment displays or use Adafruit GFX on a LED matrix.
+Currently this library supports more than 25 [different TM16xx chips](#tm16xx-chip-features) in various configurations; such as the TM1616, TM1618, TM1620, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650 and TM1652. 
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
 
@@ -29,7 +29,7 @@ Initial version was based on the [TM1638 library](https://github.com/rjbatista/t
 
 ## TM16xx chip features
 
-The TM16xx family is quite large. Several family members found their way to Arduino compatible LED display modules, for instance these:
+The [TM16xx family](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support) is quite large. Several family members found their way to Arduino compatible LED display modules, for instance these:
 
 Type   | Segments x digits    | Buttons      | Interface   | Notes
 ------ | -------------------- | ------------ | ------------|-------------
@@ -38,16 +38,14 @@ TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB | Anode/Inverted/QYF*
 TM1640 | 8 x 16               | n/a          | DIN/CLK     | Anode*
 TM1650 | 8 x 4                | 7 x 4 multi  | DIO/CLK     | 
 
-These chips are fully supported and tested to work: TM1616, TM1618, TM1620, TM1624, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650, TM1652, TM1668.
+The following chips are fully supported and tested to work: TM1616, TM1618, TM1620, TM1624, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650, TM1652, TM1668.
 \*) Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638, TM1618Anode and TM1640Anode are also supported.
 
-As of version 0.7.2412 many more chips are supported: TM1620B, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667.
-Note that while their features are supported via the generic class TM16xxIC, I don't have them all in my collection and they have not all been tested. Please please let me know your findings if you have tested one of them.
+Note that there are similar chips made by other manufacturers that may be compatible with the Titan Micro chips. For instance: the HBS640 by WINRISE is compatible with the TM1640.
 
-For a full overview of all the chips and their level of support go to [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
+As of end 2024 many more chips are supported: TM1620B, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. Note that while their features are supported via the [generic class TM16xxIC](#generic-class-tm16xxic), I don't have them all in my collection and they have not all been tested. Please please let me know your findings if you have tested one of them.
 
-
-
+For a full overview of all the chips and their current level of support go to [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support).
 
 See the [documents folder](/documents) for datasheets containing more information about these chips and their pinouts.
 
@@ -251,15 +249,18 @@ Some [TM16xx chips](#tm16xx-chip-features) support multiple simultaneous key pre
 ## New in this library
 
 Added library functionality:
-- Support for ATtiny's (44A, 84A, 85), ESP8266, ESP32, LGT8F328P, Pi Pico, in addition to regular Arduinos.
+- Support for ATtiny's (44A, 84A, 85), ESP8266, ESP32, LGT8F328P, Pi Pico RP2040, CH32 RiscV, in addition to regular Arduinos.
 - Revised library structure to simplify support of other TM16xx chips in addition to TM1638/TM1640.
 - Basic functionality in base class for a uniform API.
+- Added setDisplayFlipped() method to display numbers/text upside down (thanks @HoseanRC).
 - Reduced required RAM memory by using PROGMEM fonts.
 - Separate classes for LED matrix and advanced LED display support.
 - Simple display of text and numbers on 7-segment and 14-segment displays using familiar print() and println() methods.
 - Support for combining multiple 7-segment and 14-segment display modules into one large display.
 - Support for the Adafruit GFX graphics library for advanced graphics on a LED matrix.
 - Support for combining multiple matrix modules into one large Adafruit GFX matrix.
+- Support for release, click, doubleclick and long press button detection using callback functions.
+- Added [library examples](/examples).
 - Support for TM1616 (suggested by @NickLplus)
 - Support for TM1618 with 8x4 common cathode or 7x5 common anode displays (suggested by @ArnieO).
 - Support for TM1620 (thanks @eddwhite)
@@ -274,11 +275,7 @@ Added library functionality:
 - Support for TM1650. Note: TM1650 can be used in 8x4 or 7x4 display mode and supports simultaneous presses on K1/K2.
 - Support for TM1652. Note: TM1652 uses a single data line and fixed timing to determine the clock. Datasheet fully translated.
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes. Datasheet partly translated.
-- (Untested) support for many more TM16xx family members via TM16xxIC class: e.g. TM1620B, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667.
-- List of all the chips and their level of support: [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
-
-- Support for release, click, doubleclick and long press button detection using callback functions.
-- Added [library examples](/examples).
+- (Untested) support for many more TM16xx family members via TM16xxIC class: e.g. TM1620B, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. List of all the chips and their level of support: [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
 
 Functionality in original library by Ricardo Batista:
 - Support for the TM1638 and TM1640, including common anode TM1638 module;
@@ -288,14 +285,14 @@ Functionality in original library by Ricardo Batista:
 - Reading simultaneous button presses on TM1638;
 
 ## Features & limitations
-- The current version of this library supports ESP8266/ESP32, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Compatible MCUs such as LGT8F328P are also supported. Raspberry Pi Pico RP2040 is supported too (tested with core 2.5.2 by Earle Philhower). Support for CH32/STM32 is under development. Please let me know if you've successfully used this library with other MCUs.
+- The current version of this library supports ESP8266/ESP32, Atmel ATmega (e.g. ATmega328 and ATmega168) and Atmel ATtiny MCUs. Due to the required memory, the smallest ATtiny MCU supported is the ATtiny44. Compatible MCUs such as LGT8F328P are also supported. Raspberry Pi Pico RP2040 is supported too (tested with core 2.5.2 by Earle Philhower). Support for CH32 RiscV was added in 2024. STM32 is expected to work too but needs further testing. Please let me know if you've successfully used this library with other MCUs.
 - For TM1640 on Pi Pico [stability issues](https://github.com/maxint-rd/TM16xx/issues/34) were reported (requiring further analysis).
 - The TM16xx chips offer no support for daisychaining multiple chips, but when separate Clk or Latch lines are used the Din line can be shared for combined displays.
-- It is possible to define multiple display objects for multiple different modules (see the TM1638_TM1637ex_two_modules example). The library now supports combining multiple 7-segment modules into one display using the TM16xxDisplay class (example for combined TM16xxDisplay to be included soon). 
-- The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. Please note that the TM1640 supports up to 16 digits or an 8x16 LED matrix. 
+- It is possible to define multiple display objects for multiple different modules (see the TM1638_TM1637ex_two_modules example). The library now supports combining multiple 7-segment or 14-segment modules into one display using the TM16xxDisplay class (example for combined TM16xxDisplay yet to be added). 
+- The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. 
+- the TM1640 supports up to sixteen 7-segment digits, eight 14-segment digits or an 8x16 LED matrix. The TM1640Anode class can be used with a Common Anode configuration to support 8 digits of 16 segments, such as the 5241BS 14-segment plus dot LED display (example for combined TM1640Anode yet to be added).
 - The [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display) is fully supported. Please note that while multiple buttons can be pressed, pressing more than two buttons can give faulty results due to the lack of short-out preventing diodes on the module.
 - The popular TM1638 LED & KEY module comes in a number of varieties. My version has some odd button wiring sequence: S1=KS1, S5=KS2, S2=KS3, S6=KS4, S3=KS5, S7=KS6, S4=KS7, S8=KS8
-- The TM1640Anode class can be used with a Common Anode configuration to support 8 digits of 16 segments, such as the 5241BS 14-segment plus dot LED display (example for combined TM1640Anode to be included soon).
 - TM1628/TM1668 allow 13 segment mode, support for using 13-segment displays is still outstanding due to lack of having such dsiplays for testing.
 - The TM1650 datasheet mentions SDA and SCL pins. The used protocol resembles I2C, but lacks addressing. For that reason this library doesn't use the I2C Wire library, but (slow) bitbanging using digitalWrite.
 - The TM1652 allows more levels of LED dimming than supported. For uniformity only 8 levels of duty cycle are used, at maximum grid current.
