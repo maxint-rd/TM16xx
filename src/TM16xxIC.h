@@ -31,9 +31,9 @@ Made by Maxint R&D. See https://github.com/maxint-rd
 #define TM16XX_IFTYPE_2WACK 6		// 2 wire non-addressable interface with ACK like TM1637: DIO/CLK
 /*TODO*/ #define TM16XX_IFTYPE_0WIRE 0    // 0 wire no interface, only useful for debugging
 /*DONT*/ #define TM16XX_IFTYPE_1WSER 1		// 1 wire serial interface like TM1652: DIN, fixed bitrate 19200
-/*TODO*/ #define TM16XX_IFTYPE_4WSER 4		// 4 wire serial interface like  TM1623: DIN/DOU/CLK/STB (TODO: test hardware SPI)
-/*TODO*/ #define TM16XX_IFTYPE_4WSPI 4		// 4 wire SPI interface like TM1681: DA/WR/RD/CS (TODO: test hardware SPI)
-/*TODO*/ #define TM16XX_IFTYPE_5WSPI 5		// 5 wire interface like TM1649 DA?/WR?/RD?/CS?/? (TODO: find TM1649 datasheet)
+/*TODO*/ #define TM16XX_IFTYPE_4WSPI 9		// 4 wire SPI-like interface like TM1623: DIN/DOU/CLK/STB (TODO: test hardware SPI)
+/*TODO*/ #define TM16XX_IFTYPE_4WSER 4		// 4 wire serial interface like TM1681: DA/WR/RD/CS (TODO: test hardware SPI)
+/*TODO*/ #define TM16XX_IFTYPE_5WSER 5		// 3 wire like TM1649: DIO/SCLK/STB; separate DATA/CLK or BIN0-BIN3 for touch
 /*DONT*/ #define TM16XX_IFTYPE_2WACKB 7		// 2 wire non-addressable interface with ACK like TM1650: DAT/CLK, deviating commands/bitorder/etc
 /*TODO*/ #define TM16XX_IFTYPE_2WI2C 8		// 2 wire I2C addressable interface like TM1680: SDA/SCK
 
@@ -85,15 +85,16 @@ struct if_ctrl_tm16xx
 // UNTESTED chips, only based on datasheet information. CHECK BEFORE USE.
 //
 #define IC_TA6932  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 16,TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_1, 0x00FF, 0, 0x00} // SxG: 8x16 CC
-#define IC_TM1617  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 3, TM16XX_IC_SEGMUX_1 | TM16XX_IC_SEGBYTES_1, 0x00FF, 1, 0xFF}  // SxG:8x2-7x3 CC, K:6x1, no datasheet
+#define IC_TM1617  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_1 | TM16XX_IC_SEGBYTES_2, 0x0FF0, 5, 0x09}  // SxG:8x2-7x3 CC, K:6x1, chinese datasheet LCSC, address is 14 bytes from 00H to 0DH, only use: GRID1, GRID2, GRID7, SEG5-SEG12
 #define IC_TM1620  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 6, TM16XX_IC_SEGMUX_2 | TM16XX_IC_SEGBYTES_2, 0x30FF, 0, 0x00}  // SxG: 10x4-8x6 CC
 #define IC_TM1620B if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x383F, 3, 0x12}  // SxG: 9x4-6x7 CC/CA, K:6x1
-/*TODO*/ #define IC_TM1623  if_ctrl_tm16xx {TM16XX_IFTYPE_4WSPI, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x3FFF, 5, 0x3F}  // SxG: 14x4-11x7 CC/CA, K:8x3
-#define IC_TM1626A if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x3FFF, 5, 0x09}  // SxG: 14?x4-11x7 CC/CA, K:10x1, PWM controller for LED1-3, SW2/SW3 ports, see fig.28 on p12
-#define IC_TM1626B if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x00FF, 5, 0xFF}  // no datasheet
-#define IC_TM1627  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x00FF, 5, 0xFF}  // no datasheet
+/*TODO*/ #define IC_TM1623  if_ctrl_tm16xx {TM16XX_IFTYPE_4WSPI, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x3FFF, 5, 0x3F}  // SxG: 14x4-11x7 CC/CA, K:10x3
+/*TODO*/ #define IC_TM1623C  if_ctrl_tm16xx {TM16XX_IFTYPE_4WSPI, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x3FFF, 5, 0x3F}  // SxG: 14x4-11x7 CC/CA, K:10x3, same as TM1623?
+#define IC_TM1626A if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x3BFF, 5, 0x09}  // SxG: 13x4-10x7 CC/CA, K:10x1, PWM controller for LED1-3, SW2/SW3 ports, see fig.28 on p12
+#define IC_TM1626B if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x3FFF, 5, 0x3F}  // SxG: 14x4-11x7 CC/CA, K:10x3, PWM & SW2/SW3 (see TM1626A); chinese datasheet, 
+#define IC_TM1627  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x3BFF, 5, 0x1B}  // SxG: 13x4-10x7 CC/CA, K:10x2; KEYINT interrupt pin
 #define IC_TM1628A if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x3BFF, 5, 0x1B}  // same as TM1628, but with internal pull-up/down resistors
-/*TODO*/ #define IC_TM1629  if_ctrl_tm16xx {TM16XX_IFTYPE_4WSER, 5, 8, TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_2, 0xFFFF, 4, 0xFF}  // SxG: 16x8 CC/CA, K:8x4
+/*TODO*/ #define IC_TM1629  if_ctrl_tm16xx {TM16XX_IFTYPE_4WSPI, 5, 8, TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_2, 0xFFFF, 4, 0xFF}  // SxG: 16x8 CC/CA, K:8x4
 #define IC_TM1629A if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 8, TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_2, 0xFFFF, 0, 0x00}  // SxG: 16x8 CC/CA
 #define IC_TM1629B if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 8, TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_2, 0x3FFF, 4, 0xBB}  // SxG: 14x8 CC/CA, K:8x2
 #define IC_TM1629C if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 8, TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_2, 0x7FFF, 4, 0x88}  // SxG: 15x8 CC/CA, K:8x1
@@ -101,16 +102,17 @@ struct if_ctrl_tm16xx
 #define IC_TM1630  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 5, TM16XX_IC_SEGMUX_1 | TM16XX_IC_SEGBYTES_2, 0x00FF, 4, 0xFF}  // SxG: 8x4-7x5, K:7x1; chinese datasheet
 #define IC_TM1636  if_ctrl_tm16xx {TM16XX_IFTYPE_2WACK, 5, 4, TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_1, 0x00FF, TM16XX_KD_PRESS_NI | 1, 0x1F}  // SxG: 8x4 CA, K:8x2 single pressed key number 0-6 + B3/B4 inverted 
 #define IC_TM1639  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 8, TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_2, 0x0F0F, 2, 0xCC}  // SxG: 8x8 CC/CA, K:4x2
-#define IC_TM1640B if_ctrl_tm16xx {TM16XX_IFTYPE_2WSER, 5, 16,TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_1, 0x00FF, 0, 0x00}  // no datasheet
+#define IC_TM1640B if_ctrl_tm16xx {TM16XX_IFTYPE_2WSER, 5, 16,TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_1, 0x00FF, 0, 0x00}  // same as TM1640, different current limits
 #define IC_TM1642  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x3BFF, 4, 0x1B}  // SxG: 13x4-10x7, K:8x2
-#define IC_TM1643  if_ctrl_tm16xx {TM16XX_IFTYPE_2WSER, 5, 16,TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_1, 0x00FF, 0, 0x00}  // 16x8 point led, uncommon wiring
+/*DONT*/ #define IC_TM1643  if_ctrl_tm16xx {TM16XX_IFTYPE_2WSER, 5, 16,TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_1, 0x00FF, 0, 0x00}  // 16x8 point led, uncommon wiring
+/*DONT*/ #define IC_TM1646  if_ctrl_tm16xx {TM16XX_IFTYPE_2WSER, 5, 18,TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_1, 0x00FF, 0, 0x00}  // 18x8 led, uncommon wiring like TM1643
 /*TODO*/ #define IC_TM1648A if_ctrl_tm16xx {TM16XX_IFTYPE_2WI2C, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x00FF, 1, 0xFF}  // SxG: 13x4-10x7 CC/CA, K:8x1 touch, i2C @50, 1x buz
-/*TODO*/ #define IC_TM1649  if_ctrl_tm16xx {TM16XX_IFTYPE_5WSPI, 5, 7, TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_2, 0x00FF, 4, 0xFF}  // no datasheet
+/*TODO*/ #define IC_TM1649  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 8, TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_2, 0x7FFF, 4, 0x88}  // SxG: 15x8, K:8x1 + 8x1 touch, chinese datasheet LCSC
 #define IC_TM1651  if_ctrl_tm16xx {TM16XX_IFTYPE_2WACK, 5, 4, TM16XX_IC_SEGMUX_0 | TM16XX_IC_SEGBYTES_1, 0x007F, TM16XX_KD_PRESS_NI | 1, 0x0F}  // SxG: 7x4 CA, K:7x1 single pressed key number 0-6 + B3 inverted
 #define IC_TM1665  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x00FF, 4, 0xFF}  // no datasheet
 #define IC_TM1667  if_ctrl_tm16xx {TM16XX_IFTYPE_3WSER, 5, 7, TM16XX_IC_SEGMUX_3 | TM16XX_IC_SEGBYTES_2, 0x3BFF, 5, 0x1B}  // SxG: 13x4-10x7 CC/CA, K:10x2, chinese datasheet
 /*TODO*/ #define IC_TM1680  if_ctrl_tm16xx {TM16XX_IFTYPE_2WI2C, 5, 96,TM16XX_IC_SEGMUX_8 | TM16XX_IC_SEGBYTES_NIB, 0x0F0F, 0, 0x00}  // SxG: 32x8/24x16; A0 must be wired low for 7-bit I2C address 0x73, see issue #2, 16 level duty
-/*TODO*/ #define IC_TM1681  if_ctrl_tm16xx {TM16XX_IFTYPE_4WSPI, 5, 96,TM16XX_IC_SEGMUX_8 | TM16XX_IC_SEGBYTES_NIB, 0x0F0F, 0, 0x00}  // like TM1680, but 4WSPI interface
+/*TODO*/ #define IC_TM1681  if_ctrl_tm16xx {TM16XX_IFTYPE_4WSER, 5, 96,TM16XX_IC_SEGMUX_8 | TM16XX_IC_SEGBYTES_NIB, 0x0F0F, 0, 0x00}  // like TM1680, but 4WSPI interface
 
 //
 // Chips only supported by chip specific class, when used in TM16xxIC these trigger a compiler error
