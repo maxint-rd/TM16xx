@@ -74,11 +74,8 @@ class TM16xxDisplay : public Print
  
  private:
   void setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, bool leadingZeros, const byte numberFont[]);
-#if(TM16XX_OPT_COMBIDISPLAY)
   //TM16xx *TM16xxDisplay::findModuleByPos(const byte nPosFind);
-  //void sendCharAtCombi(const byte nPosCombi, byte btData, bool fDot);
-  void sendAsciiCharAtCombi(const byte nPosCombi, char c, bool fDot);
-#endif
-
+  void sendCharAt(const byte nPos, byte btData, bool fDot);
+  void sendAsciiCharAt(const byte nPosCombi, char c, bool fDot, const byte font[] = TM16XX_FONT_DEFAULT);
 };
 #endif

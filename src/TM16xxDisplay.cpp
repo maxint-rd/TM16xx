@@ -25,7 +25,6 @@ TM16xxDisplay::TM16xxDisplay(TM16xx *pTM16xx, byte nNumDigits)
 #if(TM16XX_OPT_COMBIDISPLAY)
 TM16xxDisplay::TM16xxDisplay(TM16xx *apTM16xx[], byte nNumModules, byte nNumDigitsTotal)
 { // constructor for a display combined out of one or more module
-  // TODO: currently only print() is supported, not the other display methods!
   _aModules=apTM16xx;   // use array provided
 	_pTM16xx=apTM16xx[0];   // set default module to first module in array
 	_nNumModules=nNumModules;
@@ -48,49 +47,59 @@ TM16xx *TM16xxDisplay::findModuleByPos(const byte nPosFind)
   return(NULL);
 }
 */
+#endif  // if(TM16XX_OPT_COMBIDISPLAY)
 
-/*
-void TM16xxDisplay::sendCharAtCombi(const byte nPosCombi, byte btData, bool fDot)
-{   // set the specified data at specified position of the module that has that position
-  byte nPos=nPosCombi;
-  for(int i=0; i<_nNumModules; i++)
-  {
-    if(nPos<0)
-      return;
-    if(nPos < _aModules[i]->getNumDigits())
-    {
-  	  _aModules[i]->sendChar(nPos, btData, fDot);
-      return;
-    }
-    else
-      nPos-=_aModules[i]->getNumDigits();
-  }
-}
-*/
-
-void TM16xxDisplay::sendAsciiCharAtCombi(const byte nPosCombi, char c, bool fDot)
-{ // Set the specified Ascii character at specified position of the module that has that position
-  // If the display is flipped, the position should be reversed as a whole, but also position in the module (to compensate for reversal done in TM16xx).
+void TM16xxDisplay::sendCharAt(const byte nPosCombi, byte btData, bool fDot)
+{ // set the specified data at specified position of the module that has that position)
+  // If the display is flipped, the position should be flipped as a whole, but also position in the module (to compensate for flipping done in TM16xx).
   // Note that each individual module can have a different size (just to complicate things).
   byte nPos=nPosCombi;
 
   if(this->_fFlipped)
-    nPos=_nNumDigits-1-nPos;
+    nPos=_nNumDigits-1-nPos;      // flip the whole combination
+#if(TM16XX_OPT_COMBIDISPLAY)
   for(int i=0; i<_nNumModules; i++)
   {
     if(nPos<0)
       return;
     if(nPos < _aModules[i]->getNumDigits())
     {
-  	  _aModules[i]->sendAsciiChar(this->_fFlipped ? _aModules[i]->getNumDigits()-1-nPos : nPos, c, fDot);
+  	  _aModules[i]->sendChar(this->_fFlipped ? _aModules[i]->getNumDigits()-1-nPos : nPos, btData, fDot);      // compensate for flipping individual module
       return;
     }
     else
       nPos-=_aModules[i]->getNumDigits();
   }
+#else
+  _pTM16xx->sendChar(nPos, btData, fDot);
+#endif
 }
 
-#endif
+void TM16xxDisplay::sendAsciiCharAt(const byte nPosCombi, char c, bool fDot, const byte font[])
+{ // Set the specified Ascii character at specified position of the module that has that position
+  // If the display is flipped, the position should be flipped as a whole, but also position in the module (to compensate for flipping done in TM16xx).
+  // Note that each individual module can have a different size (just to complicate things).
+  byte nPos=nPosCombi;
+
+  if(this->_fFlipped)
+    nPos=_nNumDigits-1-nPos;      // flip the whole combination
+#if(TM16XX_OPT_COMBIDISPLAY)
+  for(int i=0; i<_nNumModules; i++)
+  {
+    if(nPos<0)
+      return;
+    if(nPos < _aModules[i]->getNumDigits())
+    {
+  	  _aModules[i]->sendAsciiChar(this->_fFlipped ? _aModules[i]->getNumDigits()-1-nPos : nPos, c, fDot, font);      // compensate for flipping individual module
+      return;
+    }
+    else
+      nPos-=_aModules[i]->getNumDigits();
+  }
+#else
+  _pTM16xx->sendAsciiChar(nPos, c, fDot, font);
+#endif  // #if(TM16XX_OPT_COMBIDISPLAY)
+}
 
 void TM16xxDisplay::setIntensity(byte intensity)
 {	// set the intensity of the module; range 0-8, 0=off, 8=brightest
@@ -125,66 +134,58 @@ void TM16xxDisplay::setDisplayFlipped(bool flipped)
 
 void TM16xxDisplay::setDisplayToString(const char* string, const word dots, const byte pos, const byte font[])
 {	// call base implementation
-	_pTM16xx->setDisplayToString(string, dots, pos, font);
-}
-
-void TM16xxDisplay::setDisplayToString(const String string, const word dots, const byte pos, const byte font[])
-{	// additional implementation using String class (uses more memory than char * version)
-  int stringLength = string.length();
+	//_pTM16xx->setDisplayToString(string, dots, pos, font);
+  int stringLength = strlen(string);
 
   for (int i = 0; i < _nNumDigits - pos; i++) {
     if (i < stringLength) {
-      _pTM16xx->sendChar(i + pos, pgm_read_byte_near(font+(string.charAt(i) - 32)), (dots & (1 << (_nNumDigits - i - 1))) != 0);
+  	  sendAsciiCharAt(i + pos, string[i], (dots & (1 << (_nNumDigits - i - 1))) != 0, font);   // use sendAsciiChar to support 14-segments (via derived classes)
     } else {
       break;
     }
   }
+ }
+
+void TM16xxDisplay::setDisplayToString(const String string, const word dots, const byte pos, const byte font[])
+{	// additional implementation using String class (uses more memory than char * version)
+  setDisplayToString(string.c_str(), dots, pos, font);
 }
 
 void TM16xxDisplay::setDisplayToError()
 {	// set the display to Error text
-  _pTM16xx->setDisplay(TM16XX_ERROR_DATA, 8);
-
-	// MMOLE TODO: just use clear before instead?
-	for (int i = 8; i < _nNumDigits; i++) {
-	    _pTM16xx->clearDisplayDigit(i, false);
-	}
+  this->clear();
+  _pTM16xx->setDisplay(TM16XX_ERROR_DATA, sizeof(TM16XX_ERROR_DATA));  // TODO?: support COMBIDISPLAY
 }
 
 void TM16xxDisplay::setDisplayToHexNumber(unsigned long number, byte dots, bool leadingZeros, const byte numberFont[])
 {
-	for (int i = 0; i < _nNumDigits; i++) {
-		if (!leadingZeros && number == 0) {
-			_pTM16xx->clearDisplayDigit(_nNumDigits - i - 1, (dots & (1 << i)) != 0);
-		} else {
-			_pTM16xx->setDisplayDigit(number & 0xF, _nNumDigits - i - 1, (dots & (1 << i)) != 0, numberFont);
-			number >>= 4;
-		}
+  for (int nPos = 0; nPos < _nNumDigits; nPos++) {
+    if (number > 0 || leadingZeros || nPos==0) {
+      sendCharAt(_nNumDigits - nPos - 1, pgm_read_byte_near(numberFont + (number & 0xF)), (dots & (1 << nPos)) != 0);
+    } else {
+      sendCharAt(_nNumDigits - nPos - 1, 0, (dots & (1 << nPos)) != 0);     // clearDisplayDigit
+    }
+    number >>= 4;
 	}
 }
 
 void TM16xxDisplay::setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, bool leadingZeros, const byte numberFont[])
 {
-	if (number > 99999999L) {
-		setDisplayToError();
-	} else {
-		for (int i = 0; i < _nNumDigits - startingPos; i++) {
-			if (number != 0) {
-				_pTM16xx->setDisplayDigit(number % 10, _nNumDigits - i - 1, (dots & (1 << i)) != 0, numberFont);
-				number /= 10;
-			} else {
-			if (leadingZeros) {
-				_pTM16xx->setDisplayDigit(0, _nNumDigits - i - 1, (dots & (1 << i)) != 0, numberFont);
-			} else {
-				_pTM16xx->clearDisplayDigit(_nNumDigits - i - 1, (dots & (1 << i)) != 0);
-			}
-			}
-		}
-	}
+  if (number > 99999999L) {
+    setDisplayToError();    // original code: limit to 8 digit numbers
+  } else {
+    for (int nPos = 0; nPos < _nNumDigits - startingPos; nPos++) {
+      if (number != 0 || nPos==0 || leadingZeros) {
+        sendCharAt(_nNumDigits - nPos - 1, pgm_read_byte_near(numberFont + (number  % 10)), (dots & (1 << nPos)) != 0);
+      } else {
+        sendCharAt(_nNumDigits - nPos - 1, 0, (dots & (1 << nPos)) != 0);     // clearDisplayDigit
+      }
+      number /= 10;
+    }
+  }
 }
 
-void TM16xxDisplay::setDisplayToDecNumber(unsigned long number, byte dots, bool leadingZeros,
-	const byte numberFont[])
+void TM16xxDisplay::setDisplayToDecNumber(unsigned long number, byte dots, bool leadingZeros,	const byte numberFont[])
 {
 	setDisplayToDecNumberAt(number, dots, 0, leadingZeros, numberFont);
 }
@@ -197,16 +198,16 @@ void TM16xxDisplay::setDisplayToSignedDecNumber(signed long number, byte dots, b
 		if (-number > 9999999L) {
 			setDisplayToError();
 		} else {
-			setDisplayToDecNumberAt(-number, dots, 1, leadingZeros, numberFont);
-			_pTM16xx->sendChar(0, MINUS, (dots & (0x80)) != 0);
+			setDisplayToDecNumberAt(-number, dots, 1, leadingZeros, numberFont);   // start at pos 1
+      sendCharAt(0, MINUS, (dots & (0x80)) != 0); // minus at pos 0, use dot at highest bit = bit(7)
 		}
 	}
 }
 
 void TM16xxDisplay::setDisplayToBinNumber(byte number, byte dots, const byte numberFont[])
 {
-  for (int i = 0; i < _nNumDigits; i++) {
-    _pTM16xx->setDisplayDigit((number & (1 << i)) == 0 ? 0 : 1, _nNumDigits - i - 1, (dots & (1 << i)) != 0, numberFont);
+  for (int nPos = 0; nPos < _nNumDigits; nPos++) {
+    sendCharAt(_nNumDigits - nPos - 1, pgm_read_byte_near(numberFont + ((number & (1 << nPos)) == 0 ? 0 : 1)), (dots & (1 << nPos)) != 0);
   }
 }
 
@@ -226,7 +227,8 @@ void TM16xxDisplay::setCursor(int8_t nPos)
 {		// Set the print position. Allow negative numbers to support scrolling
 	_nPrintPos=nPos;
 }
-	
+
+
 /*
  * Support for the Print class
  *
@@ -261,12 +263,7 @@ size_t TM16xxDisplay::write(uint8_t c)
   {
     while(_nPrintPos>0 && _nPrintPos<_nNumDigits)
     {	// clear the remainder of the line
-    #if(TM16XX_OPT_COMBIDISPLAY)
-      //sendCharAtCombi(_nPrintPos, 0, false);    // sending 0 is same as clearDisplayDigit()
-      sendAsciiCharAtCombi(_nPrintPos, ' ', false);    // sending space is same as clearDisplayDigit()
-    #else
-      _pTM16xx->clearDisplayDigit(_nPrintPos);
-    #endif
+      sendCharAt(_nPrintPos, 0, false);    // sending 0 is same as clearDisplayDigit()
       _nPrintPos++;
     }
 
@@ -282,11 +279,7 @@ size_t TM16xxDisplay::write(uint8_t c)
 
   // print character
   if(_nPrintPos>=0 && _nPrintPos<_nNumDigits)
-  #if(TM16XX_OPT_COMBIDISPLAY)
-    sendAsciiCharAtCombi(_nPrintPos, c, fDot);
-  #else
-    _pTM16xx->sendAsciiChar(_nPrintPos, c, fDot);
-  #endif
+    sendAsciiCharAt(_nPrintPos, c, fDot);
   cPrevious=c;
   _nPrintPos++;
   return(1);
