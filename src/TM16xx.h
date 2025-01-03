@@ -50,6 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TM16XX_CMD_MODE_5GRID 0x01    // TM1630: 4x8 - 5x7
 #define TM16XX_CMD_MODE_6GRID 0x02    // TM1620: 4x10 - 6x8
 #define TM16XX_CMD_MODE_7GRID 0x03    // TM1628, TM1668: 4x13 - 7x10, TM1624: 4x14 - 7x11, TM1618: 4x8 - 7x5
+// TM1617 has 14 addresses (00-0D) but only uses GRID1, GRID2 and GRID7. For mode 7x3 instead of 8x2 it uses command MODE_7GRID.
 
 #include "TM16xxFonts.h"
 
