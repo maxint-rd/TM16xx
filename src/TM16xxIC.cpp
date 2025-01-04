@@ -169,16 +169,50 @@ void TM16xxIC::setAlphaNumeric(bool fAlpha, const byte *pMap)    // const byte a
   pSegmentMap=pMap;
 }
 
-void TM16xxIC::sendAsciiChar(byte pos, char c, bool fDot)
+uint16_t TM16xxIC::flipSegments16(uint16_t uSegments)
+{
+  if(this->flipped)
+  { // Flip the character 180 degrees by some clever bit-manipulation.
+    // For 7 segments: swap segment A, B and C with D, E and F; leave G and DP intact
+    // (see PR #58 and issue #20 for info and references)
+    //   byte xored = (data ^ (data >> 3)) & (7);
+    //   data = data ^ (xored | (xored << 3));
+    //   pos = this->digits - 1 - pos;
+    
+    // For 14-segments: a,b,c should be swapped with d,e,f, then g1 should be swapped with g2, 
+    //   then h,j,k should be swapped with l,m,n and the dot be left behind.
+    // You can split the variable into 3 parts:
+    //    & 0x0E07 (0000 1110 0000 0111: abc and hjk)
+    //    & 0x7038 (0111 0000 0011 1000: def and lmn)
+    //    & 0x01C0 (0000 0001 1100 0000: dot, g1 and g2)
+    // Shift the first part to left by 3 bits, Shift the second part to right by 3 bits, swap g1 and g2 in the third part, then OR all the parts together.
+    // (Bit swapping: https://graphics.stanford.edu/~seander/bithacks.html#SwappingBitsXOR     @HoseanRC - Thank you!)
+    //
+    uint16_t part1=uSegments & 0x0E07; // (abc and hjk)
+    uint16_t part2=uSegments & 0x7038; // (def and lmn)
+    uint16_t part3=uSegments & 0x01C0; // (dot, g1 and g2)
+    uint16_t  xored= ((part3 >> 6) ^ (part3 >> 8)) & 1;
+    part3 = part3 ^ ((xored << 6) | (xored << 8));
+    uSegments = part1<<3 | part2>>3 | part3;
+  }
+  return(uSegments);
+}
+
+void TM16xxIC::sendAsciiChar(byte pos, char c, bool fDot, const byte font[])
 { // Method to send an Ascii character to the display.
   // This method is also called by TM16xxDisplay.print() to display characters.
   // The base class uses the default 7-segment font to find the LED pattern.
   // Derived classes for multi-segment displays or alternate layout displays can override this method.
   if(!fAlphaNumeric)
-    TM16xx::sendAsciiChar(pos, c, fDot);
+    TM16xx::sendAsciiChar(pos, c, fDot, font);    // the base method calls sendChar, which will do 7-segment flipping if needed
   else
   {
     uint16_t uSegments= pgm_read_word(TM16XX_FONT_15SEG+(c - 32));
+    if(this->flipped)
+    {
+      uSegments=flipSegments16(uSegments);
+      pos = this->digits - 1 - pos;
+    }
     setSegments16(uSegments | (fDot ? 0b10000000 : 0), pos);
   }
 }

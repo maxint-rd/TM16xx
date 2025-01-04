@@ -30,14 +30,7 @@ Pinout (bottom side up)
   | | | | | | | | |         Anode digit 2 is on pin 11
 
 Made by Maxint R&D, partly based on TM1638Anode class. See https://github.com/maxint-rd/
-
 */
-
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
-#else
-	#include "WProgram.h"
-#endif
 
 #include "TM1640Anode.h"
 
@@ -51,16 +44,16 @@ TM1640Anode::TM1640Anode(byte dataPin, byte clockPin, byte numDigits, bool activ
 	setupDisplay(activateDisplay, intensity);
 }
 
-
-void TM1640Anode::sendAsciiChar(byte pos, char c, bool fDot)
+void TM1640Anode::sendAsciiChar(byte pos, char c, bool fDot, const byte font[])
 { // Method to send an Ascii character to the display.
   // This method is also called by TM16xxDisplay.print() to display characters.
   // The base class uses the default 7-segment font to find the LED pattern.
   // Derived classes for multi-segment displays or alternate layout displays can override this method.
   uint16_t uSegments= pgm_read_word(TM16XX_FONT_15SEG+(c - 32));
 	setSegments16(uSegments | (fDot ? 0b10000000 : 0), pos);
-}
 
+  // Note: It is assumed that TM1640Anode::sendAsciiChar() is always used in 16-SEG x 8-GRD (in Common Anode configuration)
+}
 
 void TM1640Anode::setSegments(byte segments, byte position)
 { // Set regular 7-segment segments on the 15-segment display. This allows for using the regular 7-segment font.
@@ -70,7 +63,6 @@ void TM1640Anode::setSegments(byte segments, byte position)
     segments16|=bit(8);   // duplicate G1 to G2
   this->setSegments16((uint16_t)segments16, position);
 }
-
 
 void TM1640Anode::setSegmentMap(const byte aMap[])
 { // Set a segment map to be used in subsequent setting of segments

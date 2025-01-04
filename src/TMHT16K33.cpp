@@ -42,7 +42,7 @@ Note: LED-display KYX-5241AS has the same pinout, but NC pin 3 is missing.
 Made by Maxint R&D. See https://github.com/maxint-rd
 */
 
-#include "TMHT16K33.h"  // will include Arduino.h
+#include "TMHT16K33.h"
 #include <Wire.h>       // needed for I2C
 
 TMHT16K33::TMHT16K33(byte i2cAddress, byte sdaPin, byte sclPin, byte numDigits)

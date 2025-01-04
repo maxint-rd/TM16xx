@@ -61,8 +61,7 @@ class TMHT16K33 : public TM16xx
 	  virtual void setSegments(byte segments, byte position);   // will duplicate G to G1/G2 in 15-segment
 	  virtual void setSegments16(uint16_t segments, byte position);   // some modules support more than 8 segments
     /** Set an Ascii character on a specific location (overloaded for 15-segment display) */
-		//virtual void sendAsciiChar(byte pos, char c, bool dot); // public method to allow calling from TM16xxDisplay
-		virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // made public to allow calling from TM16xxDisplay); // public method to allow calling from TM16xxDisplay
+		virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // public method to allow calling from TM16xxDisplay
 
 	  // Set mapping array to be used when displaying segments
 	  // The array should contain _maxSegments bytes specifying the desired mapping

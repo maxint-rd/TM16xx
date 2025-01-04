@@ -8,13 +8,7 @@ Made by Maxint R&D, based on TM1638 class. See https://github.com/maxint-rd/
 #ifndef TM1640Anode_h
 #define TM1640Anode_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
-#else
-	#include "WProgram.h"
-#endif
-
-#include "TM1640.h"
+#include "TM1640.h"   // will include Arduino.h
 
 #define TM1640Anode_MAX_POS 8
 #define TM1640Anode_MAX_SEG 16
@@ -26,7 +20,7 @@ class TM1640Anode : public TM1640
     TM1640Anode(byte dataPin, byte clockPin, byte numDigits=4, bool activateDisplay = true, byte intensity = 7);
 
     /** Set an Ascii character on a specific location (overloaded for 15-segment display) */
-		virtual void sendAsciiChar(byte pos, char c, bool dot); // public method to allow calling from TM16xxDisplay
+		virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // public method to allow calling from TM16xxDisplay
 
 		/** Set the segments at a specific position on or off */
 	  virtual void setSegments(byte segments, byte position);   // will duplicate G to G1/G2 in 15-segment

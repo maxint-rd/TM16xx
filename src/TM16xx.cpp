@@ -99,7 +99,6 @@ void TM16xx::setSegments16(uint16_t segments, byte position)
   // Depending on the module this method should shift the segments to the proper data position.
 }
 
-
 void TM16xx::sendChar(byte pos, byte data, bool dot)
 {
 /*
