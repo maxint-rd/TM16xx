@@ -38,12 +38,12 @@ TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB | Anode/Inverted/QYF*
 TM1640 | 8 x 16               | n/a          | DIN/CLK     | Anode*
 TM1650 | 8 x 4                | 7 x 4 multi  | DIO/CLK     | 
 
-The following chips are fully supported and tested to work: TM1616, TM1618, TM1620, TM1624, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650, TM1652, TM1668.
+The following chips are fully supported and tested to work: TM1616, TM1618, TM1620, TM1623, TM1624, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650, TM1652, TM1668.
 \*) Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638, TM1618Anode and TM1640Anode are also supported.
 
 Note that there are similar chips made by other manufacturers that may be compatible with the Titan Micro chips. For instance: the HBS640 by WINRISE is compatible with the TM1640.
 
-As of end 2024 many more chips are supported: TM1620B, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. Note that while their features are supported via the [generic class TM16xxIC](#generic-class-tm16xxic), I don't have them all in my collection and they have not all been tested. Please please let me know your findings if you have tested one of them.
+As of end 2024 many more chips are supported: TM1620B, TM1623C, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. Note that while their features are supported via the [generic class TM16xxIC](#generic-class-tm16xxic), I don't have them all in my collection and they have not all been tested. Please please let me know your findings if you have tested one of them.
 
 For a full overview of all the chips and their current level of support go to [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support).
 
@@ -108,7 +108,7 @@ ___NEW___  - To support a large range of TM16xx chips, the generic class TM16xxI
 
 TM16xxIC module(IC_TM1638, 8, 9, 7);   // IC is TM1638, DIO=8, CLK=9, STB=7
 ```
-These untested chips have supported features: TM1620B, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667.
+These untested chips have supported features: TM1620B, TM1623C, TM1626A, TM1616B, TM1628A, TM1629, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667.
 For a full overview of all the chips and their level of support go to [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
 
 ## TM16xxDisplay class
@@ -275,7 +275,7 @@ Added library functionality:
 - Support for TM1650. Note: TM1650 can be used in 8x4 or 7x4 display mode and supports simultaneous presses on K1/K2.
 - Support for TM1652. Note: TM1652 uses a single data line and fixed timing to determine the clock. Datasheet fully translated.
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes. Datasheet partly translated.
-- (Untested) support for many more TM16xx family members via TM16xxIC class: e.g. TM1620B, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. List of all the chips and their level of support: [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
+- Support for many more TM16xx family members via TM16xxIC class: e.g. TM1620B, TM1623, TM1624, TM1626A, TM1616B, TM1628A, TM1629, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. List of all the chips and their level of support: [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
 
 Functionality in original library by Ricardo Batista:
 - Support for the TM1638 and TM1640, including common anode TM1638 module;
@@ -293,7 +293,7 @@ Functionality in original library by Ricardo Batista:
 - the TM1640 supports up to sixteen 7-segment digits, eight 14-segment digits or an 8x16 LED matrix. The TM1640Anode class can be used with a Common Anode configuration to support 8 digits of 16 segments, such as the 5241BS 14-segment plus dot LED display (example for combined TM1640Anode yet to be added).
 - The [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display) is fully supported. Please note that while multiple buttons can be pressed, pressing more than two buttons can give faulty results due to the lack of short-out preventing diodes on the module.
 - The popular TM1638 LED & KEY module comes in a number of varieties. My version has some odd button wiring sequence: S1=KS1, S5=KS2, S2=KS3, S6=KS4, S3=KS5, S7=KS6, S4=KS7, S8=KS8
-- TM1628/TM1668 allow 13 segment mode, support for using 13-segment displays is still outstanding due to lack of having such dsiplays for testing.
+- TM1628/TM1668 allow 13 segment mode, TM1623/TM1624 allow 14 segment mode. By combining G1/G2 and or omitting decimal point, thise chips can be used to display alphanumeric text on 14-Segment + DP LED displays.
 - The TM1650 datasheet mentions SDA and SCL pins. The used protocol resembles I2C, but lacks addressing. For that reason this library doesn't use the I2C Wire library, but (slow) bitbanging using digitalWrite.
 - The TM1652 allows more levels of LED dimming than supported. For uniformity only 8 levels of duty cycle are used, at maximum grid current.
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. In future versions this functionality may be replaced by a specific class for using RGB LEDs. (TODO: The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Unfortunately these chips don't support individual LED brightness, only intensity of the whole display).
