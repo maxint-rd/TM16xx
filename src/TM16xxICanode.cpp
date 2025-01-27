@@ -28,7 +28,7 @@ TM16xxICanode::TM16xxICanode(if_ctrl_tm16xx ctrl, byte dataPin, byte clockPin, b
 
 void TM16xxICanode::setupDisplay(bool active, byte intensity)
 {
-  // Set display mode. For TM16xxICanode, the display mode is reverse of regular common cathode usage
+  // TODO: Set display mode. For TM16xxICanode, the display mode is reverse of regular common cathode usage
   // Upper grid pins are shared with the upper segment pins, so select appropriate mode based on _maxSegments
   //sendCommand(_maxSegments==7 ? TM16XX_CMD_MODE_7GRID : (_maxSegments==6 ? TM16XX_CMD_MODE_6GRID : (_maxSegments==5 ? TM16XX_CMD_MODE_5GRID : TM16XX_CMD_MODE_4GRID)));
 
@@ -76,23 +76,28 @@ void TM16xxICanode::setSegments16(uint16_t segments, byte position)
     if(pSegmentMapX)
       segments=mapSegments16(segments, pSegmentMapX);
 
-		//update our memory bitmap
+		// update our memory bitmap, remember changed segments
+    uint16_t uChangedSegments=bitmap[position] ^ segments;      // determine changed segments (using xor) to minimize data traffic 
 		this->bitmap[position]=segments;
-    
 
 		// Transpose the segments/positions to counter Common Anode connections and send the whole bitmap 
  		for (byte nSeg = 0; nSeg < _maxSegmentsX; nSeg++)      // transpose _maxSegments/_maxDisplays
  		{
- 		  uint16_t nVal=0;
-   		for(byte nPos=0; nPos < _maxDisplaysX; nPos++)
-			{
-				// Assume 1st digit to be connected to SEG1, 2nd digit connected to SEG2 etc
-				nVal |= (((this->bitmap[nPos] >> nSeg) & 1) << (nPos));
-			}
+      if(uChangedSegments & bit(nSeg))
+      { // Update the display, but only for changed segments.
+        // Updating all segments is very slow since for every digit the whole display will be updated
+        // Testing scrolled text on TM1640 16 segments x 8 CA-digits @8MHz CH32 showed 727ms per 8-char line when sending all segments. 
+        // Sending only changed was 0-320ms, depending on contents. @48MHz measurements were 0-67ms.
+        uint16_t nVal=0;
+        for(byte nPos=0; nPos < _maxDisplaysX; nPos++)
+        {
+          // Assume 1st digit to be connected to SEG1, 2nd digit connected to SEG2 etc
+          nVal |= (((this->bitmap[nPos] >> nSeg) & 1) << (nPos));
+        }
 
-      // Send the transposed position data for the segment.
-      // Note that this method is very slow since for every changed digit the whole display will be updated
-      TM16xxIC::setSegments16(nVal, nSeg);
+        // Send the transposed position data for the segment.
+        TM16xxIC::setSegments16(nVal, nSeg);
+      }
  		}
  	}
 }

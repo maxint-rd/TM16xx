@@ -1,6 +1,9 @@
 /*
 TM16xxICanode - Library implementation for TM16xxIC used in Common Anode configuration.
 
+Tested configurations:
+  TM1640: 16 GRD-segments x 8 SEG-digits 
+
 Part of the TM16xx library by Maxint. See https://github.com/maxint-rd/TM16xx
 The Arduino TM16xx library supports LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 as well as individual chips.
 Simply use print() on 7-segment displays and use Adafruit GFX on matrix displays.
@@ -23,14 +26,14 @@ const byte SEGMAP_15SEG_BB2X5241BS[] PROGMEM = {12, 11, 8, 6, 1, 9, 13, 7, 5, 10
 class TM16xxICanode : public TM16xxIC
 {
   public:
-    /** Instantiate a TM16xxIC module specifying data, clock and stobe pins, the display state, the starting intensity (0-7). */
+    /** Instantiate a module; specifying data, clock and strobe pins and the number of digits (default is 4 digits) */
     TM16xxICanode(if_ctrl_tm16xx ctrl, byte dataPin, byte clockPin, byte strobePin, byte numDigits=4);
 
     /** Constructor for chips with only data and clock */
     TM16xxICanode(if_ctrl_tm16xx ctrl, byte dataP, byte clockP) : TM16xxICanode(ctrl, dataP, clockP, dataP, 4) {};
 
     /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
-    virtual void setupDisplay(bool active, byte intensity);   // For TM16xxICanode: also set the display mode (based on _maxSegments)
+    virtual void setupDisplay(bool active, byte intensity);   // TODO for TM16xxICanode: also set the display mode (based on _maxSegments)
 
     /** use alphanumeric display (yes/no) with or without segment map */	
     virtual void setAlphaNumeric(bool fAlpha=true, const byte *pMap=NULL);    // const byte aMap[]
