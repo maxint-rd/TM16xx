@@ -35,12 +35,12 @@ class TM16xxICanode : public TM16xxIC
     /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
     virtual void setupDisplay(bool active, byte intensity);   // TODO for TM16xxICanode: also set the display mode (based on _maxSegments)
 
-    /** use alphanumeric display (yes/no) with or without segment map */	
+    /** use alphanumeric display (yes/no) with or without segment map */  
     virtual void setAlphaNumeric(bool fAlpha=true, const byte *pMap=NULL);    // const byte aMap[]
 
     /** Set the segments at a specific position on or off */
     virtual void setSegments16(uint16_t segments, byte position);
-	  
+    
     /** Clear the display */
     virtual void clearDisplay();
 

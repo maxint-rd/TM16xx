@@ -14,7 +14,7 @@ Made by Maxint R&D. See https://github.com/maxint-rd
 #include "TM16xxICanode.h"
 
 TM16xxICanode::TM16xxICanode(if_ctrl_tm16xx ctrl, byte dataPin, byte clockPin, byte strobePin, byte numDigits)
-	: TM16xxIC(ctrl, dataPin, clockPin, strobePin, numDigits)
+  : TM16xxIC(ctrl, dataPin, clockPin, strobePin, numDigits)
 {
   // transpose SEG/GRD
   _maxDisplaysX=_maxSegments;
@@ -61,7 +61,7 @@ byte TM16xxICanode::mapSegments(byte segments)
 */
 
 void TM16xxICanode::setSegments16(uint16_t segments, byte position)
-{	// Set leds on common anode GRID/SEG lines as specified.
+{ // Set leds on common anode GRID/SEG lines as specified.
   // TM1640 in common anode mode supports 16 GRID lines for segment anodes, connected to max. 8 SEG lines for cathodes
   // Since the segments of digits are located at different display addresses, a memory bitmap is used to transpose the segments.
 
@@ -69,20 +69,20 @@ void TM16xxICanode::setSegments16(uint16_t segments, byte position)
   // To avoid this we call begin() first to ensure it's not executed later.
   begin();     // calls setupDisplay() and clearDisplay(), which will clear the bitmap 
 
-	//if(position<_maxDisplays)
-	if(position<TM16xxICanode_MAX_POS)
-	{
+  //if(position<_maxDisplays)
+  if(position<TM16xxICanode_MAX_POS)
+  {
     // Map segments if specified for alternative segment wiring.
     if(pSegmentMapX)
       segments=mapSegments16(segments, pSegmentMapX);
 
-		// update our memory bitmap, remember changed segments
+    // update our memory bitmap, remember changed segments
     uint16_t uChangedSegments=bitmap[position] ^ segments;      // determine changed segments (using xor) to minimize data traffic 
-		this->bitmap[position]=segments;
+    this->bitmap[position]=segments;
 
-		// Transpose the segments/positions to counter Common Anode connections and send the whole bitmap 
- 		for (byte nSeg = 0; nSeg < _maxSegmentsX; nSeg++)      // transpose _maxSegments/_maxDisplays
- 		{
+    // Transpose the segments/positions to counter Common Anode connections and send the whole bitmap 
+    for (byte nSeg = 0; nSeg < _maxSegmentsX; nSeg++)      // transpose _maxSegments/_maxDisplays
+    {
       if(uChangedSegments & bit(nSeg))
       { // Update the display, but only for changed segments.
         // Updating all segments is very slow since for every digit the whole display will be updated
@@ -98,12 +98,12 @@ void TM16xxICanode::setSegments16(uint16_t segments, byte position)
         // Send the transposed position data for the segment.
         TM16xxIC::setSegments16(nVal, nSeg);
       }
- 		}
- 	}
+    }
+  }
 }
 
 void TM16xxICanode::clearDisplay()
 { // NOTE: TM16xx class assumes chips only have 2 bytes per digit when it uses >8 segments
   TM16xxIC::clearDisplay();  // call parent method 
-	memset(this->bitmap, 0, TM16xxICanode_MAX_POS); // clear the memory bitmap
+  memset(this->bitmap, 0, TM16xxICanode_MAX_POS); // clear the memory bitmap
 }
