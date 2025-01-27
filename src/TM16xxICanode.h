@@ -1,8 +1,11 @@
 /*
-TM1618Anode - Library implementation for TM1618 with Common Anode up to 5 digits of 7 segments.
-TM1618: 5x7 - 8x4 SEGxGRD, 5 x 1 single button, DIO/CLK/STB
+TM16xxICanode - Library implementation for TM16xxIC used in Common Anode configuration.
 
-Made by Maxint R&D, based on TM1638 class. See https://github.com/maxint-rd/
+Part of the TM16xx library by Maxint. See https://github.com/maxint-rd/TM16xx
+The Arduino TM16xx library supports LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 as well as individual chips.
+Simply use print() on 7-segment displays and use Adafruit GFX on matrix displays.
+
+Made by Maxint R&D. See https://github.com/maxint-rd
 */
 
 #ifndef TM16xxICanode_h
@@ -20,28 +23,29 @@ const byte SEGMAP_15SEG_BB2X5241BS[] PROGMEM = {12, 11, 8, 6, 1, 9, 13, 7, 5, 10
 class TM16xxICanode : public TM16xxIC
 {
   public:
-    /** Instantiate a TM1640 module specifying data, clock and stobe pins, the display state, the starting intensity (0-7). */
+    /** Instantiate a TM16xxIC module specifying data, clock and stobe pins, the display state, the starting intensity (0-7). */
     TM16xxICanode(if_ctrl_tm16xx ctrl, byte dataPin, byte clockPin, byte strobePin, byte numDigits=4);
 
-   /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
-   virtual void setupDisplay(bool active, byte intensity);   // For TM16xxICanode: also set the display mode (based on _maxSegments)
+    /** Constructor for chips with only data and clock */
+    TM16xxICanode(if_ctrl_tm16xx ctrl, byte dataP, byte clockP) : TM16xxICanode(ctrl, dataP, clockP, dataP, 4) {};
 
-   	/** use alphanumeric display (yes/no) with or without segment map */	
+    /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
+    virtual void setupDisplay(bool active, byte intensity);   // For TM16xxICanode: also set the display mode (based on _maxSegments)
+
+    /** use alphanumeric display (yes/no) with or without segment map */	
     virtual void setAlphaNumeric(bool fAlpha=true, const byte *pMap=NULL);    // const byte aMap[]
 
-		/** Set the segments at a specific position on or off */
-	  virtual void setSegments16(uint16_t segments, byte position);
+    /** Set the segments at a specific position on or off */
+    virtual void setSegments16(uint16_t segments, byte position);
 	  
-		/** Clear the display */
-		virtual void clearDisplay();
+    /** Clear the display */
+    virtual void clearDisplay();
 
   private:
-		//byte mapSegments(byte segments);
-		uint16_t bitmap[TM16xxICanode_MAX_POS];       // store a bitmap for all 8 digits to allow common anode manipulation
-		//const uint16_t *pSegmentMap=NULL;               // pointer to segment map set using setSegmentMap()
+    uint16_t bitmap[TM16xxICanode_MAX_POS];       // store a bitmap for all 8 digits to allow common anode manipulation
     byte _maxSegmentsX=0;
     byte _maxDisplaysX=0;
-		const byte *pSegmentMapX=NULL; // pointer to segment map for alphanumeric displays. set using setAlphaNumeric()
+    const byte *pSegmentMapX=NULL; // pointer to segment map for alphanumeric displays. set using setAlphaNumeric()
 };
 
 #endif

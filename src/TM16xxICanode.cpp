@@ -1,5 +1,8 @@
 /*
-TM16xxICanode - Library implementation for TM16xxIC with Common Anode 
+TM16xxICanode - Library implementation for TM16xxIC used in Common Anode configuration.
+
+Tested configurations:
+  TM1640: 16 GRD-segments x 8 SEG-digits 
 
 Part of the TM16xx library by Maxint. See https://github.com/maxint-rd/TM16xx
 The Arduino TM16xx library supports LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 as well as individual chips.
@@ -19,15 +22,6 @@ TM16xxICanode::TM16xxICanode(if_ctrl_tm16xx ctrl, byte dataPin, byte clockPin, b
   if(_maxSegments>numDigits)    // correct _maxSegments for use of SEG pins as common anode
     _maxSegments=numDigits;
   _maxDisplays=ctrl.grid_len;   // max number of GRD pins usable for segments depends on display mode
-
-/*
-  // calculate total SEG/GRD pins possible
-  if(NIBBLE_HIGH(_ctrl.seg_bytes)!=TM16XX_IC_SEGMUX_0)
-  {
-    byte numSegGrdPins=_maxSegments+_ctrl.grid_len-(NIBBLE_HIGH(_ctrl.seg_bytes)>>4);
-    _maxSegments=numSegGrdPins-_maxDisplays;        // adjust for SEG pins used as GRD
-  }
-*/
 
   // NOTE: CONSTRUCTORS SHOULD NOT CALL DELAY(), MILLIS() OR MICROS() <= may hang ESP8266/ESP32/LGT8F328P/CH32V003/STM32...
 }
@@ -68,8 +62,8 @@ byte TM16xxICanode::mapSegments(byte segments)
 
 void TM16xxICanode::setSegments16(uint16_t segments, byte position)
 {	// Set leds on common anode GRID/SEG lines as specified.
-  // TM1618 in common anode mode supports up to 7 GRID lines for segment anodes, connected to max. 5 SEG lines for cathodes
-  // since the segments of digit are located at different display addresses, a memory bitmap is used to transpose the segments.
+  // TM1640 in common anode mode supports 16 GRID lines for segment anodes, connected to max. 8 SEG lines for cathodes
+  // Since the segments of digits are located at different display addresses, a memory bitmap is used to transpose the segments.
 
   // Since sendData() does implicit begin(), it may clear the bitmap after we filled it
   // To avoid this we call begin() first to ensure it's not executed later.
@@ -84,6 +78,7 @@ void TM16xxICanode::setSegments16(uint16_t segments, byte position)
 
 		//update our memory bitmap
 		this->bitmap[position]=segments;
+    
 
 		// Transpose the segments/positions to counter Common Anode connections and send the whole bitmap 
  		for (byte nSeg = 0; nSeg < _maxSegmentsX; nSeg++)      // transpose _maxSegments/_maxDisplays
@@ -94,13 +89,10 @@ void TM16xxICanode::setSegments16(uint16_t segments, byte position)
 				// Assume 1st digit to be connected to SEG1, 2nd digit connected to SEG2 etc
 				nVal |= (((this->bitmap[nPos] >> nSeg) & 1) << (nPos));
 			}
-			
-      // Since the TM1618 uses two bytes per position, the (transposed) segments are sent in two parts,
-      // using nSeg as position and the combined byte as segment value.
-      // We cannot call the parent method TM1618::setSegments() because it has an unwanted check.
+
+      // Send the transposed position data for the segment.
+      // Note that this method is very slow since for every changed digit the whole display will be updated
       TM16xxIC::setSegments16(nVal, nSeg);
-      //sendData(nSeg << 1, (byte)nVal&0x1F);
-      //sendData((nSeg << 1) | 1, (byte)(nVal>>5)<<3);
  		}
  	}
 }
