@@ -35,13 +35,13 @@ Made by Maxint R&D, partly based on TM1638Anode class. See https://github.com/ma
 #include "TM1640Anode.h"
 
 TM1640Anode::TM1640Anode(byte dataPin, byte clockPin, byte numDigits, bool activateDisplay, byte intensity)
-	: TM1640(dataPin, clockPin, numDigits, activateDisplay, intensity)
+  : TM1640(dataPin, clockPin, numDigits, activateDisplay, intensity)
 {
-  _maxSegments=TM1640Anode_MAX_SEG; 	// On the 5241BS LED display modules the 15 segments are connected to the GRD1-GRD16 lines of the TM1640.
+  _maxSegments=TM1640Anode_MAX_SEG;   // On the 5241BS LED display modules the 15 segments are connected to the GRD1-GRD16 lines of the TM1640.
                                       // The display has the two common anode digits connected to the SEG lines, resulting in max. 8 digits.
   _maxDisplays=TM1640Anode_MAX_POS;
-	clearDisplay();
-	setupDisplay(activateDisplay, intensity);
+  clearDisplay();
+  setupDisplay(activateDisplay, intensity);
 }
 
 void TM1640Anode::sendAsciiChar(byte pos, char c, bool fDot, const byte font[])
@@ -50,7 +50,7 @@ void TM1640Anode::sendAsciiChar(byte pos, char c, bool fDot, const byte font[])
   // The base class uses the default 7-segment font to find the LED pattern.
   // Derived classes for multi-segment displays or alternate layout displays can override this method.
   uint16_t uSegments= pgm_read_word(TM16XX_FONT_15SEG+(c - 32));
-	setSegments16(uSegments | (fDot ? 0b10000000 : 0), pos);
+  setSegments16(uSegments | (fDot ? 0b10000000 : 0), pos);
 
   // Note: It is assumed that TM1640Anode::sendAsciiChar() is always used in 16-SEG x 8-GRD (in Common Anode configuration)
 }
@@ -77,74 +77,56 @@ uint16_t TM1640Anode::mapSegments16(uint16_t segments)
   // Usually segment A is mapped to pin GRID1 of the TM1640. Using segmentmapping this can become any other pin.
   if(pSegmentMap)
   {
-/*
-    Serial.print(F("SegmentMapping: "));
-    Serial.print(segments, HEX);
-    Serial.print("->");
-*/
     uint16_t nSegmentsMapped=0;
     for(byte n=0; n<_maxSegments; n++)
     {
-      //nSegmentsMapped|=(bit(pSegmentMap[n])&(segments&bit(n)));
       nSegmentsMapped|=((segments&bit(n))?bit(pSegmentMap[n]):0);
     }
     segments=nSegmentsMapped;
-//    Serial.println(segments, HEX);
   }
   return(segments);
 }
 
 void TM1640Anode::setSegments16(uint16_t segments, byte position)
-{	// Set 16 leds on common grd as specified
+{ // Set 16 leds on common grd as specified
   // TM1640 uses 8 SEGs for 16 GRIDs one byte address per GRID
   // For the 15-segment displays in common anode configuration one SEG per display position is used.
   // When used as a 8-segment display, the G segment is translated to G1/G2.
   // Note: For 15-segment characters the sendAsciiChar function is redefined.
 
-  // Map segments if specified for alternative segment wiring.
-  segments=mapSegments16(segments);
-    
-	//if(position<_maxDisplays)
-	if(position<TM1640Anode_MAX_POS)
-	{
-		//update our memory bitmap
-		this->bitmap[position]=segments;
+  //if(position<_maxDisplays)
+  if(position<TM1640Anode_MAX_POS)
+  {
+    // Map segments if specified for alternative segment wiring.
+    segments=mapSegments16(segments);
 
-		// Transpose the segments/positions to counter Common Anode connections and send the whole bitmap 
- 		for (byte nSeg = 0; nSeg < _maxSegments; nSeg++)
- 		{
- 		  byte nVal=0;
-   		for(byte nPos=0; nPos < TM1640Anode_MAX_POS; nPos++)
-			{
-				// Assume 1st digit to be connected to SEG1, 2nd digit connected to SEG2 etc
-				nVal |= (((this->bitmap[nPos] >> nSeg) & 1) << (nPos));
-			}
-			sendData(nSeg, nVal);
- 		}
- 	}
+    // update our memory bitmap, remember changed segments
+    uint16_t uChangedSegments=bitmap[position] ^ segments;      // determine changed segments (using xor) to minimize data traffic 
+    this->bitmap[position]=segments;
+
+    // Transpose the segments/positions to counter Common Anode connections and send the whole bitmap 
+    for (byte nSeg = 0; nSeg < _maxSegments; nSeg++)
+    {
+      if(uChangedSegments & bit(nSeg))
+      { // Update the display, but only for changed segments.
+        byte nVal=0;
+        for(byte nPos=0; nPos < TM1640Anode_MAX_POS; nPos++)
+        {
+          // Assume 1st digit to be connected to SEG1, 2nd digit connected to SEG2 etc
+          nVal |= (((this->bitmap[nPos] >> nSeg) & 1) << (nPos));
+        }
+        sendData(nSeg, nVal);
+      }
+    }
+  }
 }
 
 void TM1640Anode::clearDisplay()
 {
-/*
-  Serial.print(F("pre-clr:"));
+  memset(this->bitmap, 0, TM1640Anode_MAX_POS*sizeof(uint16_t));
   for(byte nPos=0; nPos<TM1640Anode_MAX_POS; nPos++)
-  {
-    Serial.print(nPos);
-    Serial.print(":");
-    Serial.print(this->bitmap[nPos], HEX);
-    Serial.print(" ");
-  }
-  Serial.println(". ");
-*/
-	memset(this->bitmap, 0, TM1640Anode_MAX_POS*sizeof(uint16_t));
-  for(byte nPos=0; nPos<TM1640Anode_MAX_POS; nPos++)
-  {
-	  // all OFF
-	  sendData(nPos << 1, 0);
-	  sendData((nPos << 1) | 1, 0);
-	  // all ON
-	  //sendData(nPos << 1, 0b11111111);
-	  //sendData((nPos << 1) | 1, 0b00000011);
+  { // set all segments OFF
+    sendData(nPos << 1, 0);
+    sendData((nPos << 1) | 1, 0);
   }
 }
