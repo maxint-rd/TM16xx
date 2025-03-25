@@ -73,7 +73,7 @@ void TM16xx::begin(bool activateDisplay, byte intensity)
 { // Call begin() in setup() to clear the display and set initial activation and intensity.
   // begin() is implicitly called upon first sending of display data, but only executes once.
   // Some chips may require begin() to initialize communication or other things.
-  static bool fBeginDone=false;
+  //static bool fBeginDone=false; // NOTE: Statics are shared like globals when using multiple object instances. That's unwanted behavior here!
   if(fBeginDone)
     return;
   fBeginDone=true;

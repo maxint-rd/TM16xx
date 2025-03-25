@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 #define TM16XX_CMD_DATA_AUTO 0x40
-#define TM16XX_CMD_DATA_READ 0x42			// command to read data used on two wire interfaces of TM1637
+#define TM16XX_CMD_DATA_READ 0x42     // command to read data used on two wire interfaces of TM1637
 #define TM16XX_CMD_DATA_FIXED 0x44
 #define TM16XX_CMD_DISPLAY 0x80
 #define TM16XX_CMD_ADDRESS 0xC0
@@ -62,7 +62,7 @@ class TM16xx
      * maxDisplays - the maximum number of displays supported by the chip (as provided by derived chip specific class), 
      * nDigitsUsed - the number of digits used to display numbers or text, 
      */
-    TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, bool activateDisplay=true,	byte intensity=7);
+    TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, bool activateDisplay=true, byte intensity=7);
     /** DEPRECATED: activation, intensity (0-7) and display mode are no longer used by constructor. */
 
     /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
@@ -75,43 +75,43 @@ class TM16xx
     virtual void setDisplayReversed(bool fReversed);
 
     /** Clear the display */
-		virtual void clearDisplay();
+    virtual void clearDisplay();
 
     /** Use explicit call in setup() or rely on implicit call by sendData(); calls setupDisplay() and clearDisplay() */
     virtual void begin(bool activateDisplay=true, byte intensity=7);
 
     /** Set segments of the display */
-	  virtual void setSegments(byte segments, byte position);
-	  virtual void setSegments16(uint16_t segments, byte position);   // some modules support more than 8 segments
-	  
+    virtual void setSegments(byte segments, byte position);
+    virtual void setSegments16(uint16_t segments, byte position);   // some modules support more than 8 segments
+    
     //
-	  // Basic display functions. For additional display features use the TM16xxDisplay class
+    // Basic display functions. For additional display features use the TM16xxDisplay class
     //
 
     /** Set a single display at pos (starting at 0) to a digit (left to right) */
     virtual void setDisplayDigit(byte digit, byte pos=0, bool dot=false, const byte numberFont[] = TM16XX_NUMBER_FONT);
 
-		/** Set the display to a decimal number */
-	  virtual void setDisplayToDecNumber(int nNumber, byte bDots=0, bool fLeadingZeros=true);
+    /** Set the display to a decimal number */
+    virtual void setDisplayToDecNumber(int nNumber, byte bDots=0, bool fLeadingZeros=true);
 
-		/** Clear a single display at pos (starting at 0, left to right) */ 
+    /** Clear a single display at pos (starting at 0, left to right) */ 
     virtual void clearDisplayDigit(byte pos, bool dot=false);
     /** Set the display to the values (left to right) */
     virtual void setDisplay(const byte values[], byte size=8);
 
     /** Set the display to the string (defaults to built in 7-segment alphanumeric font) */
-		virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
+    virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
 
-		virtual void sendChar(byte pos, byte data, bool dot); // made public to allow calling from TM16xxDisplay
-		virtual void setNumDigits(byte numDigitsUsed);   // set number of digits used for alignment
-		virtual byte getNumDigits(); // called by TM16xxDisplay to combine multiple modules
-		virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // made public to allow calling from TM16xxDisplay
+    virtual void sendChar(byte pos, byte data, bool dot); // made public to allow calling from TM16xxDisplay
+    virtual void setNumDigits(byte numDigitsUsed);   // set number of digits used for alignment
+    virtual byte getNumDigits(); // called by TM16xxDisplay to combine multiple modules
+    virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // made public to allow calling from TM16xxDisplay
 
-		// Key-scanning functions
-		// Note: not all TM16xx chips support key-scanning and sizes are different per chip
-		// Up to 32 key states are supported, but specific chips may support less keys or less combinations
-		// The chip specific derived class method will return a 32-bit value representing the state of each key, containing 0 if no key is pressed
-		virtual uint32_t getButtons();  // return state of up to 32 keys.
+    // Key-scanning functions
+    // Note: not all TM16xx chips support key-scanning and sizes are different per chip
+    // Up to 32 key states are supported, but specific chips may support less keys or less combinations
+    // The chip specific derived class method will return a 32-bit value representing the state of each key, containing 0 if no key is pressed
+    virtual uint32_t getButtons();  // return state of up to 32 keys.
 
   protected:
     virtual void bitDelay();
@@ -142,11 +142,13 @@ auto min(T x, U y) -> decltype(x>y ? x : y)
 }
 #endif  // !defined(max)
 
-    byte _maxDisplays=2;  // maximum number of digits (grids), chip-dependent
-    byte _maxSegments=8;  // maximum number of segments per display, chip-dependent
-    bool flipped=false;   // sets the flipped state of the display;
+    byte _maxDisplays=2;   // maximum number of digits (grids), chip-dependent
+    byte _maxSegments=8;   // maximum number of segments per display, chip-dependent
+    bool flipped=false;    // sets the flipped state of the display;
     bool reversed=false;   // sets the reversed state of the display;
-    byte digits;          // number of digits in the display, module dependent
+    bool fBeginDone=false; // for implicit begin checking;
+    //byte intensitySetup; // TODO: prevent changing of intensity when calling setupDisplay followed by clearDisplay
+    byte digits;           // number of digits in the display, module dependent
     byte dataPin;
     byte clockPin;
     byte strobePin;
