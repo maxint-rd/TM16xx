@@ -7,7 +7,8 @@ The TM16xx chip family by Titan Micro allows driving LED displays or LED matrice
 Next to built-in high-frequency LED multiplexing, they offer control of LED brightness.
 Most TM16xx chips also support reading key-scan data for button presses.
 Using this library you can simply use print() on a 7-segment or 14-segment displays or use Adafruit GFX on a LED matrix.
-Currently this library supports more than 25 [different TM16xx chips](#tm16xx-chip-features) in various configurations; such as the TM1616, TM1618, TM1620, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650 and TM1652. 
+Currently this library supports more than 25 [different TM16xx chips](#tm16xx-chip-features) in various configurations; such as the TM1616, TM1618, TM1620, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650 and TM1652.
+For a quick look hit the play button in this [LIVE DEMO](https://wokwi.com/projects/424388671069721601) on Wokwi.
 
 Made by Maxint R&D. See https://github.com/maxint-rd/
 
@@ -138,7 +139,7 @@ void loop() {
 }
 ```
 If you want you can combine multiple modules into a single TM16xxDisplay object. When combined print() and println() will use all available digits to print the string.
-See [TM16xxDisplay.h](/src/TM16xxDisplay.h) for the provided methods.
+See [TM16xxDisplay class reference](https://github.com/maxint-rd/TM16xx/wiki/TM16xxDisplay-class-reference) for the provided methods.
 
 ## TM16xxMatrix class
 The _TM16xxMatrix_ class provides basic methods for using a single LED-matrix module. For more advanced graphics use the [_TM16xxMatrixGFX_](#tm16xxmatrixgfx-class) class. To use the _TM16xxMatrix_ class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
@@ -264,6 +265,7 @@ Added library functionality:
 - Support for TM1616 (suggested by @NickLplus)
 - Support for TM1618 with 8x4 common cathode or 7x5 common anode displays (suggested by @ArnieO).
 - Support for TM1620 (thanks @eddwhite)
+- Support for TM1623, TM1624 (tested derivement of TM16xxIC) - can be used in 11 x 7 - 14 x 4 display modes.
 - Support for TM1628. Note: TM1628 can be used in 10x7 - 13x4 display modes.
 - Support for TM1630 (thanks @tokuhira)
 - Support for TM1637. Note: TM1637 does not support simultaneous button presses.
