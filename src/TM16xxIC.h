@@ -178,12 +178,13 @@ class TM16xxIC : public TM16xx
     virtual void send(byte data);
     uint16_t mapSegments16(uint16_t segments, const byte *pMap=NULL);
     uint16_t flipSegments16(uint16_t uSegments);
+    if_ctrl_tm16xx _ctrl; // made protected to make it usable by derived classes
+    const byte *pSegmentMap=NULL; // pointer to segment map for alphanumeric displays. set using setAlphaNumeric(); made protected to make it usable by derived classes
 
   private:
     uint8_t countMaxSEG(void);
-    if_ctrl_tm16xx _ctrl;
+    //if_ctrl_tm16xx _ctrl;
     bool fAlphaNumeric=false;     // If true use 15-segment alphanumeric  display when having at least 13 SEG (15-seg: 14-segments plus dot)
-    const byte *pSegmentMap=NULL; // pointer to segment map for alphanumeric displays. set using setAlphaNumeric()
 };
 
 #endif
