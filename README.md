@@ -46,6 +46,8 @@ Note that there are similar chips made by other manufacturers that may be compat
 
 As of end 2024 many more chips are supported: TM1620B, TM1623C, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. Note that while their features are supported via the [generic class TM16xxIC](#generic-class-tm16xxic), I don't have them all in my collection and they have not all been tested. Please please let me know your findings if you have tested one of them.
 
+___NEW___  - In 2025 support was added for the [TM1621 and TM1622 LCD drivers](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support#tm16xx-lcd-driver-chips), including specific support for the HT1621 based 6 x 7-segment PDC-6X1 module and the TM1622 based DM8BA10 module with 10 x 16-segment alphanumeric digits. The TM1621D was tested with a 3x7-segment mini LCD display. Other variations (TM1621B, TM1621C, TM1622B) were not tested, but may work.
+
 For a full overview of all the chips and their current level of support go to [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support).
 
 See the [documents folder](/documents) for datasheets containing more information about these chips and their pinouts.
@@ -265,6 +267,7 @@ Added library functionality:
 - Support for TM1616 (suggested by @NickLplus)
 - Support for TM1618 with 8x4 common cathode or 7x5 common anode displays (suggested by @ArnieO).
 - Support for TM1620 (thanks @eddwhite)
+- Support for TM1621 and TM1622 LCD drivers, including LCD modules PDC-6X1 and DM8BA10.
 - Support for TM1623, TM1624 (tested derivement of TM16xxIC) - can be used in 11 x 7 - 14 x 4 display modes.
 - Support for TM1628. Note: TM1628 can be used in 10x7 - 13x4 display modes.
 - Support for TM1630 (thanks @tokuhira)
