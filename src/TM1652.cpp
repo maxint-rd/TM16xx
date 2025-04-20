@@ -35,7 +35,6 @@ TM1652::TM1652(byte dataPin, byte numDigits)
 void TM1652::begin(bool activateDisplay, byte intensity, byte driveCurrent)
 { // Call begin() in setup() to clear the display and set initial activation and intensity.
   // begin() is implicitly called upon first sending of display data, but only executes once.
-  static bool fBeginDone=false;
   if(fBeginDone)
     return;
   fBeginDone=true;
