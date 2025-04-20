@@ -74,7 +74,6 @@ bool TMHT16K33::isConnected()
 void TMHT16K33::begin(bool activateDisplay, byte intensity)
 { // Call begin() in setup() to clear the display and set initial activation and intensity.
   // begin() is implicitly called upon first sending of display data, but only executes once.
-  static bool fBeginDone=false;
   if(fBeginDone)
     return;
   fBeginDone=true;
