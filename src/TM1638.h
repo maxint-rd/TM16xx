@@ -20,12 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef TM1638_h
 #define TM1638_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "Arduino.h"
-#else
-	#include "WProgram.h"
-#endif
-
 #include "TM16xx.h"
 
 #define TM1638_MAX_POS 8
@@ -37,15 +31,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class TM1638 : public TM16xx
 {
   public:
-    /** Instantiate a tm1638 module specifying data, clock and stobe pins, the number of digits, the display state, the starting intensity (0-7). */
+    /** Instantiate a TM1638 module specifying data, clock and stobe pins, the number of digits
+        DEPRECATED: activation and intensity are no longer used by constructor. Use begin() or setupDisplay() instead. */
     TM1638(byte dataPin, byte clockPin, byte strobePin, byte numDigits=8, bool activateDisplay = true, byte intensity = 7);
 
-		/** Set the segments at a specific position on or off */
-	  virtual void setSegments(byte segments, byte position);
-	  virtual void setSegments16(uint16_t segments, byte position);
+    /** Set the up to 8 segments at a specific position on or off */
+    virtual void setSegments(byte segments, byte position);
+
+    /** Set the up to 16 segments at a specific position on or off  (max. 10 for TM1638) */
+    virtual void setSegments16(uint16_t segments, byte position);
 
     /** Set the LED at pos to color (TM1638_COLOR_RED, TM1638_COLOR_GREEN or both) */
     virtual void setLED(byte color, byte pos);
+
     /** Set the LEDs. MSB byte for the green LEDs, LSB for the red LEDs */
     virtual void setLEDs(word led);
 

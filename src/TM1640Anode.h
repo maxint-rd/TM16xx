@@ -16,7 +16,8 @@ Made by Maxint R&D, based on TM1638 class. See https://github.com/maxint-rd/
 class TM1640Anode : public TM1640
 {
   public:
-    /** Instantiate a TM1640 module specifying data, clock and stobe pins, the display state, the starting intensity (0-7). */
+    /** Instantiate a TM1640 module specifying data, clock and stobe pins.
+        DEPRECATED: activation and intensity are no longer used by constructor. Use begin() or setupDisplay() instead. */
     TM1640Anode(byte dataPin, byte clockPin, byte numDigits=4, bool activateDisplay = true, byte intensity = 7);
 
     /** Set an Ascii character on a specific location (overloaded for 15-segment display) */
@@ -24,10 +25,12 @@ class TM1640Anode : public TM1640
 
 		/** Set the segments at a specific position on or off */
 	  virtual void setSegments(byte segments, byte position);   // will duplicate G to G1/G2 in 15-segment
+
+		/** Set the segments at a specific position on or off */
 	  virtual void setSegments16(uint16_t segments, byte position);
 	  
-	  // Set mapping array to be used when displaying segments
-	  // The array should contain TM1640Anode_MAX_SEG bytes specifying the desired mapping
+	  /* Set mapping array to be used when displaying segments
+       The array should contain TM1640Anode_MAX_SEG bytes specifying the desired mapping */
 	  virtual void setSegmentMap(const byte aMap[]);
 
 		/** Clear the display */

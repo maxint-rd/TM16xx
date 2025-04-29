@@ -40,8 +40,14 @@ TM1640Anode::TM1640Anode(byte dataPin, byte clockPin, byte numDigits, bool activ
   _maxSegments=TM1640Anode_MAX_SEG;   // On the 5241BS LED display modules the 15 segments are connected to the GRD1-GRD16 lines of the TM1640.
                                       // The display has the two common anode digits connected to the SEG lines, resulting in max. 8 digits.
   _maxDisplays=TM1640Anode_MAX_POS;
+/*
   clearDisplay();
   setupDisplay(activateDisplay, intensity);
+*/
+  // NOTE: CONSTRUCTORS SHOULD NOT CALL DELAY() <= gives hanging on certain ESP8266 cores as well as on LGT8F328P
+  // Using micros() or millis() in constructor also gave issues on LST8F328P and CH32.
+  // Root cause is that the timer interrupt to update these counters may not be set until setup() is called.
+  // To initialize the display an implicit begin() is called by TM16xx::sendData().
 }
 
 void TM1640Anode::sendAsciiChar(byte pos, char c, bool fDot, const byte font[])
