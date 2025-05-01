@@ -59,6 +59,8 @@ void TM1640Anode8S16D::setSegments(byte segments, byte position)
 
   if(position<TM1640Anode8S16D_MAX_POS)
   {
+    begin();    // implicit begin() now, to avoid clearing a partially filled memory bitmap in sendData().
+
     // Map segments if specified for alternative segment wiring.
     //segments=mapSegments(segments);
 
