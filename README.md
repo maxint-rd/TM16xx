@@ -281,6 +281,7 @@ Added library functionality:
 - Support for TM1652. Note: TM1652 uses a single data line and fixed timing to determine the clock. Datasheet fully translated.
 - Support for TM1668. Note: TM1668 can be used in 10x7 - 13x4 display modes. Datasheet partly translated.
 - Support for many more TM16xx family members via TM16xxIC class: e.g. TM1620B, TM1623, TM1624, TM1626A, TM1616B, TM1628A, TM1629, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. List of all the chips and their level of support: [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support)
+- Support for the QYF-0231 alpha-numeric LED module, a 4 digit 15-segment display that uses the HT16K33 chip. That chip resembles the TM1640, but uses I2C (default address 0x70). Use the TMHT16K33 class as defined in [TMHT16K33.h](/src/TMHT16K33.h).
 
 Functionality in original library by Ricardo Batista:
 - Support for the TM1638 and TM1640, including common anode TM1638 module;
@@ -296,7 +297,7 @@ Functionality in original library by Ricardo Batista:
 - It is possible to define multiple display objects for multiple different modules (see the TM1638_TM1637ex_two_modules example). The library now supports combining multiple 7-segment or 14-segment modules into one display using the TM16xxDisplay class (example for combined TM16xxDisplay yet to be added). 
 - The TM16xxMatrixGFX class does support combining multiple LED Matrix module into one large matrix. 
 - the TM1640 supports up to sixteen 7-segment digits, eight 14-segment digits or an 8x16 LED matrix. The TM1640Anode class can be used with a Common Anode configuration to support 8 digits of 16 segments, such as the 5241BS 14-segment plus dot LED display (example for combined TM1640Anode yet to be added).
-- The [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM138 with common anode display) is fully supported. Please note that while multiple buttons can be pressed, pressing more than two buttons can give faulty results due to the lack of short-out preventing diodes on the module.
+- The [QYF-TM1638 module](http://arduinolearning.com/code/qyf-tm1638-and-arduino-module.php) (TM1638 with common anode display) is fully supported. Please note that while multiple buttons can be pressed, pressing more than two buttons can give faulty results due to the lack of short-out preventing diodes on the module.
 - The popular TM1638 LED & KEY module comes in a number of varieties. My version has some odd button wiring sequence: S1=KS1, S5=KS2, S2=KS3, S6=KS4, S3=KS5, S7=KS6, S4=KS7, S8=KS8
 - TM1628/TM1668 allow 13 segment mode, TM1623/TM1624 allow 14 segment mode. By combining G1/G2 and or omitting decimal point, thise chips can be used to display alphanumeric text on 14-Segment + DP LED displays.
 - The TM1650 datasheet mentions SDA and SCL pins. The used protocol resembles I2C, but lacks addressing. For that reason this library doesn't use the I2C Wire library, but (slow) bitbanging using digitalWrite.
@@ -332,7 +333,7 @@ If you happen to own a device featuring a TM16xx chip, feel free to open a new i
 - TM1637 library used for reference: [/avishorp/TM1637](https://github.com/avishorp/TM1637)
 - A TM1637 library optimized for speed and size: [/Erriez/ErriezTM1637](https://github.com/Erriez/ErriezTM1637)
 - TM1637 library optimized for ATtiny85 with alphanumeric animations: [/jasonacox/TM1637TinyDisplay](https://github.com/jasonacox/TM1637TinyDisplay) and [online animator](https://jasonacox.github.io/TM1637TinyDisplay/examples/7-segment-animator.html)
-- TM1650 library that uses the Wire interface: [/mozgy/Mozz_TM1650](https://github.com/mozgy/Mozz_TM1650)
+- TM1650 libraries that uses the Wire interface: [/mozgy/Mozz_TM1650](https://github.com/mozgy/Mozz_TM1650), [/arkhipenko/TM1650](https://github.com/arkhipenko/TM1650)
 - A TM16XX library with an interesting generic approach: [sufzoli/TM16XX](https://github.com/sufzoli/TM16XX)
 - MAX7219 LED Matrix library: [/markruys/arduino-Max72xxPanel](https://github.com/markruys/arduino-Max72xxPanel)
 - OneButton multi-state buttons: [/mathertel/OneButton](https://github.com/mathertel/OneButton)
