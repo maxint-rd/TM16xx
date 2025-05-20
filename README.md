@@ -318,6 +318,7 @@ See the [library examples](/examples) for more information on how to use this li
 
 ### Real world devices using a TM16xx chip
 Some users found a TM16xx chip in their device and shared their experience:
+- [TM1623 in the vTech 1546 Touch & Learn Activity Desk](https://github.com/maxint-rd/TM16xx/issues/65#issuecomment-2893072549) - nice 7x7 LED matrix teaching children their ABC
 - [TM1628 in a Royal Sovereign BDH-450 dehumidifier](https://github.com/maxint-rd/TM16xx/issues/45)  - nice mod to make a dumb device smarter
 - [TM1652 in the Xiaomi XIAO AI Smart Alarm Clock](https://github.com/maxint-rd/TM16xx/issues/41#issue-1940161388) - make it smarter with NTP
 - [TM1680 in the Denver BTL - 350 bluetooth speaker](https://github.com/maxint-rd/TM16xx/issues/2#issuecomment-1406738635) - make sense of a 11x11 RGB matrix
