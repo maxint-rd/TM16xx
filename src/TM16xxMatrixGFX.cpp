@@ -5,8 +5,9 @@ TM16xxMatrixGFX.h - Adafruit GFX LED Matrix library for TM16xx.
 Made by Maxint R&D. See https://github.com/maxint-rd/
 
 */
-#include <Adafruit_GFX.h>
 #include "TM16xxMatrixGFX.h"
+
+#if has_Adafruit_GFX
 
 #define TM16xxMatrixGFX_swap(a, b) { int16_t t = a; a = b; b = t; }
 
@@ -193,3 +194,4 @@ void TM16xxMatrixGFX::write()
 		}
 	}
 }
+#endif  // #if has_Adafruit_GFX

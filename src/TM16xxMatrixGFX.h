@@ -20,8 +20,24 @@ Made by Maxint R&D. See https://github.com/maxint-rd/
 
 #include "TM16xx.h"
 
+#ifdef __has_include
+    #if __has_include(<Adafruit_GFX.h>)
+        // GCC supports __has_include, others may not...
+        #include <Adafruit_GFX.h>
+        #define has_Adafruit_GFX 1
+    #else
+        #warning "TM16xxMatrixGFX requires AdafruitGFX. Install AdafruitGFX library when using TM16xxMatrixGFX."
+        #define has_Adafruit_GFX 0
+    #endif
+#else
+    #warning "Note: TM16xxMatrixGFX requires AdafruitGFX library."
+    #define has_Adafruit_GFX 1 // maybe, but we cannot check...
+#endif
+
+
 #define TM16XX_MATRIXGFX_MAXCOLUMNS 16
 
+#if has_Adafruit_GFX
 class TM16xxMatrixGFX : public Adafruit_GFX
 {
  public:
@@ -52,4 +68,5 @@ class TM16xxMatrixGFX : public Adafruit_GFX
  private:
  	bool convertToMemPos(int16_t &x, int16_t &y);
 };
+#endif  // #if has_Adafruit_GFX
 #endif
