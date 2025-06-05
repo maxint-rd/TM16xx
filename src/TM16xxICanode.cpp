@@ -105,5 +105,5 @@ void TM16xxICanode::setSegments16(uint16_t segments, byte position)
 void TM16xxICanode::clearDisplay()
 { // NOTE: TM16xx class assumes chips only have 2 bytes per digit when it uses >8 segments
   TM16xxIC::clearDisplay();  // call parent method 
-  memset(this->bitmap, 0, TM16xxICanode_MAX_POS); // clear the memory bitmap
+  memset(this->bitmap, 0, TM16xxICanode_MAX_POS*sizeof(this->bitmap[0])); // clear the memory bitmap
 }
