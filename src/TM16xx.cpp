@@ -19,14 +19,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "TM16xx.h"
 
-TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, bool activateDisplay,	byte intensity)
+TM16xx::TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays,
+               byte nDigitsUsed, bool activateDisplay, byte intensity,
+               const byte defaultAlphaFont[95], const byte defaultNumberFont[16])
+    : dataPin(dataPin), clockPin(clockPin), strobePin(strobePin),
+      _maxDisplays(maxDisplays), digits(nDigitsUsed),
+      defaultFontAlpha(defaultAlphaFont), defaultFontNum(defaultNumberFont)
 {
-  // DEPRECATED: activation, intensity (0-7) and display mode are no longer used by constructor.  
-  this->dataPin = dataPin;
-  this->clockPin = clockPin;
-  this->strobePin = strobePin;
-  this->_maxDisplays = maxDisplays;
-  this->digits = nDigitsUsed;
+  // DEPRECATED: activation, intensity (0-7) and display mode are no longer used by constructor.
 
   pinMode(dataPin, OUTPUT);
   pinMode(clockPin, OUTPUT);
@@ -79,8 +79,23 @@ void TM16xx::begin(bool activateDisplay, byte intensity)
   fBeginDone=true;
   clearDisplay();
   setupDisplay(activateDisplay, intensity);
-} 
-  
+}
+
+void TM16xx::setDefaultAlphaFont(const byte font[95])
+{ // Change the default font used to interpret printable ASCII characters.
+  // The font table should be defined as a byte array with at least 95 elements,
+  // one for each printable ASCII character in the range char(32) to char(126).
+  // See TM16xxFonts.h for the definition of the default font TM16XX_FONT_DEFAULT
+  defaultFontAlpha = font;
+}
+
+void TM16xx::setDefaultNumberFont(const byte font[16])
+{ // Change the default font used to interpret (hexadecimal) digits.
+  // The font table should be defined as a byte array with at least 16 elements,
+  // one for each number 0-9 and letter A-F.
+  // See TM16xxFonts.h for the definition of the default font TM16XX_NUMBER_FONT
+  defaultFontNum = font;
+}
 
 void TM16xx::setSegments(byte segments, byte position)
 {	// set 8 leds on common grd as specified
@@ -123,7 +138,8 @@ void TM16xx::sendAsciiChar(byte pos, char c, bool fDot, const byte font[])
   // This method is also called by TM16xxDisplay.print to display characters
   // The base class uses the default 7-segment font to find the LED pattern.
   // Derived classes for multi-segment displays or alternate layout displays can override this method
-  sendChar(pos, pgm_read_byte_near(font+(c - 32)), fDot);
+  const byte *activeFont = font ? font : defaultFontAlpha;
+  sendChar(pos, pgm_read_byte_near(activeFont + (c - 32)), fDot);
 }
 
 void TM16xx::setDisplayFlipped(bool fFlipped)
@@ -141,7 +157,8 @@ void TM16xx::setDisplayReversed(bool fReversed)
 
 void TM16xx::setDisplayDigit(byte digit, byte pos, bool dot, const byte numberFont[])
 {
-  sendChar(pos, pgm_read_byte_near(numberFont + (digit & 0xF)), dot);
+  const byte *activeFont = numberFont ? numberFont : defaultFontNum;
+  sendChar(pos, pgm_read_byte_near(activeFont + (digit & 0xF)), dot);
 }
 
 void TM16xx::setDisplayToDecNumber(int nNumber, byte bDots, bool fLeadingZeros)		// byte bDots=0, bool fLeadingZeros=true

@@ -29,7 +29,7 @@ class TM1628 : public TM16xx
     virtual void clearDisplay();
 
     /** Set an Ascii character on a specific location (overloaded for 15-segment display) */
-    virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // public method to allow calling from TM16xxDisplay
+    virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = nullptr); // public method to allow calling from TM16xxDisplay
 
     // Set mapping array to be used when displaying segments
     // The array should contain _maxSegments bytes specifying the desired mapping

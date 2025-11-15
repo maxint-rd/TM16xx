@@ -21,7 +21,7 @@ class TM1640Anode : public TM1640
     TM1640Anode(byte dataPin, byte clockPin, byte numDigits=4, bool activateDisplay = true, byte intensity = 7);
 
     /** Set an Ascii character on a specific location (overloaded for 15-segment display) */
-		virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // public method to allow calling from TM16xxDisplay
+		virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = nullptr); // public method to allow calling from TM16xxDisplay
 
 		/** Set the segments at a specific position on or off */
 	  virtual void setSegments(byte segments, byte position);   // will duplicate G to G1/G2 in 15-segment
