@@ -59,10 +59,14 @@ class TM16xx
   public:
     /**
      * Instantiate a TM16xx module specifying data, clock and strobe pins (no strobe on some modules),
-     * maxDisplays - the maximum number of displays supported by the chip (as provided by derived chip specific class), 
-     * nDigitsUsed - the number of digits used to display numbers or text, 
+     * maxDisplays - the maximum number of displays supported by the chip (as provided by derived chip specific class),
+     * nDigitsUsed - the number of digits used to display numbers or text,
+     * defaultFont - the default font to use to interpret printable ASCII characters
      */
-    TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays, byte nDigitsUsed, bool activateDisplay=true, byte intensity=7);
+    TM16xx(byte dataPin, byte clockPin, byte strobePin, byte maxDisplays,
+           byte nDigitsUsed, bool activateDisplay = true, byte intensity = 7,
+           const byte defaultAlphaFont[95] = TM16XX_FONT_DEFAULT,
+           const byte defaultNumberFont[16] = TM16XX_NUMBER_FONT);
     /** DEPRECATED: activation, intensity (0-7) and display mode are no longer used by constructor. */
 
     /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
@@ -80,6 +84,13 @@ class TM16xx
     /** Use explicit call in setup() or rely on implicit call by sendData(); calls setupDisplay() and clearDisplay() */
     virtual void begin(bool activateDisplay=true, byte intensity=7);
 
+    /** Set a new default alphanumeric font */
+    virtual void setDefaultAlphaFont(const byte font[95] = TM16XX_FONT_DEFAULT);
+    virtual byte *getDefaultAlphaFont() { return defaultFontAlpha; };
+    /** Set a new default numeric font */
+    virtual void setDefaultNumberFont(const byte font[16] = TM16XX_NUMBER_FONT);
+    virtual byte *getDefaultNumberFont() { return defaultFontNum; };
+
     /** Set segments of the display */
     virtual void setSegments(byte segments, byte position);
     virtual void setSegments16(uint16_t segments, byte position);   // some modules support more than 8 segments
@@ -89,7 +100,7 @@ class TM16xx
     //
 
     /** Set a single display at pos (starting at 0) to a digit (left to right) */
-    virtual void setDisplayDigit(byte digit, byte pos=0, bool dot=false, const byte numberFont[] = TM16XX_NUMBER_FONT);
+    virtual void setDisplayDigit(byte digit, byte pos=0, bool dot=false, const byte numberFont[] = nullptr);
 
     /** Set the display to a decimal number */
     virtual void setDisplayToDecNumber(int nNumber, byte bDots=0, bool fLeadingZeros=true);
@@ -100,12 +111,12 @@ class TM16xx
     virtual void setDisplay(const byte values[], byte size=8);
 
     /** Set the display to the string (defaults to built in 7-segment alphanumeric font) */
-    virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
+    virtual void setDisplayToString(const char *string, const word dots = 0, const byte pos = 0, const byte font[] = nullptr);
 
     virtual void sendChar(byte pos, byte data, bool dot); // made public to allow calling from TM16xxDisplay
     virtual void setNumDigits(byte numDigitsUsed);   // set number of digits used for alignment
     virtual byte getNumDigits(); // called by TM16xxDisplay to combine multiple modules
-    virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // made public to allow calling from TM16xxDisplay
+    virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = nullptr); // made public to allow calling from TM16xxDisplay
 
     // Key-scanning functions
     // Note: not all TM16xx chips support key-scanning and sizes are different per chip
@@ -144,6 +155,8 @@ auto min(T x, U y) -> decltype(x>y ? x : y)
 
     byte _maxDisplays=2;   // maximum number of digits (grids), chip-dependent
     byte _maxSegments=8;   // maximum number of segments per display, chip-dependent
+    byte *defaultFontAlpha;// default font table for alphanumerics (printable ACSII)
+    byte *defaultFontNum;  // default font table for (hexadecimal) digits
     bool flipped=false;    // sets the flipped state of the display;
     bool reversed=false;   // sets the reversed state of the display;
     bool fBeginDone=false; // for implicit begin checking;

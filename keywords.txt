@@ -52,6 +52,10 @@ setDisplayDigit	KEYWORD2
 setDisplay	KEYWORD2
 clearDisplay	KEYWORD2
 setDisplayToString	KEYWORD2
+setDefaultAlphaFont	KEYWORD2
+getDefaultAlphaFont	KEYWORD2
+setDefaultNumberFont	KEYWORD2
+getDefaultNumberFont	KEYWORD2
 setLED	KEYWORD2
 setLEDs	KEYWORD2
 setRGBLED	KEYWORD2

@@ -40,18 +40,18 @@ class TM16xxDisplay : public Print
   virtual void setDisplayFlipped(bool flipped);
 
   // Set the display to the String (defaults to built in font)
-  virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
-  virtual void setDisplayToString(String string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
+  virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = nullptr);
+  virtual void setDisplayToString(String string, const word dots=0, const byte pos=0, const byte font[] = nullptr);
   virtual void setDisplayToError();
 
   // Set the display to a unsigned hexadecimal number (with or without leading zeros)
-  void setDisplayToHexNumber(unsigned long number, byte dots, bool leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
+  void setDisplayToHexNumber(unsigned long number, byte dots, bool leadingZeros = true, const byte numberFont[] = nullptr);
   // Set the display to a unsigned decimal number (with or without leading zeros)
-  void setDisplayToDecNumber(unsigned long number, byte dots, bool leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
+  void setDisplayToDecNumber(unsigned long number, byte dots, bool leadingZeros = true, const byte numberFont[] = nullptr);
   // Set the display to a signed decimal number (with or without leading zeros)
-  void setDisplayToSignedDecNumber(signed long number, byte dots, bool leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
+  void setDisplayToSignedDecNumber(signed long number, byte dots, bool leadingZeros = true, const byte numberFont[] = nullptr);
   // Set the display to a unsigned binary number
-  void setDisplayToBinNumber(byte number, byte dots, const byte numberFont[] = TM16XX_NUMBER_FONT);
+  void setDisplayToBinNumber(byte number, byte dots, const byte numberFont[] = nullptr);
 
   // support for the Print class
   void setCursor(int8_t nPos); 	// allows setting negative to support scrolled printing
@@ -76,6 +76,6 @@ class TM16xxDisplay : public Print
   void setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, bool leadingZeros, const byte numberFont[]);
   //TM16xx *TM16xxDisplay::findModuleByPos(const byte nPosFind);
   void sendCharAt(const byte nPos, byte btData, bool fDot);
-  void sendAsciiCharAt(const byte nPosCombi, char c, bool fDot, const byte font[] = TM16XX_FONT_DEFAULT);
+  void sendAsciiCharAt(const byte nPosCombi, char c, bool fDot, const byte font[] = nullptr);
 };
 #endif

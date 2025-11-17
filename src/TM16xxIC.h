@@ -162,7 +162,7 @@ class TM16xxIC : public TM16xx
     /** use alphanumeric display (yes/no) with or without segment map */  
     virtual void setAlphaNumeric(bool fAlpha=true, const byte *pMap=NULL);    // const byte aMap[]
     /** Set an Ascii character on a specific location (overloaded for 15-segment display) */
-    virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // public method to allow calling from TM16xxDisplay
+    virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = nullptr); // public method to allow calling from TM16xxDisplay
 
     /** Clear the display */
     virtual void clearDisplay();

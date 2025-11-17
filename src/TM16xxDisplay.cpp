@@ -159,9 +159,10 @@ void TM16xxDisplay::setDisplayToError()
 
 void TM16xxDisplay::setDisplayToHexNumber(unsigned long number, byte dots, bool leadingZeros, const byte numberFont[])
 {
+  const byte *activeFont = numberFont ? numberFont : _pTM16xx->getDefaultNumberFont();
   for (int nPos = 0; nPos < _nNumDigits; nPos++) {
     if (number > 0 || leadingZeros || nPos==0) {
-      sendCharAt(_nNumDigits - nPos - 1, pgm_read_byte_near(numberFont + (number & 0xF)), (dots & (1 << nPos)) != 0);
+      sendCharAt(_nNumDigits - nPos - 1, pgm_read_byte_near(activeFont + (number & 0xF)), (dots & (1 << nPos)) != 0);
     } else {
       sendCharAt(_nNumDigits - nPos - 1, 0, (dots & (1 << nPos)) != 0);     // clearDisplayDigit
     }
@@ -174,9 +175,10 @@ void TM16xxDisplay::setDisplayToDecNumberAt(unsigned long number, byte dots, byt
   if (number > 99999999L) {
     setDisplayToError();    // original code: limit to 8 digit numbers
   } else {
+    const byte *activeFont = numberFont ? numberFont : _pTM16xx->getDefaultNumberFont();
     for (int nPos = 0; nPos < _nNumDigits - startingPos; nPos++) {
       if (number != 0 || nPos==0 || leadingZeros) {
-        sendCharAt(_nNumDigits - nPos - 1, pgm_read_byte_near(numberFont + (number  % 10)), (dots & (1 << nPos)) != 0);
+        sendCharAt(_nNumDigits - nPos - 1, pgm_read_byte_near(activeFont + (number  % 10)), (dots & (1 << nPos)) != 0);
       } else {
         sendCharAt(_nNumDigits - nPos - 1, 0, (dots & (1 << nPos)) != 0);     // clearDisplayDigit
       }
@@ -206,8 +208,9 @@ void TM16xxDisplay::setDisplayToSignedDecNumber(signed long number, byte dots, b
 
 void TM16xxDisplay::setDisplayToBinNumber(byte number, byte dots, const byte numberFont[])
 {
+  const byte *activeFont = numberFont ? numberFont : _pTM16xx->getDefaultNumberFont();
   for (int nPos = 0; nPos < _nNumDigits; nPos++) {
-    sendCharAt(_nNumDigits - nPos - 1, pgm_read_byte_near(numberFont + ((number & (1 << nPos)) == 0 ? 0 : 1)), (dots & (1 << nPos)) != 0);
+    sendCharAt(_nNumDigits - nPos - 1, pgm_read_byte_near(activeFont + ((number & (1 << nPos)) == 0 ? 0 : 1)), (dots & (1 << nPos)) != 0);
   }
 }
 
