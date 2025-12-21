@@ -22,19 +22,26 @@ class TM1628 : public TM16xx
     /** Instantiate a TM1628 module specifying data, clock and stobe pins, the number of digits, the display state, the starting intensity (0-7). */
     TM1628(byte dataPin, byte clockPin, byte strobePin, byte numDigits=TM1628_MAX_POS, bool activateDisplay = true, byte intensity = 7);
 
-    /** Set the segments at a specific position on or off */
-    virtual void setSegments(byte segments, byte position);
-    virtual void setSegments16(uint16_t segments, byte position);
+   /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
+   virtual void setupDisplay(bool active, byte intensity);   // For TM1628: also set the display mode (based on _maxSegments)
+
+		/** Set the segments at a specific position on or off */
+	  virtual void setSegments(byte segments, byte position);
+	  virtual void setSegments16(uint16_t segments, byte position);
 
     virtual void clearDisplay();
 
-    /** Set an Ascii character on a specific location (overloaded for 15-segment display) */
-    virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // public method to allow calling from TM16xxDisplay
+    /** use alphanumeric display (yes/no) with or without segment map */  
+    virtual void setAlphaNumeric(bool fAlpha=true, const byte *pMap=NULL);    // const byte aMap[]
 
-    // Set mapping array to be used when displaying segments
-    // The array should contain _maxSegments bytes specifying the desired mapping
-//    virtual void setSegmentMap(const byte aMap[]);  // OK on ESP32 core 3.0.2, tinyPico, not on ESP8266
-    virtual void setSegmentMap(PGM_P aMap);  // OK???? on ESP32 core 3.0.2, tinyPico, works for  ESP8266
+    /** Set an Ascii character on a specific location (overloaded for 15-segment display) */
+		virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // public method to allow calling from TM16xxDisplay
+
+	  // Set mapping array to be used when displaying segments
+	  // The array should contain _maxSegments bytes specifying the desired mapping
+//	  virtual void setSegmentMap(const byte aMap[]);  // OK on ESP32 core 3.0.2, tinyPico, not on ESP8266
+	  //virtual void setSegmentMap(PGM_P aMap);  // OK???? on ESP32 core 3.0.2, tinyPico, works for  ESP8266
+    virtual void setSegmentMap(const byte *pMap);
 
     /** Returns the pressed buttons as a bit set (left to right). */
     virtual uint32_t getButtons();
@@ -43,10 +50,12 @@ class TM1628 : public TM16xx
     virtual void bitDelay();
 
   private:
-    uint16_t mapSegments16(uint16_t segments);
-//    const PROGMEM byte *_pSegmentMap=NULL;               // pointer to segment map set using setSegmentMap()
-    PGM_P _pSegmentMap=NULL;               // pointer to segment map set using setSegmentMap() - PGM_P needed in ESP8266 core 3.0.2
-
+    uint16_t flipSegments16(uint16_t uSegments);
+		uint16_t mapSegments16(uint16_t segments);
+//		const PROGMEM byte *_pSegmentMap=NULL;               // pointer to segment map set using setSegmentMap()
+//		PGM_P _pSegmentMap=NULL;               // pointer to segment map set using setSegmentMap() - PGM_P needed in ESP8266 core 3.0.2
+		const byte * _pSegmentMap=NULL;               // pointer to segment map set using setSegmentMap()
+    bool _fAlphaNumeric=false;     // If true use 15-segment alphanumeric  display when having at least 13 SEG (15-seg: 14-segments plus dot)
 };
 
 // Regular segment order: 
