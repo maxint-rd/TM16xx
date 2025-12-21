@@ -301,8 +301,12 @@ byte TM16xx::receive()
   }
 
   // Pull-up off
+#if defined(ARDUINO_ARCH_CH32)
+  digitalWrite(dataPin, LOW);   // MMOLE 250814: CH32 is sensitive of order
+  pinMode(dataPin, OUTPUT);
+#else
   pinMode(dataPin, OUTPUT);
   digitalWrite(dataPin, LOW);
-
+#endif
   return temp;
 }
