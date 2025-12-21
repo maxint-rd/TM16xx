@@ -34,15 +34,15 @@ class TM16xxDisplay : public Print
 #endif
   void setIntensity(byte intensity);		// intensity 0-7, 0=off, 7=bright
 
-  virtual void clear();
+  void clear();
 
   /** sets flipped state of the display (every digit is rotated 180 degrees) */
-  virtual void setDisplayFlipped(bool flipped);
+  void setDisplayFlipped(bool flipped);
 
   // Set the display to the String (defaults to built in font)
-  virtual void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
-  virtual void setDisplayToString(String string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
-  virtual void setDisplayToError();
+  void setDisplayToString(const char* string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
+  void setDisplayToString(String string, const word dots=0, const byte pos=0, const byte font[] = TM16XX_FONT_DEFAULT);
+  void setDisplayToError();
 
   // Set the display to a unsigned hexadecimal number (with or without leading zeros)
   void setDisplayToHexNumber(unsigned long number, byte dots, bool leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
@@ -56,7 +56,7 @@ class TM16xxDisplay : public Print
   // support for the Print class
   void setCursor(int8_t nPos); 	// allows setting negative to support scrolled printing
   using Print::write; // pull in write(str) and write(buf, size) from Print
-  virtual size_t write(uint8_t character);
+  size_t write(uint8_t character);    // MMOLE 250805: was virtual - having virtual limits LTO to remove unused library functions 
   /* virtual size_t write(const char *str); */
 
  protected:

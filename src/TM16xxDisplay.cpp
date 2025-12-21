@@ -60,8 +60,10 @@ void TM16xxDisplay::sendCharAt(const byte nPosCombi, byte btData, bool fDot)
 #if(TM16XX_OPT_COMBIDISPLAY)
   for(int i=0; i<_nNumModules; i++)
   {
+/* nPos is byte => unsigned
     if(nPos<0)
       return;
+*/
     if(nPos < _aModules[i]->getNumDigits())
     {
   	  _aModules[i]->sendChar(this->_fFlipped ? _aModules[i]->getNumDigits()-1-nPos : nPos, btData, fDot);      // compensate for flipping individual module
@@ -86,8 +88,10 @@ void TM16xxDisplay::sendAsciiCharAt(const byte nPosCombi, char c, bool fDot, con
 #if(TM16XX_OPT_COMBIDISPLAY)
   for(int i=0; i<_nNumModules; i++)
   {
+/* nPos is byte => unsigned
     if(nPos<0)
       return;
+*/
     if(nPos < _aModules[i]->getNumDigits())
     {
   	  _aModules[i]->sendAsciiChar(this->_fFlipped ? _aModules[i]->getNumDigits()-1-nPos : nPos, c, fDot, font);      // compensate for flipping individual module
