@@ -152,15 +152,19 @@ class TM16xxIC : public TM16xx
     TM16xxIC(if_ctrl_tm16xx ctrl, byte dataPin, byte clockPin, byte strobePin, byte numGrdUsed=0);
     TM16xxIC(if_ctrl_tm16xx ctrl, byte dataPin, byte clockPin);    // constructor for chips without strobe
 
-   /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
-   virtual void setupDisplay(bool active, byte intensity);   // For TM1618: also set the display mode (based on _maxSegments)
+    /** Set the display (segments and LEDs) active or off and intensity (range from 0-7). */
+    virtual void setupDisplay(bool active, byte intensity);   // For TM1618: also set the display mode (based on _maxSegments)
 
     /** Set the segments at a specific position on or off */
     virtual void setSegments(byte segments, byte position);
     virtual void setSegments16(uint16_t segments, byte position);   // some modules support more than 8 segments
 
+	  /** Set PROGMEM mapping array to be used when displaying segments */
+    virtual void setSegmentMap(const byte *pMap);
+    
     /** use alphanumeric display (yes/no) with or without segment map */  
-    virtual void setAlphaNumeric(bool fAlpha=true, const byte *pMap=NULL);    // const byte aMap[]
+    virtual void setAlphaNumeric(bool fAlpha=true, const byte *pMap=NULL);
+
     /** Set an Ascii character on a specific location (overloaded for 15-segment display) */
     virtual void sendAsciiChar(byte pos, char c, bool dot, const byte font[] = TM16XX_FONT_DEFAULT); // public method to allow calling from TM16xxDisplay
 
@@ -179,7 +183,7 @@ class TM16xxIC : public TM16xx
     uint16_t mapSegments16(uint16_t segments, const byte *pMap=NULL);
     uint16_t flipSegments16(uint16_t uSegments);
     if_ctrl_tm16xx _ctrl; // made protected to make it usable by derived classes
-    const byte *pSegmentMap=NULL; // pointer to segment map for alphanumeric displays. set using setAlphaNumeric(); made protected to make it usable by derived classes
+    const byte *pSegmentMap=NULL; // pointer to PROGMEM segment map for alphanumeric displays. set using setAlphaNumeric(); made protected to make it usable by derived classes
 
   private:
     uint8_t countMaxSEG(void);

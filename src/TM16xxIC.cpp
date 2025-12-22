@@ -162,13 +162,6 @@ void TM16xxIC::setupDisplay(bool active, byte intensity)
   sendCommand(TM16XX_CMD_DISPLAY | (active ? 8 : 0) | min(7, intensity));
 }
 
-
-void TM16xxIC::setAlphaNumeric(bool fAlpha, const byte *pMap)    // const byte aMap[]
-{
-  fAlphaNumeric=fAlpha;
-  pSegmentMap=pMap;
-}
-
 uint16_t TM16xxIC::flipSegments16(uint16_t uSegments)
 {
   if(this->flipped)
@@ -198,23 +191,21 @@ uint16_t TM16xxIC::flipSegments16(uint16_t uSegments)
   return(uSegments);
 }
 
-void TM16xxIC::sendAsciiChar(byte pos, char c, bool fDot, const byte font[])
-{ // Method to send an Ascii character to the display.
-  // This method is also called by TM16xxDisplay.print() to display characters.
-  // The base class uses the default 7-segment font to find the LED pattern.
-  // Derived classes for multi-segment displays or alternate layout displays can override this method.
-  if(!fAlphaNumeric)
-    TM16xx::sendAsciiChar(pos, c, fDot, font);    // the base method calls sendChar, which will do 7-segment flipping if needed
-  else
-  {
-    uint16_t uSegments= pgm_read_word(TM16XX_FONT_15SEG+(c - 32));
-    if(this->flipped)
-    {
-      uSegments=flipSegments16(uSegments);
-      pos = this->digits - 1 - pos;
-    }
-    setSegments16(uSegments | (fDot ? 0b10000000 : 0), pos);
-  }
+void TM16xxIC::setAlphaNumeric(bool fAlpha, const byte *pMap)    // const byte aMap[]
+{
+  fAlphaNumeric=fAlpha;
+  if(pMap)
+    pSegmentMap=pMap;
+}
+
+void TM16xxIC::setSegmentMap(const byte *pMap)
+{ // Set a segment map to be used in subsequent setting of _maxSegments segments
+  // aMap[] should be a 16-byte PROGMWM array, each byte designating the target position of the segment.
+  // Example map for easy breadboard wiring of TM1650 to dual 5241BS (TM1640 pin 1 right-top, 5241BS pin 1 left bottom)
+  // const PROGMEM byte aSegmentMap[]={12, 11, 8, 6, 1, 9, 13, 7, 5, 10, 15, 14, 4, 3, 2, 0};  // mapping for TM1640 left of 5241BS with streight wiring
+  // const PROGMEM byte aSegmentMap[]={0, 1, 2, 3, 4, 5, 6, 14, 7, 8, 9, 10, 13, 12, 11, 15};  // mapping for HT16K33 module with dual 5241AS 14-segment + DP
+  // const PROGMEM byte aSegmentMap[]={3, 2, 12, 10, 6, 1, 9, 15 /*11*/, 9, 0, 7, 4, 8, 5, 11, 15};      // mapping for LED-display dual 5241AS combined 19-pins, having G1=G2,no DP to use 13 segments
+  pSegmentMap=pMap;
 }
 
 uint16_t TM16xxIC::mapSegments16(uint16_t segments, const byte *pMap)
@@ -225,7 +216,9 @@ uint16_t TM16xxIC::mapSegments16(uint16_t segments, const byte *pMap)
   {
     uint16_t nSegmentsMapped=0;
     for(byte n=0; n<16; n++)
-      nSegmentsMapped|=((segments&bit(n))?bit(pMap[n]):0);
+      nSegmentsMapped|=((segments&bit(n))?bit(pgm_read_byte(pMap+n)):0);
+      // NOTE: Platforms like CH32 accept direct addressing, but Atmel needs pgm_read_byte().
+      //nSegmentsMapped|=((segments&bit(n))?bit(pMap[n]):0);
     segments=nSegmentsMapped;
   }
   return(segments);
@@ -277,6 +270,26 @@ void TM16xxIC::setSegments16(uint16_t segments, byte position)
   }
 }
 
+void TM16xxIC::sendAsciiChar(byte pos, char c, bool fDot, const byte font[])
+{ // Method to send an Ascii character to the display.
+  // This method is also called by TM16xxDisplay.print() to display characters.
+  // The base class uses the default 7-segment font to find the LED pattern.
+  // Derived classes for multi-segment displays or alternate layout displays can override this method.
+  if(!fAlphaNumeric)
+    TM16xx::sendAsciiChar(pos, c, fDot, font);    // the base method calls sendChar, which will do 7-segment flipping if needed
+  else
+  {
+    uint16_t uSegments= pgm_read_word(TM16XX_FONT_15SEG+(c - 32));
+    if(this->flipped)
+    {
+      uSegments=flipSegments16(uSegments);
+      pos = this->digits - 1 - pos;
+    }
+    setSegments16(uSegments | (fDot ? 0b10000000 : 0), pos);
+  }
+}
+
+
 
 void TM16xxIC::clearDisplay()
 { // NOTE: TM16xx class assumes chips only have 2 bytes per digit when it uses >8 segments
@@ -312,6 +325,7 @@ uint32_t TM16xxIC::getButtons(void)
   //    TM1637: 8x2 keys single, 1 byte memory. All 1 when nothing pressed bit 3 low for K1, bit 4 low for K2. Inverted key number in bits 0-2 for keys 0-7
   uint32_t keys32 = 0;
   byte received;
+  byte key_scan=_ctrl.key_scan;
   byte key_method=NIBBLE_HIGH(_ctrl.key_scan);
   byte key_length=NIBBLE_LOW(_ctrl.key_scan);
 

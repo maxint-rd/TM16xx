@@ -98,8 +98,9 @@ uint16_t TM1628::mapSegments16(uint16_t segments)
   {
     uint16_t nSegmentsMapped=0;
     for(byte n=0; n<16; n++)
-      nSegmentsMapped|=((segments&bit(n))?bit(_pSegmentMap[n]):0);
-      //nSegmentsMapped|=((segments&bit(n))?bit(pgm_read_byte(_pSegmentMap+n)):0);
+      nSegmentsMapped|=((segments&bit(n))?bit(pgm_read_byte(_pSegmentMap+n)):0);
+      // NOTE: Platforms like CH32 accept direct addressing, but Atmel needs pgm_read_byte().
+      //nSegmentsMapped|=((segments&bit(n))?bit(_pSegmentMap[n]):0);
     segments=nSegmentsMapped;
   }
   return(segments);
