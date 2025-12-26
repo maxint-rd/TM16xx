@@ -52,7 +52,7 @@ Made by Maxint R&D. See https://github.com/maxint-rd
 
 #include "TM1680.h"
 
-#if defined(CH32X033F8P)   // for our CH32X033 that has no hardware I2C
+#if defined(CH32X033F8P)   // for our CH32X033 that has no hardware I2C (i.e. chip of  0-series)
   // SeeedStudio SoftwareI2C
   // see https://wiki.seeedstudio.com/Arduino_Software_I2C_user_guide/
   //     https://github.com/Seeed-Studio/Arduino_Software_I2C
@@ -119,7 +119,7 @@ void TM1680::begin(bool activateDisplay, byte intensity)
   this->fBeginDone=true;
   
   // Init i2c. Some architectures allow using different pins for I2C
-#if defined(CH32X033F8P)   // for CH32X033
+#if defined(CH32X033F8P)   // for CH32X033 using SoftwareI2C
   Wire.begin(13, 14);       // sda, scl
   //Wire.begin();     // default on ESP8266 SDA=4,SCL=5, using hardware I2C
 #else
@@ -148,7 +148,10 @@ void TM1680::begin(bool activateDisplay, byte intensity)
   // TM1680 init sequence
   Wire.beginTransmission(_i2cAddress);  // transmit to device 73
   Wire.write(TM1680_SYS_DIS);              // SYS DIS
-  Wire.write(TM1680_COM_01);              // COM option 01: 16COM Nmos
+  if(_maxDisplays>24)
+    Wire.write(TM1680_COM_00);              // COM option 00: 8-COM Nmos
+  else
+    Wire.write(TM1680_COM_01);              // COM option 01: 16-COM Nmos
   Wire.write(TM1680_RC_1);              // RC Master Mode 1
   Wire.endTransmission();        // stop transmitting
 
