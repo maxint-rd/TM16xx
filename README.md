@@ -6,7 +6,7 @@ This Arduino library facilitates driving LED/LCD displays using TM16xx driver ch
 Members of the TM16xx family by Titan Micro support driving LED displays, LCD displays or LED matrices.
 Next to built-in high-frequency LED/LCD multiplexing, they offer control of brightness/contrast.
 Most TM16xx chips also support reading key-scan data for button presses.
-Using this library you can simply use print() on a 7-segment or 14-segment displays or use Adafruit GFX on a LED matrix.
+Using this library you can simply use print() on a 7-segment or 14-segment display or use Adafruit GFX on a LED matrix.
 Currently this library supports more than 25 [different TM16xx chips](#tm16xx-chip-features) in various configurations; such as the TM1616, TM1618, TM1620, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650 and TM1652.
 For a quick look hit the play button in this [LIVE DEMO](https://wokwi.com/projects/424388671069721601) on Wokwi.
 
@@ -39,14 +39,17 @@ TM1638 | 10 x 8               | 8 x 3 multi  | DIO/CLK/STB | Anode/Inverted/QYF*
 TM1640 | 8 x 16               | n/a          | DIN/CLK     | Anode*
 TM1650 | 8 x 4                | 7 x 4 multi  | DIO/CLK     | 
 
+<sup>\*) Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638, TM1618Anode and TM1640Anode are also supported.</sup>
+
 The following chips are fully supported and tested to work: TM1616, TM1618, TM1620, TM1623, TM1624, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650, TM1652, TM1668.
-\*) Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638, TM1618Anode and TM1640Anode are also supported.
+
+
 
 Note that there are similar chips made by other manufacturers that may be compatible with the Titan Micro chips. For instance: the HBS640 by WINRISE is compatible with the TM1640.
 
-As of end 2024 many more chips are supported: TM1620B, TM1623C, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. Note that while their features are supported via the [generic class TM16xxIC](#generic-class-tm16xxic), I don't have them all in my collection and they have not all been tested. Please please let me know your findings if you have tested one of them.
+As of end 2024 many more chips are supported: TM1620B, TM1623C, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. Note that while their features are supported via the [generic class TM16xxIC](#generic-class-tm16xxic), I don't have them all in my collection and they have not all been tested. Please let me know your findings if you have tested one of them.
 
-___NEW___  - In 2025 support was added for the [TM1621 and TM1622 LCD drivers](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support#tm16xx-lcd-driver-chips), including specific support for the HT1621 based 6 x 7-segment PDC-6X1 module and the TM1622 based DM8BA10 module with 10 x 16-segment alphanumeric digits. The TM1621D was tested with a 3x7-segment mini LCD display. Other variations (TM1621B, TM1621C, TM1622B) were not tested, but may work.
+___NEW___  - In 2025 support was added for the [TM1621 and TM1622 LCD drivers](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support#tm16xx-lcd-driver-chips), including specific support for the HT1621 based 6 x 7-segment PDC-6X1 module and the TM1622 based DM8BA10 module with 10 x 16-segment alphanumeric digits. The TM1621D was tested with a 3x7-segment mini LCD display. Other variations (TM1621B, TM1621C, TM1622B) were not tested, but may work fine.
 
 For a full overview of all the chips and their current level of support go to [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support).
 
@@ -141,7 +144,7 @@ void loop() {
 }
 ```
 If you want you can combine multiple modules into a single TM16xxDisplay object. When combined print() and println() will use all available digits to print the string.
-See [TM16xxDisplay class reference](https://github.com/maxint-rd/TM16xx/wiki/TM16xxDisplay-class-reference) for the provided methods.
+See the [TM16xxDisplay class reference](https://github.com/maxint-rd/TM16xx/wiki/TM16xxDisplay-class-reference) for detailed documentation of the provided methods.
 
 ## TM16xxMatrix class
 The _TM16xxMatrix_ class provides basic methods for using a single LED-matrix module. For more advanced graphics use the [_TM16xxMatrixGFX_](#tm16xxmatrixgfx-class) class. To use the _TM16xxMatrix_ class on top of the base class, all you need to do is instantiate it, refering to the chip specific class:
@@ -207,7 +210,7 @@ ___NOTE: AdafruitGFX needs to be installed, even if you don't use TM16xxMatrixGF
 
 
 ## TM16xxButtons class
-The _TM16xxButtons_ class enlarges the footprint a bit, but based on the popular [OneButton library](https://github.com/mathertel/OneButton) library, it adds more advanced methods to use buttons. Next to simply polling the state of each button, you can define callback functions that will be called when a button is released, clicked, double-clicked or long pressed. To use this class on top of the base class, all you need to do is include the proper headers and instantiate the buttons object, refering to the chip specific class, for example:
+The _TM16xxButtons_ class enlarges the footprint a bit, but based on the popular [OneButton](https://github.com/mathertel/OneButton) library, it adds more advanced methods to use buttons. Next to simply polling the state of each button, you can define callback functions that will be called when a button is released, clicked, double-clicked or long pressed. To use this class on top of the base class, all you need to do is include the proper headers and instantiate the buttons object, refering to the chip specific class, for example:
 ```C++
 #include <TM1638.h>
 #include <TM16xxButtons.h>
@@ -247,7 +250,7 @@ void loop()
   // do your other things
 }
 ```
-Some [TM16xx chips](#tm16xx-chip-features) support multiple simultaneous key presses. To implement a shift key, you can use the isPressed() function. See [TM16xxButtons.h](/src/TM16xxButtons.h) for the provided methods and the [Button clicks example](/examples/TM16xxButtons_clicks) for more information.
+Some [TM16xx chips](#tm16xx-chip-features) support multiple simultaneous key presses. To implement a shift key, you can use the isPressed() function. See the [TM16xxButtons class reference]([/src/TM16xxButtons.h](https://github.com/maxint-rd/TM16xx/wiki/TM16xxButtons-class-reference)) for full documentation of the provided methods and see the [Button clicks example](/examples/TM16xxButtons_clicks) for a demonstration of how the class can be used.
 
 ## New in this library
 
