@@ -250,7 +250,7 @@ void loop()
   // do your other things
 }
 ```
-Some [TM16xx chips](#tm16xx-chip-features) support multiple simultaneous key presses. To implement a shift key, you can use the isPressed() function. See the [TM16xxButtons class reference]([/src/TM16xxButtons.h](https://github.com/maxint-rd/TM16xx/wiki/TM16xxButtons-class-reference)) for full documentation of the provided methods and see the [Button clicks example](/examples/TM16xxButtons_clicks) for a demonstration of how the class can be used.
+Some [TM16xx chips](#tm16xx-chip-features) support multiple simultaneous key presses. To implement a shift key, you can use the isPressed() function. See the [TM16xxButtons class reference](https://github.com/maxint-rd/TM16xx/wiki/TM16xxButtons-class-reference) for full documentation of the provided methods and see the [Button clicks example](/examples/TM16xxButtons_clicks) for a demonstration of how the class can be used.
 
 ## New in this library
 
