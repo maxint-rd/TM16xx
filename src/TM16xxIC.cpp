@@ -325,7 +325,6 @@ uint32_t TM16xxIC::getButtons(void)
   //    TM1637: 8x2 keys single, 1 byte memory. All 1 when nothing pressed bit 3 low for K1, bit 4 low for K2. Inverted key number in bits 0-2 for keys 0-7
   uint32_t keys32 = 0;
   byte received;
-  byte key_scan=_ctrl.key_scan;
   byte key_method=NIBBLE_HIGH(_ctrl.key_scan);
   byte key_length=NIBBLE_LOW(_ctrl.key_scan);
 
