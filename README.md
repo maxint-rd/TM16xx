@@ -68,7 +68,7 @@ The figure below illustrates that concept:
 The easiest way to install this library is using the Arduino Library Manager. Just search for "TM16xx LEDs and Buttons" and click the install button.
 You can also download the [latest version](https://github.com/maxint-rd/TM16xx/archive/refs/heads/master.zip) or select one from the [releases](https://github.com/maxint-rd/TM16xx/releases) as zipfile and use Add .ZIP library in the Arduino IDE.
 
-___NOTE: AdafruitGFX needs to be installed, even if you don't use TM16xxMatrixGFX. If you don't want to install AdafruitGFX you can remove TM16xxMatrixGFX.h and TM16xxMatrixGFX.cpp from the library directory to avoid compilation errors.___
+___NOTE: AdafruitGFX mey need to be installed, even if you don't use TM16xxMatrixGFX. Depending your compiler you may get compilation errors if AdafruitGFX isn't installed. In such case you can remove TM16xxMatrixGFX.h and TM16xxMatrixGFX.cpp from the library directory.___
 
 
 ## Base class usage (TM1637, TM1638, TM16..)
@@ -206,7 +206,7 @@ can be shared to reduce the number of pins:
 ```  
 See  [Adafruit GFX documentation](https://learn.adafruit.com/adafruit-gfx-graphics-library/graphics-primitives) and [TM16xxMatrixGFX.h](/src/TM16xxMatrixGFX.h) for the provided methods. See the [library examples](/examples) for more information.
 
-___NOTE: AdafruitGFX needs to be installed, even if you don't use TM16xxMatrixGFX. If you don't want to install AdafruitGFX you can remove TM16xxMatrixGFX.h and TM16xxMatrixGFX.cpp from the library directory to avoid compilation errors. To reduce this dependency, the TM16xxMatrixGFX class may be moved to a separate library in future versions___
+___NOTE: To use TM16xxMatrixGFX, AdafruitGFX needs to be installed. The library checks if AdafruitGFX is present, but depending your compiler version and settings you may get compilation errors or a warning if AdafruitGFX isn't installed.___
 
 
 ## TM16xxButtons class
