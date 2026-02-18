@@ -54,6 +54,7 @@ void TM1621::sendBits(uint16_t uFullData, byte nNumBits)
 
 void TM1621::send(byte data)
 { // instead of regular 8-bit send(), TM1621 expects 12 bits for commands or 13 bits for data
+  (void) data; // silence unused variable warning
 }
 
 void TM1621::sendCommand(byte cmd)
@@ -183,6 +184,15 @@ Bar-3 on seg 3 of position 10
     position=this->digits-position-1;     // reverse the digit order
     sendData((position<<1), segABCP);     // segments ABCP--- on first address
     sendData(((position<<1)|1), segFGED); // segments 0----CBA on second address
+  }
+  else if(fAlphaNumeric)
+  { // Alphanumeric displays use up to 16 segments per position. 
+    // 4-com/4-seg per digit; lsegment order: TM1621_LAYOUT_4C4S__0NML_KJHg_PGFE_DCBA
+    // Send segment data as four 4-bit addresses (segment order may already be changed by mapping)
+    sendData(((position<<2)|3), (segments & 0xF000)>>12);
+    sendData(((position<<2)|2), (segments&0x0F00)>>8);
+    sendData(((position<<2)|1), (segments & 0x00F0)>>4);
+    sendData(((position<<2)), segments & 0x000F);
   }
   else
   { // assume 4-COM, 2-SEG layout by default: TM1621_LAYOUT_4C2S_PGFE_DCBA
