@@ -22,6 +22,7 @@ TM1652::TM1652(byte dataPin, byte numDigits, bool activateDisplay, byte intensit
 
   // TM1652 uses bit timing to communicate, so clearDisplay() and setupDisplay() cannot be called in constructor.
   // Call begin() in setup() to clear the display and set initial activation and intensity.
+  (void)displaymode;  // avoid warning for unused parameters
 
 	// Actual setting of display mode is chip is done in setupDisplay(), which also sets intensity and on/off state
   _maxSegments = (numDigits>5?7:8);    // default display mode: 5 Grid x 8 Segments (TM1652: 5x8 or 6x7)
@@ -41,7 +42,7 @@ void TM1652::begin(bool activateDisplay, byte intensity, byte driveCurrent)
   clearDisplay();
   setupDisplay(activateDisplay, intensity, driveCurrent);
 } 
-  
+
 void TM1652::start()
 { // For the TM1652, start and stop are sent using serial UART protocol so no separate start or stop
 }
@@ -51,14 +52,17 @@ void TM1652::stop()
 }
 
 void TM1652::send(byte data)
-{	// Send a byte to the chip the way the TM1652 likes it (LSB-first, UART serial 8E1 - 8 bits, parity bit set to 0 when odd, one stop bit)
-	// Note: while segment data is LSB-first, address bits and SEG/GRID intensity bit are reversed
-	// The address command can be followed by multiple databytes, requiring specific timing to distinguish multiple commands
+{ // Send a byte to the chip the way the TM1652 likes it (LSB-first, UART serial 8E1 - 8 bits, parity bit set to 0 when odd, one stop bit)
+  // Note: while segment data is LSB-first, address bits and SEG/GRID intensity bit are reversed
+  // The address command can be followed by multiple databytes, requiring specific timing to distinguish multiple commands
   //  - start bit, 8x data bits, parity bit, stop bit; 52 us = 19200bps
   // (Datasheet: "The baud rate range supported by TM1652 is: 17500bps ~ 21200bps [...] the time range of each bit is: 47us ~ 57us."
   // To compensate for processing instructions on slower processors, BITDELAY is set lower than 52
-  // Testing on CH32V003 @ 48Mhz, showed that value working fine. Faster processors may need a higher delay. TODO: test other MCU's.
-  #define TM1652_BITDELAY 49     // NOTE: core 1.0.6 of LGT8F328@32MHz miscalculates delayMicroseconds() (should be 52us delay). For fix see https://github.com/dbuezas/lgt8fx/issues/18
+  // Testing on CH32V003 @ 48Mhz, showed that value working fine. Faster processors may need a higher delay.
+  // Testing on CH32V203 @ 48MHz and @ 144MHz showed no issues and very precise timing. 
+  // For CH570 a much smaller delay (22) and optimized compiling was required. TODO: test other MCU's.
+  #define TM1652_BITDELAY 49
+  // NOTE: core 1.0.6 of LGT8F328@32MHz miscalculates delayMicroseconds() (should be 52us delay). For fix see https://github.com/dbuezas/lgt8fx/issues/18
   bool fParity=true;
 
   // Note: To improve timing accuracy, sending data should not be interrupted. 
@@ -94,7 +98,8 @@ void TM1652::waitCmd(void)
 { // Wait for at least 3ms since previous call to ensure TM1652 treats next byte as new command
   // Datasheet: "Time: Data line high time (minimum time is 3ms)"
   #define TM1652_WAITCMD 3000L
-  while(micros() < tLastCmd + TM1652_WAITCMD);    // NOTE: tLastCmd is 32-bit => wrap-around is about 4295 sec
+  // NOTE: core 1.0.4 of CH32 has a bug in micros(). For details and the fix see https://github.com/openwch/arduino_core_ch32/pull/250
+  while((uint32_t)micros() - tLastCmd < TM1652_WAITCMD);    // NOTE: use subtraction to avoid wrap-around issues (tLastCmd is 32-bit => wrap-around is about 4295 sec)
 }
 
 void TM1652::endCmd(void)
