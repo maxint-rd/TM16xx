@@ -23,6 +23,10 @@ Made by Maxint R&D. See https://github.com/maxint-rd
 #define TM1652_CMD_MODE  0x18
 #define TM1652_CMD_ADDRESS  0x08
 
+/** TM1652 module class. 
+ *  Constructor: TM1652(byte dataPin, byte numDigits=4)
+ *  Example: TM1652 module(10);
+ */
 class TM1652 : public TM16xx
 {
   public:
@@ -30,12 +34,20 @@ class TM1652 : public TM16xx
     /** DEPRECATED: activation, intensity (0-7) and display mode are no longer used by constructor. */
     TM1652(byte dataPin, byte numDigits=4, bool activateDisplay=true, byte intensity=7, byte displaymode = TM1652_DISPMODE_5x8);
     // TODO: remove deprecated parameters - TM1652(byte dataPin, byte numDigits=4);
+    /** Clear the display */
     virtual void clearDisplay();
+    /** Set display state (on=true, off=false), intensity (0-7) and drive current (0-6) */
     virtual void setupDisplay(bool active, byte intensity, byte driveCurrent);
-    virtual void setupDisplay(bool active, byte intensity) { setupDisplay(active, intensity, 6); };
        // NOTE: When called from TM16xxDisplay via TM16xx object pointer, default parameters are not supplied and the 
        //       TM16xx method may be called instead of overloaded class method. To avoid this we explicitely 
-       //       implementent a version setupDisplay() that uuses that default.
+       //       implement a version setupDisplay() that uses that default.
+    virtual void setupDisplay(bool active, byte intensity) { setupDisplay(active, intensity, 6); };
+
+    /** Begin using the TM1652. Clear display, set initial brightness and drive current.
+     *    `activateDisplay` - should the display be on or off (default: true).
+     *    `intensity` - brightness of the display. Range 0-7 (low to high, default: 7).
+     *    `driveCurrent` - specific to TM1652 - Range 0-6 (low to high, default: 6).
+     */
     virtual void begin(bool activateDisplay=true, byte intensity=7, byte driveCurrent = 6);
 
   protected:
