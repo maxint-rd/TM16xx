@@ -1,5 +1,5 @@
 # TM16xx
-Arduino TM16xx library for LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 and similar chips. Simply use print() on 7-segment end 14-segment displays and use Adafruit GFX on matrix displays.
+Arduino TM16xx library for LED & KEY and LED Matrix modules based on TM1638, TM1637, TM1640 and similar chips. Simply use print() on 7-segment and 14-segment displays and use Adafruit GFX on matrix displays.
 
 ## TM16xx LEDs and Buttons library
 This Arduino library facilitates driving LED/LCD displays using TM16xx driver chips.
@@ -41,19 +41,17 @@ TM1650 | 8 x 4                | 7 x 4 multi  | DIO/CLK     |
 
 <sup>\*) Alternative configurations TM1638QYF/TM1638Anode/InvertedTM1638, TM1618Anode and TM1640Anode are also supported.</sup>
 
-The following chips are fully supported and tested to work: TM1616, TM1618, TM1620, TM1623, TM1624, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650, TM1652, TM1668.
+The following chips are fully supported and tested to work: TM1616, TM1618, TM1620, TM1623, TM1624, TM1628, TM1630, TM1637, TM1638, TM1640, TM1650, TM1652, TM1668, TM1680.
 
-
+The [generic class TM16xxIC](#generic-class-tm16xxic) was added to aupport many more chips: TM1620B, TM1623C, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. Note that while their features are supported, I don't have them all in my collection and they have not all been tested. Please let me know your findings if you have tested one of them.
 
 Note that there are similar chips made by other manufacturers that may be compatible with the Titan Micro chips. For instance: the HBS640 by WINRISE is compatible with the TM1640.
-
-As of end 2024 many more chips are supported: TM1620B, TM1623C, TM1626A, TM1616B, TM1628A, TM1629A, TM1629B, TM1629C, TM1629D, TM1636, TM1639, TM1640B, TM1642, TM1643, TM1665, TM1667. Note that while their features are supported via the [generic class TM16xxIC](#generic-class-tm16xxic), I don't have them all in my collection and they have not all been tested. Please let me know your findings if you have tested one of them.
 
 ___NEW___  - In 2025 support was added for the [TM1621 and TM1622 LCD drivers](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support#tm16xx-lcd-driver-chips), including specific support for the HT1621 based 6 x 7-segment PDC-6X1 module and the TM1622 based DM8BA10 module with 10 x 16-segment alphanumeric digits. The TM1621D was tested with a 3x7-segment mini LCD display. Other variations (TM1621B, TM1621C, TM1622B) were not tested, but may work fine.
 
 For a full overview of all the chips and their current level of support go to [TM16xx chips features and support](https://github.com/maxint-rd/TM16xx/wiki/TM16xx-chips-features-and-support).
 
-See the [documents folder](/documents) for datasheets containing more information about these chips and their pinouts.
+See the [documents folder](/documents) for datasheets containing more information about many of these chips and their pinouts.
 
 ## Library structure
 This library has a layered structure to simplify the support of multiple TM16xx chips.
@@ -66,7 +64,7 @@ The figure below illustrates that concept:
 
 ## Library installation
 The easiest way to install this library is using the Arduino Library Manager. Just search for "TM16xx LEDs and Buttons" and click the install button.
-You can also download the [latest version](https://github.com/maxint-rd/TM16xx/archive/refs/heads/master.zip) or select one from the [releases](https://github.com/maxint-rd/TM16xx/releases) as zipfile and use Add .ZIP library in the Arduino IDE.
+You can also download the [latest version](https://github.com/maxint-rd/TM16xx/archive/refs/heads/master.zip) or select one from the [releases](https://github.com/maxint-rd/TM16xx/releases) as zipfile and use _Add .ZIP library_ in the Arduino IDE.
 
 ___NOTE: AdafruitGFX may need to be installed, even if you don't use TM16xxMatrixGFX. Depending on your compiler you may get compilation errors if AdafruitGFX isn't installed. In such case you can either install AdafruitGFX or remove TM16xxMatrixGFX.h and TM16xxMatrixGFX.cpp from the library directory.___
 
@@ -306,7 +304,7 @@ Functionality in original library by Ricardo Batista:
 - The TM1650 datasheet mentions SDA and SCL pins. The used protocol resembles I2C, but lacks addressing. For that reason this library doesn't use the I2C Wire library, but (slow) bitbanging using digitalWrite.
 - The TM1652 allows more levels of LED dimming. For uniformity only 8 levels of duty cycle are supported. Additionally drive current can be specified.
 - The TM1668 class has experimental support for using RGB LEDs on Grids 5-7. Some information about the wiring can be found in the example code. In future versions this functionality may be removed or replaced by a specific class for using RGB LEDs.
-- The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. (Unfortunately these chips don't support individual LED brightness, only intensity of the whole display). TODO: TM16xx matrix classes are still limited to monochrome usage.
+- The TM1680 has 8x24 outputs which sounds ideal for creating a 8x8 RGB matrix. Use the separate [TM1680MatrixGFX library](https://github.com/maxint-rd/TM1680MatrixGFX) if you need colours (currently only for the BTL-350 display). Unfortunately the TM1680 doesn't support individual LED brightness, only intensity of the whole display.
 - The WeMOS D1 mini Matrix LED Shield and the TM1640 Mini LED Matrix 8x16 by Maxint R&D have R1 on the right-top. Call setMirror(true) to reverse the x-mirrorring.
 - When using TM16xxButtons, the amount of memory used can become too large. To preserve RAM memory on smaller MCUs such as the ATtiny84 and ATtiny85, the number of buttons tracked is limited to 2 combined button presses. This can be changed by setting the maximum button slots in the TM16xxButtons.h header file:
 ```C++
@@ -327,7 +325,8 @@ Some users found a TM16xx chip in their device and shared their experience:
 - [Compatible ARTSCHIP HT1628B in DVD player](https://github.com/maxint-rd/TM16xx/issues/69#issuecomment-3568216112) - don't let a good display module go to waste
 - [AIP1629B (TM1629) in Ukranian power stabalizer](https://github.com/maxint-rd/TM16xx/issues/52) - 10kVA protected AC power
 - [TM1652 in the Xiaomi XIAO AI Smart Alarm Clock](https://github.com/maxint-rd/TM16xx/issues/41#issue-1940161388) - make it smarter with NTP
-- [TM1680 in the Denver BTL - 350 bluetooth speaker](https://github.com/maxint-rd/TM16xx/issues/2#issuecomment-1406738635) - make sense of a 11x11 RGB matrix
+- [TM1680 in the Denver BTL - 350 bluetooth speaker](https://github.com/maxint-rd/TM16xx/issues/2#issuecomment-1406738635) - make sense of a 11x11 RGB matrix.
+  ___NEW___ - Use the separate [TM1680MatrixGFX library](https://github.com/maxint-rd/TM1680MatrixGFX) if you have a BTL-350 display.
 - [TM1680 in the thermostat MH3901-Z from MCO HOME](https://github.com/maxint-rd/TM16xx/issues/2#issuecomment-1501193063) - how PCB designers make developers crazy
 - [TM1616 in the Gosund SW7 dual-channel dimmer](https://github.com/maxint-rd/TM16xx/issues/22#issue-1285063037) - make an ESP8285 dimmer talk to Tasmota
 - [TM1621 LCD in old radio](https://github.com/maxint-rd/TM16xx/issues/59) - yet to be tested with the newly added LCD support class
