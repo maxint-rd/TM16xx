@@ -68,6 +68,10 @@ void TM1652::send(byte data)
   // Note: To improve timing accuracy, sending data should not be interrupted. 
   // However, having interrupts may be required by timing functions such as delayMicroseconds (e.g. on RP2040)
   // Interrupts during data could be a bigger issue on slower processors.
+  // Issue #72 shows a case of instability on the ESP32 C3 when doing WiFi, where ESP8266 worked fine. 
+  // Multi-core processors (like ESP32 S2?) may have their WiFi handled in a separate core, while others may handle WiFi during yield().
+  // On those processors interrupts may be allowable, but not on C3 with WiFi on.
+  noInterrupts();
 
   // start - low
   digitalWrite(dataPin, LOW);
@@ -88,6 +92,11 @@ void TM1652::send(byte data)
 
   // stop - high
   digitalWrite(dataPin, HIGH);
+
+  // What is the earliest point where interrupts can be switched on again? More testing needed...
+  interrupts();
+
+  // bit-delay after digitalWrite()
   delayMicroseconds(TM1652_BITDELAY);
 
   // idle - remain high
