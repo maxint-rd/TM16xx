@@ -70,7 +70,7 @@ void TM1652::send(byte data)
   // Interrupts during data could be a bigger issue on slower processors.
   // Issue #72 shows a case of instability on the ESP32 C3 when doing WiFi, where ESP8266 worked fine. 
   // Multi-core processors (like ESP32 S2?) may have their WiFi handled in a separate core, while others may handle WiFi during yield().
-  // On those processors interrupts may be allowable, but not on C3 with WiFi on.
+  // On those processors interrupts may be allowable, but not on C3 with WiFi on...
   noInterrupts();
 
   // start - low
