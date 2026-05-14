@@ -282,6 +282,11 @@ byte TM16xx::receive()
 {
   byte temp = 0;
 
+  // Set clock low. According various datasheets "a BIT is read and received at rising edge of the clock" (see issue #73)
+  // DIO should not be changed when CLK is high.
+  digitalWrite(clockPin, LOW);
+  bitDelay();		// NOTE: on TM1637 reading keys should be slower than 250Khz (see datasheet p3)
+
   // Pull-up on
   pinMode(dataPin, INPUT);
   digitalWrite(dataPin, HIGH);
@@ -289,14 +294,14 @@ byte TM16xx::receive()
   for (int i = 0; i < 8; i++) {
     temp >>= 1;
 
-    digitalWrite(clockPin, LOW);
+    digitalWrite(clockPin, HIGH);
     bitDelay();		// NOTE: on TM1637 reading keys should be slower than 250Khz (see datasheet p3)
 
     if (digitalRead(dataPin)) {
       temp |= 0x80;
     }
 
-    digitalWrite(clockPin, HIGH);
+    digitalWrite(clockPin, LOW);
     bitDelay();
   }
 
