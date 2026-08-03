@@ -40,20 +40,18 @@ void TM1637::bitDelay()
 
 void TM1637::stop()
 { // to stop TM1637 expects the clock to go high, when strobing DIO high
-  digitalWrite(strobePin, LOW);
   digitalWrite(clockPin, LOW);
+  pinMode(strobePin, OUTPUT);
+  digitalWrite(strobePin, LOW);
   bitDelay();
   digitalWrite(clockPin, HIGH);
+  bitDelay();
   digitalWrite(strobePin, HIGH);
   bitDelay();
 }
 
-void TM1637::send(byte data)
-{  // send a byte to the chip the way the TM1637 likes it
-  // MOLE 180514: TM1637 uses acknowledgement after sending the data
-  // (method derived from https://github.com/avishorp/TM1637 but using pins in standard output mode when writing)
-  TM16xx::send(data);
-
+void TM1637::ack()
+{
   // unlike TM1638/TM1668 and TM1640, the TM1637 uses an ACK to confirm reception of command/data
   // read the acknowledgement
   // TODO? return the ack?
@@ -63,9 +61,11 @@ void TM1637::send(byte data)
   digitalWrite(clockPin, HIGH);
   bitDelay();
   uint8_t ack = digitalRead(dataPin);
-  if (ack == 0)
+  if (ack == 0) {
+    pinMode(dataPin, OUTPUT);
     digitalWrite(dataPin, LOW);
-  pinMode(dataPin, OUTPUT);
+  }
+  digitalWrite(clockPin, LOW);
 }
 
 uint32_t TM1637::getButtons()
@@ -78,9 +78,48 @@ uint32_t TM1637::getButtons()
   // with K1 in the highest byte (bits 8-15) and K2 in the lowest byte (bits 0-7)
   start();
   send(TM16XX_CMD_DATA_READ);		// send read buttons command
+  ack();
   byte received=receive();
+  ack();
   stop();
+
   if(received==0xFF)
     return(0);
-  return(_BV((0xFF-received)&0x0F)); 		// return bit set for the button that is pressed (bits 0-15)
+  return(_BV((0xFF-received)&0x0F));           // return bit set for the button that is pressed (bits 0-15)
+}
+
+void TM1637::sendCommand(byte cmd)
+{
+  start();
+  send(cmd);
+  ack();
+  stop();
+}
+
+void TM1637::sendData(byte address, byte data)
+{
+  sendCommand(TM16XX_CMD_DATA_FIXED);							// use fixed addressing for data
+  start();
+  send(TM16XX_CMD_ADDRESS | address);						// address command + address
+  ack();
+  send(data);
+  ack();
+  stop();
+}
+
+void TM1637::clearDisplay()
+{
+  sendCommand(TM16XX_CMD_DATA_AUTO);		// set auto increment addressing mode
+  start();
+  send(TM16XX_CMD_ADDRESS);
+  ack();
+  for (int i = 0; i < _maxDisplays; i++) {
+    send(0x00);
+    ack();
+    if(_maxSegments>8) {
+      send(0x00);
+      ack();
+    }
+  }
+  stop();
 }
