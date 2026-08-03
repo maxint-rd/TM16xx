@@ -50,6 +50,8 @@ class TM16xxDisplay : public Print
   void setDisplayToDecNumber(unsigned long number, byte dots, bool leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
   // Set the display to a signed decimal number (with or without leading zeros)
   void setDisplayToSignedDecNumber(signed long number, byte dots, bool leadingZeros = true, const byte numberFont[] = TM16XX_NUMBER_FONT);
+  // Set the display to a unsigned decimal number at a specific starting position (fixes issue #75)
+  void setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, bool leadingZeros, const byte numberFont[] = TM16XX_NUMBER_FONT);
   // Set the display to a unsigned binary number
   void setDisplayToBinNumber(byte number, byte dots, const byte numberFont[] = TM16XX_NUMBER_FONT);
 
@@ -73,7 +75,6 @@ class TM16xxDisplay : public Print
 
  
  private:
-  void setDisplayToDecNumberAt(unsigned long number, byte dots, byte startingPos, bool leadingZeros, const byte numberFont[]);
   //TM16xx *TM16xxDisplay::findModuleByPos(const byte nPosFind);
   void sendCharAt(const byte nPos, byte btData, bool fDot);
   void sendAsciiCharAt(const byte nPosCombi, char c, bool fDot, const byte font[] = TM16XX_FONT_DEFAULT);
