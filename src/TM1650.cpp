@@ -208,11 +208,14 @@ uint32_t TM1650::getButtons()
 	if(received<0x44)
 		return(0);
 
-  // MMOLE 240410: support multi-press for K1+K2. BREAKING: previous releases used different numbers!
-	// map key presses to key-numbers 0-6/8-14/16-22/24-30
-  byte nLine=(received>>3)&0x7;      // scan-line 0-7 where 7=KI1+KI2
-  byte nRow=(received)&0x3;
-  uint32_t uButtons=(nLine<7) ? bit(nLine) : (bit(0)|bit(1));
-  uButtons=uButtons<<nRow;
+  // MMOLE 240410: support multi-press for KI1+KI2. BREAKING: previous releases used different numbers!
+  // Map key presses to key-numbers 0-6/8-14/16-22/24-30
+  // MMOLE 261010: Fix incorrect shifting causing only digit1 to be correct. 
+  //               Also prevent 16-bit overflow by using 1UL instead of bit(1).
+  byte nLine=(received>>3) & 0x7;      // scan-line 0-7 where 7=KI1+KI2
+  byte nRow=(received) & 0x3;
+  uint32_t uButtons = (nLine<7) ? (1UL<<nLine) : ((1UL<<0) | (1UL<<1));
+  uButtons = uButtons << (nRow*8); // Multiply by 8 to shift by byte rows (0, 8, 16, 24)
+
   return(uButtons);
 }
