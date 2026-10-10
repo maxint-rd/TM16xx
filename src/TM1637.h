@@ -29,12 +29,15 @@ class TM1637 : public TM16xx
   public:
 	/** Instantiate a TM1637 module specifying the display state, the starting intensity (0-7) data and clock pins. */
   	TM1637(byte dataPin, byte clockPin, byte numDigits=4, bool activateDisplay=true, byte intensity=7);
-		virtual uint32_t getButtons();
+    virtual uint32_t getButtons();
+    virtual void clearDisplay();
 
   protected:
     virtual void bitDelay();
     virtual void stop();
-    virtual void send(byte data);
+    virtual void sendCommand(byte cmd);
+    virtual void sendData(byte address, byte data);
+    virtual void ack();
     //uint16_t _uLeds;		// rooom to store status of LEDS that can be attached to GRD 5 and 6
 };
 
